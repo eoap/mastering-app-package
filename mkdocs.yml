@@ -1,0 +1,116 @@
+site_name: Mastering Earth Observation Application Packaging with CWL
+
+theme:
+    logo: imgs/icon-eoap.png
+    name: material
+
+    palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+plugins:
+  - search
+  - mermaid2:
+      version: 10.6.0
+
+markdown_extensions:
+  - pymdownx.details
+  - abbr
+  - admonition
+  - footnotes
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_div_format
+  - attr_list
+  - pymdownx.snippets:
+      base_path: './'
+  - pymdownx.highlight:
+      line_spans: __span
+extra_css:
+  - styles/css/app.css
+  
+extra_javascript:
+  - javascripts/config.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  
+
+nav:
+  - Introduction: 'index.md'
+  - Prerequisites: 
+    - Introduction to YAML: prerequisites/yaml.md
+    - Introduction to CWL: prerequisites/cwl.md
+  - Earth Observation Application Package:
+    - OGC Activities: app-package/ogc-context.md
+  - Introducing the application:
+    - Water bodies detection: app/water-bodies-detection.md
+    - Application Steps:
+      - Crop: 
+        - Description: app/crop/app.md
+        - Running the step: python-env/crop.md
+      - Normalized Difference:
+        - Description: app/normalized-difference/app.md
+        - Running the step: python-env/norm-diff.md
+      - Otsu threshold:
+        - Description: app/otsu/app.md
+        - Running the step: python-env/otsu.md
+      - STAC Catalog:
+        - Description: app/stac/app.md
+        - Running the step: python-env/stac.md
+  - Package the EO Application:
+    - Creating the containers: 
+      - Scope: containers/scope.md
+      - Test the containers:
+        - Crop: containers/crop.md
+        - Normalized difference: containers/norm-diff.md
+        - Ostu threshold: containers/otsu.md
+        - STAC Catalog: containers/stac.md
+    - Create CWL CommandLineTools:
+      - Scope: cwl-cli/scope.md
+      - Crop: cwl-cli/crop.md
+      - Normalized difference: cwl-cli/norm-diff.md
+      - Ostu threshold: cwl-cli/otsu.md
+      - STAC Catalog: cwl-cli/stac.md
+    - Create the CWL Workflows:
+      - Scope: cwl-workflow/scope.md
+      - Sentinel-2 Cloud native Workflow: cwl-workflow/cloud-native.md
+      - Staged Landsat-9 Workflow:
+        - Understanding stage-in/out: cwl-workflow/stage-in-out.md
+        - CWL CommandLineTool for stage-in: cwl-workflow/stage-in.md
+        - CWL CommandLineTool for stage-out: cwl-workflow/stage-out.md
+        - Processing a staged Landsat-9 acquisition: cwl-workflow/staged.md
+      - Sentinel-2 Workflow of Workflow: cwl-workflow/scatter-cloud-native.md
+  - Release the EO Application:
+    - Scope: release/scope.md
+    - Continuous Integration: release/ci.md
+  - Execution Scenarios:
+    - Scope: exec/scope.md
+    - Running on a local machine:
+      - Sentinel-2: cwl-workflow/exec-cloud-native.md
+      - Landsat-9: cwl-workflow/exec-stage-in.md
+    - Running CWL Workflow on Kubernetes: 
+      - Run the CWL Workflow with calrissian: kubernetes/calrissian.md 
+  - FAIR Application Packages: fair/best-practice.md
+  - Reference:
+    - OGC Application Package Best Practice: reference/ogc-ap-bp.md
+    - CWL CommandLineTool: reference/cwl-commandlinetool.md
+    - CWL Workflow: reference/cwl-workflow.md
+    - Tools: 
+      - cwltool: reference/cwltool.md
+      - calrissian: reference/calrissian.md

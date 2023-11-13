@@ -1,0 +1,144 @@
+name: build
+on:
+  push:
+    branches:
+    - master
+    - main
+
+    paths:
+    # Only rebuild website when apps have changed
+    - 'water-bodies/**'
+    - .github/**
+    - docs/**
+    - cwl-workflow/*.cwl
+    - codemeta.json
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+    - run: pip install cwltool
+    - run: cwltool --validate cwl-workflow/app-water-bodies-cloud-native.cwl
+    - run: cwltool --validate cwl-workflow/app-water-body-cloud-native.cwl
+    - run: cwltool --validate cwl-workflow/app-water-body.cwl
+
+  version:
+    needs: validate
+
+    runs-on: ubuntu-latest
+
+    outputs:
+
+      app-version: ${{ steps.set-version.outputs.version }}
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: echo "APP_VERSION=$(cat codemeta.json | jq -r .version )" >> $GITHUB_ENV
+    - run: echo app version is $APP_VERSION
+    - id: set-version
+      run: echo "::set-output name=version::$APP_VERSION"
+
+  container-build:
+
+    needs: version
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        step: [crop, norm_diff, otsu, stac, stage]
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: echo version ${{needs.version.outputs.app-version}}
+    - run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+    - name: build & push image
+      run: |
+        IMAGE_ID=ghcr.io/eoap/mastering-app-package/${{ matrix.step }}
+        docker build water-bodies/command-line-tools/${{ matrix.step }} --file water-bodies/command-line-tools/${{ matrix.step }}/Dockerfile --tag ${{ matrix.step }}
+        docker tag ${{ matrix.step }} $IMAGE_ID:${{needs.version.outputs.app-version}}
+        docker push $IMAGE_ID:${{needs.version.outputs.app-version}}
+
+  create-release:
+
+    needs:
+    - container-build
+    - version
+
+    runs-on: ubuntu-latest
+
+    outputs:
+
+      upload_url: ${{ steps.set-upload-url.outputs.upload_url }}
+
+    steps:
+    - name: release
+      uses: actions/create-release@v1
+      id: create_release
+      with:
+        draft: false
+        prerelease: false
+        release_name: ${{needs.version.outputs.app-version}}
+        tag_name: ${{needs.version.outputs.app-version}}
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+    - id: set-upload-url
+      run: echo "::set-output name=upload_url::${{ steps.create_release.outputs.upload_url }}"
+
+  publish-artifacts:
+
+    needs:
+    - create-release
+    - version
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        step: ["app-water-bodies-cloud-native", "app-water-body-cloud-native", "app-water-body"]
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        for step in crop norm_diff otsu stac
+        do
+          tag="ghcr.io/eoap/mastering-app-package/${step}:${{needs.version.outputs.app-version}}"
+          docker pull ${tag}
+          shatag=$( docker inspect ${tag} | yq -r '.[0]["RepoDigests"][0]' )
+          for cwl in $(ls cwl-workflow/*.cwl)
+          do
+            s="${step}" t="${shatag}" yq -i eval '(.$graph[] | select (.id == env(s)) ).hints.DockerRequirement.dockerPull = env(t)' $cwl
+          done
+        done
+    - run: |
+        for cwl in $(ls cwl-workflow/*.cwl)
+        do
+          r=$( cat codemeta.json | jq -r ".codeRepository" ) yq -i eval '."s:codeRepository" = {"URL" : env(r)}' $cwl
+          v="${{needs.version.outputs.app-version}}" yq -i eval '."s:softwareVersion" = env(v)' $cwl
+          n=$(cat codemeta.json | jq -r '(.author[0].givenName + " " + .author[0].familyName)') \
+          e=$(cat codemeta.json | jq -r '.author[0].email') \
+          a=$(cat codemeta.json | jq -r '.author[0].affiliation["name"]') \
+          yq eval -i  '."s:author" += [{"class": "s:Person", "s.name": env(n), "s.email": env(e), "s.affiliation": env(a)}]' $cwl
+        done
+    - run: |
+        mkdir downloads
+        for cwl in "app-water-bodies-cloud-native" "app-water-body-cloud-native" "app-water-body"
+        do
+          cp cwl-workflow/${cwl}.cwl downloads/${cwl}.${{needs.version.outputs.app-version}}.cwl
+        done
+    - uses: actions/upload-artifact@v2
+      with:
+        name: application-package
+        path: downloads
+    - name: upload linux artifact 1
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{needs.create-release.outputs.upload_url}}
+        asset_path: downloads/${{matrix.step}}.${{needs.version.outputs.app-version}}.cwl
+        asset_name: ${{matrix.step}}.${{needs.version.outputs.app-version}}.cwl
+        asset_content_type: text/yaml

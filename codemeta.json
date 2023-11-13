@@ -1,0 +1,53 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "license": "https://spdx.org/licenses/CC-BY-NC-SA-4.0",
+    "codeRepository": "https://github.com/eoap/mastering-app-package.git",
+    "dateCreated": "2022-09-01",
+    "datePublished": "2022-09-25",
+    "dateModified": "2022-09-25",
+    "name": "Water Bodies Detection",
+    "version": "1.0.0",
+    "description": "The Water Bodies Detection is an Application that uses the NDWI index and the Otsu threshold to detect water bodies using Sentinel-2 or Landsat-9 data",
+    "developmentStatus": "active",
+    "downloadUrl": "https://github.com/eoap/mastering-app-package/releases/tag/1.0.0",
+    "relatedLink": [
+        "https://eoap.github.io/mastering-app-package"
+    ],
+    "funder": {
+        "@type": "Organization",
+        "name": "Terradue"
+    },
+    "keywords": [
+        "NDWI", "Landsat-9", "Sentinel-2", "Water Bodies"
+    ],
+    "programmingLanguage": [
+        "Python", "CWL"
+    ],
+    "softwareRequirements": [
+        "container runtime",
+        "cwl runner"
+    ],
+    "author": [
+        {
+            "@type": "Person",
+            "givenName": "Jane",
+            "familyName": "Doe",
+            "email": "jane.doe@acme.earth",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "ACME"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "John",
+            "familyName": "Doe",
+            "email": "john.doe@acme.earth",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "ACME"
+            }
+        }
+    ]
+}
