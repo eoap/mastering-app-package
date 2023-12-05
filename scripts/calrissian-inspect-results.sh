@@ -1,0 +1,1 @@
+tree $( cat /calrissian/results.json | jq -r .stac_catalog.path )

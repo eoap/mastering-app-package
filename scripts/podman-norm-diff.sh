@@ -1,0 +1,19 @@
+podman \
+    run \
+    -i \
+    --userns=keep-id \
+    --mount=type=bind,source=/workspace/runs,target=/runs \
+    --mount=type=bind,source=/workspace/runs/crop_green.tif,target=/inputs/crop_green.tif,readonly \
+    --mount=type=bind,source=/workspace/runs/crop_nir.tif,target=/inputs/crop_nir.tif,readonly \
+    --workdir=/runs \
+    --read-only=true \
+    --user=1001:100 \
+    --rm \
+    --env=HOME=/runs \
+    --env=PYTHONPATH=/app \
+    localhost/norm-diff:latest \
+    python \
+    -m \
+    app \
+    /inputs/crop_green.tif \
+    /inputs/crop_nir.tif
