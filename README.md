@@ -1,12 +1,12 @@
 # Mastering Earth Observation Application Packaging with CWL
 
-This guide supports training events, where participants will dive into the world of EO Application Packages and explore how to effectively package, share, and execute Earth observation workflows using the Common Workflow Language (CWL) standard.
+This guide supports training events, where participants dive into the world of EO Application Packages and explore how to effectively package, share, and execute Earth observation workflows using the Common Workflow Language (CWL) standard.
 
 This tutorial is designed for developers, scientists, and Earth observation enthusiasts who want to enhance their skills in creating and sharing EO Application Packages. 
 
-Whether you are new to CWL or already have some experience, this event will provide valuable insights and practical knowledge to boost your expertise.
+Whether participants are new to CWL or already have some experience, this event provides valuable insights and practical knowledge to boost your expertise.
 
-During the training event, you will learn:
+During a training event, trainees learn:
 
 * The fundamentals of EO Application Packages and their role in the Earth observation domain.
 * How to leverage CWL to describe, package, and share workflows.
@@ -23,4 +23,4 @@ To achieve this, developers follow the steps described below.
 * Prepare the CWL Workflow orchestrating CWL CommandLineTool document(s) wrapping the command line tool available container(s).
 * Test the application package in one or more execution scenarios.
 
-This tutorial will guide you through step-by-step tutorials, demonstrating the process of creating EO Application Packages using CWL with a simple EO application for water bodies detection using NDWI. 
+This tutorial guides participants through step-by-step tutorials, demonstrating the process of creating EO Application Packages using CWL with a simple EO application for water bodies detection using NDWI. 
