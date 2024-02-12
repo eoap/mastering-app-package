@@ -1,4 +1,4 @@
-WORKSPACE=/workspace/app-package-training-bids23
+WORKSPACE=/workspace/mastering-app-package
 
 version="bids23"
 repo="ghcr.io/terradue/${REPO}"

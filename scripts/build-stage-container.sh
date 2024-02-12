@@ -1,4 +1,4 @@
-export WORKSPACE=/workspace/app-package-training-bids23
+export WORKSPACE=/workspace/mastering-app-package
 
 podman \
     build \
