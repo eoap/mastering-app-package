@@ -6,7 +6,7 @@ This tutorial is designed for developers, scientists, and Earth observation enth
 
 Whether participants are new to CWL or already have some experience, this event provides valuable insights and practical knowledge to boost your expertise.
 
-During a training event, trainees learn:
+During a training event, the trainees learn:
 
 * The fundamentals of EO Application Packages and their role in the Earth observation domain.
 * How to leverage CWL to describe, package, and share workflows.
