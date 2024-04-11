@@ -1,7 +1,7 @@
 podman run \
     -i \
     --userns=keep-id \
-    --mount=type=bind,source=/workspace/runs,target=/runs \
+    --mount=type=bind,source=/workspace/mastering-app-package/runs,target=/runs \
     --workdir=/runs \
     --read-only=true \
     --user=1001:100 \

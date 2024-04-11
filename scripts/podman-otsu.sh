@@ -2,8 +2,8 @@ podman \
     run \
     -i \
     --userns=keep-id \
-    --mount=type=bind,source=/workspace/runs,target=/runs \
-    --mount=type=bind,source=/workspace/runs/norm_diff.tif,target=/inputs/norm_diff.tif,readonly \
+    --mount=type=bind,source=/workspace/mastering-app-package/runs,target=/runs \
+    --mount=type=bind,source=/workspace/mastering-app-package/runs/norm_diff.tif,target=/inputs/norm_diff.tif,readonly \
     --workdir=/runs \
     --read-only=true \
     --user=1001:100 \
