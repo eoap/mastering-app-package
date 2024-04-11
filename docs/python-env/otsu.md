@@ -2,6 +2,10 @@
 
 Run the `otsu` step in a Python virtual environment.
 
+### Lab
+
+This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/Application steps/otsu.ipynb
+
 ### Step 1 - Configure the workspace
 
 The results produced will be available in the local folder `/workspace/runs`

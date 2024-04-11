@@ -1,6 +1,26 @@
 ### Goal 
 
-Run the `stac` step in the container image tagged `localhost/stac:latest`.
+Create a container and run the `stac` step in the container image tagged `localhost/stac:latest`.
+
+### Container
+
+Each step has its own recipe to build the container image.
+
+The `stac` step container image recipe is:
+
+```dockerfile linenums="1" title="stac/Dockerfile"
+--8<--
+water-bodies/command-line-tools/stac/Dockerfile
+--8<--
+```
+
+Build the container image with:
+
+```bash linenums="1" title="terminal"
+--8<--
+scripts/build_container_stac.sh
+--8<--
+```
 
 ### Run the container
 

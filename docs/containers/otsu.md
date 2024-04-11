@@ -1,6 +1,26 @@
 ### Goal 
 
-Run the `otsu` step in the container image tagged `localhost/otsu:latest`.
+Create a container and run the `otsu` step in the container image tagged `localhost/otsu:latest`.
+
+### Container
+
+Each step has its own recipe to build the container image.
+
+The `otsu` step container image recipe is:
+
+```dockerfile linenums="1" title="otsu/Dockerfile"
+--8<--
+water-bodies/command-line-tools/otsu/Dockerfile
+--8<--
+```
+
+Build the container image with:
+
+```bash linenums="1" title="terminal"
+--8<--
+scripts/build_container_otsu.sh
+--8<--
+```
 
 ### Run the container
 

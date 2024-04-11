@@ -1,6 +1,26 @@
 ### Goal 
 
-Run the `crop` step in the container image tagged and built in the previous step.
+Create a container and run the `crop` step in the container image tagged and built in the previous step.
+
+### Container
+
+Each step has its own recipe to build the container image.
+
+The `crop` step container image recipe is:
+
+```dockerfile linenums="1" title="crop/Dockerfile"
+--8<--
+water-bodies/command-line-tools/crop/Dockerfile
+--8<--
+```
+
+Build the container image with:
+
+```bash linenums="1" title="terminal"
+--8<--
+scripts/build_container_crop.sh
+--8<--
+```
 
 ### How to run a step in a container
 
