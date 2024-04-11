@@ -3,6 +3,10 @@
 
 Wrap the `crop` step as a Common Workflow Language CommandLineTool and execute it with a CWL runner.
 
+### Lab
+
+This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/CommandLineTools/crop.ipynb
+
 ### How to wrap a step as a CWL CommandLineTool 
 
 The CWL document below shows the `crop` step wrapped as a CWL CommandLineTool:
@@ -34,10 +38,10 @@ Let's break down the key components of this CWL document:
 
 ### Steps
 
-Clean-up the `/workspace/runs` folder: 
+Clean-up the `/workspace/mastering-app-package/runs` folder: 
 
 ```
-rm -fr /workspace/runs/*
+rm -fr /workspace/mastering-app-package/runs/*
 ```
 
 Run the CWL document using the `cwltool` CWL runner to execute the `crop` step with the `green` band with:
@@ -67,7 +71,7 @@ sh -x ${WORKSPACE}/scripts/cwl-cli-crop-nir.sh
 
 ### Expected outcome
 
-The folder `/workspace/runs` contains: 
+The folder `/workspace/mastering-app-package/runs` contains: 
 
 ```
 (base) jovyan@coder-mrossi:~/runs$ tree .
@@ -93,7 +97,7 @@ and run it with:
 ```console hl_lines="5" title="terminal"
 cwltool \
     --podman \
-    --outdir /workspace/runs \
+    --outdir /workspace/mastering-app-package/runs \
     crop.cwl \
     crop-params.yaml 
 ```

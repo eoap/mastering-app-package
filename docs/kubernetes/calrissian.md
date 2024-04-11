@@ -6,7 +6,7 @@ Run the `app-water-body-cloud-native.1.0.0.cwl` released application package usi
 
 ### Step 1 - Configure the workspace
 
-The results produced will be available in the local folder `/workspace/runs`
+The results produced will be available in the local folder `/workspace/mastering-app-package/runs`
 
 ```bash linenums="1" hl_lines="2-4" title="terminal"
 --8<--

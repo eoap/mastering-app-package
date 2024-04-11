@@ -8,7 +8,7 @@ This step has a dedicated lab available at /workspace/mastering-app-package/prac
 
 ### Step 1 - Configure the workspace
 
-The results produced will be available in the local folder `/workspace/runs`
+The results produced will be available in the local folder `/workspace/mastering-app-package/runs`
 
 ```bash linenums="1" hl_lines="2-4" title="terminal"
 --8<--
@@ -64,7 +64,7 @@ source ${WORKSPACE}/scripts/norm_diff_deactivate.sh
 
 ### Expected outcome
 
-The folder `/workspace/runs` contains: 
+The folder `/workspace/mastering-app-package/runs` contains: 
 
 ```
 (base) jovyan@coder-mrossi:~/runs$ tree .

@@ -2,6 +2,10 @@
 
 Create a container and run the `norm_diff` step in the container image tagged `localhost/norm-diff:latest`.
 
+### Lab
+
+This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/Containers/norm-diff.ipynb
+
 ### Container
 
 Each step has its own recipe to build the container image.
@@ -42,7 +46,7 @@ sh -x ${WORKSPACE}/scripts/podman-norm-diff.sh
 
 ### Expected outcome
 
-The folder `/workspace/runs` contains: 
+The folder `/workspace/mastering-app-package/runs` contains: 
 
 ```
 (base) jovyan@coder-mrossi:~/runs$ tree .

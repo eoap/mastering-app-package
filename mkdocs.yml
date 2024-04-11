@@ -76,7 +76,7 @@ nav:
   - Package the EO Application:
     - Creating the containers: 
       - Scope: containers/scope.md
-      - Test the containers:
+      - Build and test the containers:
         - Crop: containers/crop.md
         - Normalized difference: containers/norm-diff.md
         - Ostu threshold: containers/otsu.md

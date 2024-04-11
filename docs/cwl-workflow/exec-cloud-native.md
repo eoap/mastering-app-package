@@ -2,9 +2,13 @@
 
 Run the `app-water-body-cloud-native.1.0.0.cwl` released application package using `cwltool`.
 
+### Lab
+
+This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/Workflows/cloud-native.ipynb
+
 ### Step 1 - Configure the workspace
 
-The results produced will be available in the local folder `/workspace/runs`
+The results produced will be available in the local folder `/workspace/mastering-app-package/runs`
 
 ```bash linenums="1" hl_lines="2-4" title="terminal"
 --8<--
@@ -42,11 +46,11 @@ sh ${WORKSPACE}/scripts/exec-app-water-body-cloud-native.sh
 
 ### Expected outcome
 
-The folder `/workspace/runs` contains: 
+The folder `/workspace/mastering-app-package/runs` contains: 
 
 ``` hl_lines="3"
 (base) jovyan@coder-fbrito:~/runs$ tree .
-/workspace/runs/
+/workspace/mastering-app-package/runs/
 ├── app-water-body-cloud-native.1.0.0.cwl
 └── cmtriamc
     ├── S2B_10TFK_20210713_0_L2A

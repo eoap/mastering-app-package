@@ -2,6 +2,10 @@
 
 Create a container and run the `crop` step in the container image tagged and built in the previous step.
 
+### Lab
+
+This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/Containers/crop.ipynb
+
 ### Container
 
 Each step has its own recipe to build the container image.
@@ -39,7 +43,7 @@ Let's break down what this command does:
 * `podman run`: This is the command to run a container.
 * `-i`: This flag makes the container interactive, allowing you to interact with it via the terminal.
 * `--userns=keep-id`: It instructs `podman` to keep the user namespace ID.
-`--mount=type=bind,source=/workspace/runs,target=/runs`: This option mounts a directory from the host system to the container. In this case, it mounts the `/workspace/runs` directory on the host to the /runs directory inside the container.
+`--mount=type=bind,source=/workspace/mastering-app-package/runs,target=/runs`: This option mounts a directory from the host system to the container. In this case, it mounts the `/workspace/mastering-app-package/runs` directory on the host to the /runs directory inside the container.
 * `--workdir=/runs`: Sets the working directory inside the container to `/runs`.
 * `--read-only=true`: Makes the file system inside the container read-only, meaning you can't write or modify files inside the container.
 * `--user=1001:100`: Specifies the user and group IDs to be used within the container.
@@ -55,10 +59,10 @@ Let's break down what this command does:
 
 ### Steps
 
-Clean-up the `/workspace/runs` folder: 
+Clean-up the `/workspace/mastering-app-package/runs` folder: 
 
 ```
-rm -fr /workspace/runs/*
+rm -fr /workspace/mastering-app-package/runs/*
 ```
 
 Run the command to run the `crop` step with the `green` band in the container with:
@@ -75,7 +79,7 @@ sh -x ${WORKSPACE}/scripts/podman-crop-nir.sh
 
 ### Expected outcome
 
-The folder `/workspace/runs` contains: 
+The folder `/workspace/mastering-app-package/runs` contains: 
 
 ```
 (base) jovyan@coder-mrossi:~/runs$ tree .

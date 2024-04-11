@@ -2,6 +2,10 @@
 
 Wrap the `crop` step as a Common Workflow Language CommandLineTool and exectute it with a CWL runner.
 
+### Lab
+
+This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/CommandLineTools/otsu.ipynb
+
 ### CWL CommandLineTool wrapping the step
 
 The CWL document below shows the `crop` step wrapped as a CWL CommandLineTool:
@@ -29,7 +33,7 @@ sh -x ${WORKSPACE}/scripts/cwl-cli-otsu.sh
 
 ### Expected outcome
 
-The folder `/workspace/runs` contains: 
+The folder `/workspace/mastering-app-package/runs` contains: 
 
 ```
 (base) jovyan@coder-mrossi:~/runs$ tree .

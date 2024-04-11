@@ -1,6 +1,6 @@
 cwltool \
     --podman \
-    --outdir /workspace/runs \
+    --outdir ${WORKSPACE}/runs \
     ${WORKSPACE}/cwl-cli/otsu.cwl \
     --raster \
-    /workspace/runs/norm_diff.tif
+    ${WORKSPACE}/runs/norm_diff.tif

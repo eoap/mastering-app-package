@@ -1,3 +1,12 @@
+### Goal
+
+Use a stage-in CWL workflow to stage a Landsat-9 acquisition
+
+### Lab
+
+This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/Workflows/stage-in.ipynb
+
+### Step 1 - Create a stage-in CWL Workflow
 
 Below a `stage-in.cwl` CWL (Common Workflow Language) document for a command-line tool that executes a Python script. 
 
@@ -39,6 +48,8 @@ After defining the `main` function, the script sets the href variable to the fir
     * The catalog's hrefs are normalized relative to the current working directory.
     * The catalog is saved as a self-contained catalog.
 
+### Step 2 - Create a container for the stage-in
+
 The container image is built with: 
 
 ```bash linenums="1" hl_lines="8-71"
@@ -47,7 +58,9 @@ scripts/build-stage-container.sh
 --8<--
 ```
 
-Now the Landsat-9 acquistion "https://planetarycomputer.microsoft.com/api/stac/v1/collections/landsat-c2-l2/items/LC09_L2SP_042033_20231015_02_T1" is staged with: 
+### Step 3 - Stage the Landsat-9 acquisition
+
+Now the Landsat-9 acquisition "https://planetarycomputer.microsoft.com/api/stac/v1/collections/landsat-c2-l2/items/LC09_L2SP_042033_20231015_02_T1" is staged with: 
 
 ```bash linenums="1" hl_lines="8"
 --8<--
@@ -55,10 +68,12 @@ scripts/cwl-cli-stage-in.sh
 --8<--
 ```
 
+### Step 4 - Check the path to the stage Landsat-9 acquisition
+
 The result is redirected to a file named `staged.json` as we use `jq` to get the path of the staged product:
 
 ```bash title="terminal"
 cat staged.json | jq -r .staged.path
 ```
 
-This returns a path like `/workspace/runs/921x91vw`
+This returns a path like `/workspace/mastering-app-package/runs/921x91vw`

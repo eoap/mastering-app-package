@@ -1,4 +1,4 @@
 export WORKSPACE=/workspace/mastering-app-package
-export RUNTIME=/workspace/runs
+export RUNTIME=${WORKSPACE}/runs
 mkdir -p ${RUNTIME}
 cd ${RUNTIME}

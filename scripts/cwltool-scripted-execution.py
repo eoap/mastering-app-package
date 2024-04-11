@@ -31,7 +31,7 @@ def get_job_order():
 parsed_args = argparse.Namespace(
     podman=True,
     parallel=True,
-    outdir="/workspace/runs",
+    outdir="/workspace/mastering-app-package/runs",
     workflow=f"/workspace/mastering-app-package/app-water-bodies-cloud-native.{version}.cwl#water_bodies",
     job_order=get_job_order(),
 )

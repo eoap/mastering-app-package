@@ -7,4 +7,4 @@ cwltool \
     --region_name $( cat ~/.aws/config | grep region | cut -d "=" -f 2 ) \
     --s3_bucket processing-results \
     --sub_path processing-results/$( cat /proc/sys/kernel/random/uuid ) \
-    --stac_catalog /workspace/runs
+    --stac_catalog ${WORKSPACE}/runs

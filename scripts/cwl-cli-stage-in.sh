@@ -2,7 +2,7 @@ ls9_ref="https://planetarycomputer.microsoft.com/api/stac/v1/collections/landsat
 
 cwltool \
     --podman \
-    --outdir /workspace/runs \
+    --outdir ${WORKSPACE}/runs \
     ${WORKSPACE}/cwl-cli/stage-in.cwl \
     --reference \
     ${ls9_ref} > staged.json

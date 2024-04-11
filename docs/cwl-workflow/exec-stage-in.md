@@ -4,7 +4,7 @@ Run the `app-water-body.1.0.0.cwl` released application package using `cwltool` 
 
 ### Step 1 - Configure the workspace
 
-The results produced will be available in the local folder `/workspace/runs`
+The results produced will be available in the local folder `/workspace/mastering-app-package/runs`
 
 ```bash linenums="1" hl_lines="2-4" title="terminal"
 --8<--
@@ -90,7 +90,7 @@ The result is redirected to a file named `staged.json` as we use `jq` to get the
 cat staged.json | jq -r .staged.path
 ```
 
-This returns a path like `/workspace/runs/921x91vw`
+This returns a path like `/workspace/mastering-app-package/runs/921x91vw`
 
 ### Step 4 - Execute the Application Package
 
@@ -128,7 +128,7 @@ aws s3 ls $( cat staged-s3.json | jq -r .s3_catalog_output | xargs dirname )/
 
 ### Expected outcome
 
-The folder `/workspace/runs` contains: 
+The folder `/workspace/mastering-app-package/runs` contains: 
 
 ``` hl_lines="3"
 (base) jovyan@coder-mrossi:~/runs$ tree .

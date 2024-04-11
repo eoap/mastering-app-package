@@ -2,9 +2,9 @@ export WORKSPACE=/workspace/mastering-app-package
 
 cwltool \
     --podman \
-    --outdir /workspace/runs \
+    --outdir ${WORKSPACE}/runs \
     ${WORKSPACE}/cwl-cli/norm-diff.cwl \
     --rasters \
-    /workspace/runs/crop_green.tif \
+    ${WORKSPACE}/runs/crop_green.tif \
     --rasters \
-    /workspace/runs/crop_nir.tif
+    ${WORKSPACE}/runs/crop_nir.tif

@@ -2,6 +2,10 @@
 
 Wrap the `norm_diff` step as a Common Workflow Language CommandLineTool and execute it with a CWL runner.
 
+### Lab
+
+This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/CommandLineTools/norm-diff.ipynb
+
 ### CWL CommandLineTool wrapping the step
 
 The CWL document below shows the `norm_diff` step wrapped as a CWL CommandLineTool:
@@ -28,7 +32,7 @@ sh -x ${WORKSPACE}/scripts/cwl-cli-norm-diff.sh
 
 ### Expected outcome
 
-The folder `/workspace/runs` contains: 
+The folder `/workspace/mastering-app-package/runs` contains: 
 
 ```
 (base) jovyan@coder-mrossi:~/runs$ tree .

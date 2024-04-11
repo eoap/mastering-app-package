@@ -2,6 +2,10 @@
 
 Wrap the `stac` step as a Common Workflow Language CommandLineTool and execute it with a CWL runner.
 
+### Lab
+
+This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/CommandLineTools/stac.ipynb
+
 ### CWL CommandLineTool wrapping the step
 
 The CWL document below shows the `stac` step wrapped as a CWL CommandLineTool:
@@ -29,7 +33,7 @@ sh -x ${WORKSPACE}/scripts/cwl-cli-stac.sh
 
 ### Expected outcome
 
-The folder `/workspace/runs` contains: 
+The folder `/workspace/mastering-app-package/runs` contains: 
 
 ``` hl_lines="6"
 (base) jovyan@coder-fbrito:~/runs$ tree .
