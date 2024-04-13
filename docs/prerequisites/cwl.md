@@ -36,8 +36,7 @@ The CWL standards define an explicit language with a textual syntax derived from
 
 The CWL Command Line Tool Description Standard describes:
 
-- how a particular command line tool works: what are the
-inputs and parameters and their types
+- how a particular command line tool works: what are the inputs and parameters and their types
 - how to add the correct flags and switches to the command line invocation 
 - where to find the output files
 

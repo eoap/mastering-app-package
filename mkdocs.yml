@@ -106,6 +106,10 @@ nav:
       - Landsat-9: cwl-workflow/exec-stage-in.md
     - Running CWL Workflow on Kubernetes: 
       - Run the CWL Workflow with calrissian: kubernetes/calrissian.md 
+    - Scripting the execution:
+      - cwltool API: scripted/scripted-cloud-native.md
+      - calrissian API: scripted/scripted-k8s-cloud-native.md
+    - Application benchmarking: benchmarking/calrissian-benchmark.md
   - FAIR Application Packages: fair/best-practice.md
   - Reference:
     - OGC Application Package Best Practice: reference/ogc-ap-bp.md
