@@ -4,9 +4,9 @@ kind: Job
 metadata:
   name: water-bodies-detection
 spec:
+  ttlSecondsAfterFinished: 5
   template:
     spec:
-      ttlSecondsAfterFinished: 5
       serviceAccountName: default
       securityContext:
         runAsUser: 0
