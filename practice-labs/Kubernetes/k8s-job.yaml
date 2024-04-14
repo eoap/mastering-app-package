@@ -6,6 +6,7 @@ metadata:
 spec:
   template:
     spec:
+      ttlSecondsAfterFinished: 5
       serviceAccountName: default
       securityContext:
         runAsUser: 0
