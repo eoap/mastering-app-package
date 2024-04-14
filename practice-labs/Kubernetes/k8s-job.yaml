@@ -1,0 +1,55 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: water-bodies-detection
+spec:
+  template:
+    spec:
+      serviceAccountName: default
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+        - name: calrissian
+          image: ghcr.io/duke-gcb/calrissian/calrissian:0.16.0
+          command: ["calrissian"]
+          args:
+            - --stdout 
+            - /calrissian/results.json
+            - --stderr 
+            - /calrissian/app.log
+            - --max-ram 
+            - 4G
+            - --max-cores 
+            - "8"
+            - --tmp-outdir-prefix 
+            - /calrissian/tmp 
+            - --outdir
+            - /calrissian/results
+            - --usage-report 
+            - /calrissian/usage.json
+            - --tool-logs-basepath 
+            - /calrissian/logs
+            - --pod-nodeselectors 
+            - /calrissian/pod-node-selector.yaml
+            - /calrissian/app-water-bodies-cloud-native.1.0.0.cwl
+            - /calrissian/params.yaml
+          volumeMounts:
+            - name: calrissian-volume
+              mountPath: /calrissian
+          env:
+            - name: CALRISSIAN_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+      nodeSelector:
+        'k8s.scaleway.com/pool-name': 'processing-node-pool'
+
+      restartPolicy: Never
+      volumes:
+        - name: calrissian-volume
+          persistentVolumeClaim:
+            claimName: calrissian-claim    
+  backoffLimit: 3
