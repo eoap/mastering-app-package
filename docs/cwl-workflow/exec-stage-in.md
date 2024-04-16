@@ -2,6 +2,10 @@
 
 Run the `app-water-body.1.0.0.cwl` released application package using `cwltool` on a staged Landsat-9 acquisition.
 
+### Lab
+
+This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/Workflows/staged.ipynb
+
 ### Step 1 - Configure the workspace
 
 The results produced will be available in the local folder `/workspace/mastering-app-package/runs`
