@@ -4,6 +4,10 @@ Run the `app-water-body-cloud-native.1.0.0.cwl` released application package usi
 
 `calrissian` creates a pod for each of the Workflow processing step.
 
+### Lab
+
+This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/Kubernetes/calrissian.ipynb
+
 ### Step 1 - Configure the workspace
 
 The results produced will be available in the local folder `/workspace/mastering-app-package/runs`
