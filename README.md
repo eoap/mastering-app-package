@@ -25,6 +25,6 @@ To achieve this, developers follow the steps described below.
 
 This tutorial guides participants through step-by-step tutorials, demonstrating the process of creating EO Application Packages using CWL with a simple EO application for water bodies detection using NDWI. 
 
-The webpage of the documentation is eoap.github.io/mastering-app-package/. 
+The webpage of the documentation is https://eoap.github.io/mastering-app-package/. 
 
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
