@@ -122,6 +122,8 @@ jobs:
           a=$(cat codemeta.json | jq -r '.author[0].affiliation["name"]') \
           yq eval -i  '."s:author" += [{"class": "s:Person", "s.name": env(n), "s.email": env(e), "s.affiliation": env(a)}]' $cwl
         done
+    - name: Cleanup downloads folder
+      run: rm -rf downloads/*
     - run: |
         mkdir downloads
         for cwl in "app-water-bodies-cloud-native" "app-water-body-cloud-native" "app-water-body"
@@ -130,7 +132,7 @@ jobs:
         done
     - uses: actions/upload-artifact@v4
       with:
-        name: application-package-${{ github.run_id }}
+        name: application-package
         path: downloads
         overwrite: true
     - name: upload linux artifact 1
