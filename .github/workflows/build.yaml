@@ -132,7 +132,7 @@ jobs:
         done
     - uses: actions/upload-artifact@v4
       with:
-        name: application-package
+        name: application-package-${{matrix.step}}
         path: downloads
         overwrite: true
     - name: upload linux artifact 1
