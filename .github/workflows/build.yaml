@@ -31,6 +31,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
+
       app-version: ${{ steps.set-version.outputs.version }}
 
     steps:
@@ -128,11 +129,10 @@ jobs:
         do
           cp cwl-workflow/${cwl}.cwl downloads/${cwl}.${{needs.version.outputs.app-version}}.cwl
         done
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v2
       with:
         name: application-package
         path: downloads
-        overwrite: true
     - name: upload linux artifact 1
       uses: actions/upload-release-asset@v1
       env:
