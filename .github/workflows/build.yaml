@@ -97,7 +97,8 @@ jobs:
 
     strategy:
       matrix:
-        step: ["app-water-bodies-cloud-native", "app-water-body-cloud-native", "app-water-body"]
+        # step: ["app-water-bodies-cloud-native", "app-water-body-cloud-native", "app-water-body"]
+        step: ["app-water-body", "app-water-body-cloud-native", "app-water-bodies-cloud-native"]
 
     steps:
     - uses: actions/checkout@v2
