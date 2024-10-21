@@ -35,7 +35,7 @@ spec:
             - /calrissian/logs
             - --pod-nodeselectors 
             - /calrissian/pod-node-selector.yaml
-            - /calrissian/app-water-bodies-cloud-native.1.0.0.cwl
+            - /calrissian/app-water-bodies-cloud-native.1.0.0.cwl#water-bodies
             - /calrissian/params.yaml
           volumeMounts:
             - name: calrissian-volume
