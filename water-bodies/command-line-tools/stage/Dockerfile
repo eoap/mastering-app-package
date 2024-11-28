@@ -1,4 +1,4 @@
-FROM docker.io/python:3.9.18-slim-bullseye
+FROM python:3.11
 
 RUN apt update && apt install -y yq
 
