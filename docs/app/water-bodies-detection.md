@@ -44,7 +44,7 @@ subgraph scatter on bands
   C["crop(nir)"];
 end
   B["crop(green)"] -- crop_green.tif --> D[Normalized difference];
-  C["crop(nir)"] -- crop_green.tif --> D[Normalized difference];
+  C["crop(nir)"] -- crop_nir.tif --> D[Normalized difference];
   D -- norm_diff.tif --> E[Otsu threshold]
 end
   E -- otsu.tif --> F[Create STAC Catalog]
