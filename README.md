@@ -27,7 +27,6 @@ To facilitate this process, participants are guided through the tutorial using i
     1. Workflow that reads a single STAC Item as input and orchestrates the four steps `crop`, `norm_diff`, `otsu` and `stac`.
     2. Workflow that reads a STAC Catalog of a staged EO acquisition as input, then orchestrates the four steps. A first step to stage-in the EO data is also demonstrated.
     3. Workflow that reads multiple STAC Items as input and scatters them executing the Workflow in scenario 1.
-
 5. **Kubernetes**: Run the released Application Package CWL using `calrissian`, a CWL runner for kubernetes that creates a pod for each of the Workflow processing step. An additional Notebook is provided to demonstrate the use of the `calrissian` "usage report" feature to generate a resource consumption report of the execution. 
 
 The webpage of the documentation is https://eoap.github.io/mastering-app-package/. 
