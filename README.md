@@ -20,10 +20,15 @@ This tutorial will guide participants through step-by-step examples, mastering t
 
 To facilitate this process, participants are guided through the tutorial using interactive Jupyter Notebooks across various execution scenarios:
 
-1. **Application**: Understand the Application and execute its individual steps along with their associated Python modules.
+1. **Application**: Understand the Application and execute its individual steps (i.e. `crop`, `norm_diff`, `otsu`, `stac`) along with their associated Python modules.
 2. **Containers**: Build container images for each Application step with the required execution software dependencies, then run each step in its respective container.
-3. **CWL-CommandLineTool**: Prepare the CWL CommandLineTool document(s) wrapping the command line tool available in container(s).
-4. **CWL-Workflow**: Prepare the CWL Workflow orchestrating CWL CommandLineTool document(s) wrapping the command line tool available container(s).
+3. **CWL-CommandLineTool**: Prepare the CWL CommandLineTool document(s) wrapping the command line tool available in their associated container(s), and execute them with `cwltool`.
+4. **CWL-Workflow**: Prepare the Application Package CWL Workflow orchestrating CWL CommandLineTool document(s) wrapping the command line tool available container(s). Three scenarios are demonstrated:
+    1. Workflow that reads a single STAC Item as input and orchestrates the four steps `crop`, `norm_diff`, `otsu` and `stac`.
+    2. Workflow that reads a STAC Catalog of a staged EO acquisition as input, then orchestrates the four steps. A first step to stage-in the EO data is also demonstrated.
+    3. Workflow that reads multiple STAC Items as input and scatters them executing the Workflow in scenario 1.
+
+5. **Kubernetes**: Run the released Application Package CWL using `calrissian`, a CWL runner for kubernetes that creates a pod for each of the Workflow processing step. An additional Notebook is provided to demonstrate the use of the `calrissian` "usage report" feature to generate a resource consumption report of the execution. 
 
 The webpage of the documentation is https://eoap.github.io/mastering-app-package/. 
 
