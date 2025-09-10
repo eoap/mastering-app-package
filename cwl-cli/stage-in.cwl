@@ -1,4 +1,4 @@
-cwlVersion: v1.0
+cwlVersion: v1.2
 
 class: CommandLineTool
 id: main
@@ -19,6 +19,8 @@ requirements:
   DockerRequirement:
     dockerPull: localhost/stage:latest
   InlineJavascriptRequirement: {}
+  NetworkAccess:
+    networkAccess: true
   InitialWorkDirRequirement:
     listing:
       - entryname: stage.py

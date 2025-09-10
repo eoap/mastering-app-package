@@ -1,4 +1,4 @@
-cwlVersion: v1.0
+cwlVersion: v1.2
 $namespaces:
   s: https://schema.org/
 s:softwareVersion: 1.0.0
@@ -80,6 +80,8 @@ $graph:
       ResourceRequirement:
         coresMax: 1
         ramMax: 512
+      NetworkAccess:
+        networkAccess: true
     hints:
       DockerRequirement:
         dockerPull: localhost/crop:latest
@@ -118,6 +120,8 @@ $graph:
       ResourceRequirement:
         coresMax: 1
         ramMax: 512
+      NetworkAccess:
+        networkAccess: false
     hints:
       DockerRequirement:
         dockerPull: localhost/norm-diff:latest
@@ -144,6 +148,8 @@ $graph:
       ResourceRequirement:
         coresMax: 1
         ramMax: 512
+      NetworkAccess:
+        networkAccess: false
     hints:
       DockerRequirement:
         dockerPull: localhost/otsu:latest
@@ -170,6 +176,8 @@ $graph:
       ResourceRequirement:
         coresMax: 1
         ramMax: 512
+      NetworkAccess:
+        networkAccess: true
     hints:
       DockerRequirement:
         dockerPull: localhost/stac:latest

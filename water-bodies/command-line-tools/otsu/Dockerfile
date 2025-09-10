@@ -1,6 +1,11 @@
-FROM docker.io/library/python:3.10-slim@sha256:80619a5316afae7045a3c13371b0ee670f39bac46ea1ed35081d2bf91d6c3dbd
+FROM docker.io/library/python:3.11-slim@sha256:91e9d01cf4bd56be7128c603506b6fe367ef7506f9f2ad8f3a908aeec8941bb9
 
-RUN pip install --no-cache-dir rasterio scikit-image click loguru && \
+# System deps needed by rasterio wheels
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libexpat1 && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir "rasterio==1.4.3" "scikit-image==0.25.2" "click==8.2.1" "loguru==0.7.3" && \
     python -c "import rasterio"
 
 ADD app.py /app/app.py
