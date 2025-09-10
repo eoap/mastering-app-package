@@ -72,7 +72,7 @@ All these elements can be obtained from the CodeMeta vocabulary (i.e., codemeta.
 Example:
 
 ```
-cwlVersion: v1.0
+cwlVersion: v1.2
 $graph:
 ...
 $namespaces:
@@ -105,7 +105,7 @@ sameAs: URL of a reference Web page that unambiguously indicates the item’s id
 Example
 
 ```yaml hl_lines="16"
-cwlVersion: v1.0
+cwlVersion: v1.2
 $graph:
 ...
 $namespaces:

@@ -1,4 +1,4 @@
-cwlVersion: v1.0
+cwlVersion: v1.2
 
 
 class: CommandLineTool
@@ -36,6 +36,8 @@ requirements:
   DockerRequirement:
     dockerPull: ghcr.io/eoap/mastering-app-package/stage:1.0.0
   InlineJavascriptRequirement: {}
+  NetworkAccess:
+    networkAccess: true
   EnvVarRequirement:
     envDef:
       aws_access_key_id: $( inputs.aws_access_key_id )

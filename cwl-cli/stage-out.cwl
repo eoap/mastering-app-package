@@ -1,4 +1,4 @@
-cwlVersion: v1.0
+cwlVersion: v1.2
 
 
 class: CommandLineTool
@@ -36,6 +36,8 @@ requirements:
   DockerRequirement:
     dockerPull: ghcr.io/terradue/ogc-eo-application-package-hands-on/stage:1.3.2
   InlineJavascriptRequirement: {}
+  NetworkAccess:
+    networkAccess: true
   EnvVarRequirement:
     envDef:
       aws_access_key_id: $( inputs.aws_access_key_id )
