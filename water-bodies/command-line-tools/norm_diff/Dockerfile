@@ -1,5 +1,10 @@
 FROM docker.io/library/python:3.11-slim@sha256:91e9d01cf4bd56be7128c603506b6fe367ef7506f9f2ad8f3a908aeec8941bb9
 
+# System deps needed by rasterio wheels
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libexpat1 && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN pip install --no-cache-dir rasterio click loguru && \
     python -c "import rasterio"
 
