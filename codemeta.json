@@ -5,7 +5,7 @@
     "codeRepository": "https://github.com/eoap/mastering-app-package.git",
     "dateCreated": "2022-09-01",
     "datePublished": "2022-09-25",
-    "dateModified": "2024-11-07",
+    "dateModified": "2025-09-10",
     "name": "Water Bodies Detection",
     "version": "1.1.0",
     "description": "The Water Bodies Detection is an Application that uses the NDWI index and the Otsu threshold to detect water bodies using Sentinel-2 or Landsat-9 data",
