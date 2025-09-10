@@ -19,7 +19,7 @@ cwl-cli/crop.cwl
 
 Let's break down the key components of this CWL document:
 
-* `cwlVersion: v1.0`: Specifies the version of the CWL specification that this document follows.
+* `cwlVersion: v1.2`: Specifies the version of the CWL specification that this document follows.
 * `class: CommandLineTool`: Indicates that this CWL document defines a command-line tool.
 * `id: crop`: Provides a unique identifier for this tool, which can be used to reference it in workflows.
 * `requirements`: Specifies the requirements and dependencies of the tool. In this case, it defines the following:

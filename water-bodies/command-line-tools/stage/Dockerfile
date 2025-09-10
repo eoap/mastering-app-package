@@ -1,5 +1,3 @@
-FROM python:3.11
+FROM docker.io/library/python:3.11-slim@sha256:91e9d01cf4bd56be7128c603506b6fe367ef7506f9f2ad8f3a908aeec8941bb9
 
-RUN apt update && apt install -y yq
-
-RUN pip install --no-cache-dir --upgrade pip stac-asset boto3==1.35.36 pystac loguru click pyyaml
+RUN pip install --no-cache-dir --upgrade pip "stac-asset==0.4.7" "boto3==1.40.18"

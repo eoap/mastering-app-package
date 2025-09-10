@@ -14,7 +14,7 @@ spec:
         fsGroup: 0
       containers:
         - name: calrissian
-          image: ghcr.io/duke-gcb/calrissian/calrissian:0.16.0
+          image: ghcr.io/duke-gcb/calrissian/calrissian:0.18.1
           command: ["calrissian"]
           args:
             - --stdout 
@@ -35,7 +35,7 @@ spec:
             - /calrissian/logs
             - --pod-nodeselectors 
             - /calrissian/pod-node-selector.yaml
-            - /calrissian/app-water-bodies-cloud-native.1.0.0.cwl#water-bodies
+            - /calrissian/app-water-bodies-cloud-native.1.1.0.cwl#water-bodies
             - /calrissian/params.yaml
           volumeMounts:
             - name: calrissian-volume

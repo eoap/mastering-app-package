@@ -58,7 +58,7 @@ These pairs (sometimes referred to as "children") are written on new lines under
 For example:
 
 ```yaml
-cwlVersion: v1.0
+cwlVersion: v1.2
 class: CommandLineTool
 baseCommand: echo
 inputs: # this key has an object value

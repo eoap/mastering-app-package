@@ -1,0 +1,9 @@
+# create a config map
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eq-config
+  namespace: iride-datalake
+data:
+  cropimage: "{{ .Values.cropImage }}"
+  normdiffimage: "{{ .Values.normDiffImage }}"

@@ -1,4 +1,4 @@
-cwlVersion: v1.0
+cwlVersion: v1.2
 
 class: CommandLineTool
 id: norm_diff
@@ -11,6 +11,8 @@ requirements:
   ResourceRequirement:
     coresMax: 1
     ramMax: 512
+  NetworkAccess:
+    networkAccess: false
 hints:
   DockerRequirement:
     dockerPull: localhost/norm-diff:latest
