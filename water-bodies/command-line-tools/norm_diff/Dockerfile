@@ -1,4 +1,4 @@
-FROM docker.io/library/python:3.10-slim@sha256:80619a5316afae7045a3c13371b0ee670f39bac46ea1ed35081d2bf91d6c3dbd
+FROM docker.io/library/python:3.11-slim@sha256:91e9d01cf4bd56be7128c603506b6fe367ef7506f9f2ad8f3a908aeec8941bb9
 
 RUN pip install --no-cache-dir rasterio click loguru && \
     python -c "import rasterio"
