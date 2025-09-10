@@ -122,7 +122,7 @@ $graph:
         networkAccess: true
     hints:
       DockerRequirement:
-        dockerPull: cr.terradue.com/earthquake-monitoring/crop:1.0.0-4-gf1b014a@sha256:bb6d8cb523a0aca907c714bd35b7fcfc0f44e49675478a156573874df023e204
+        dockerPull: localhost/crop:latest
     baseCommand: ["python", "-m", "app"]
     arguments: []
     inputs:
@@ -162,7 +162,7 @@ $graph:
         networkAccess: false
     hints:
       DockerRequirement:
-        dockerPull: cr.terradue.com/earthquake-monitoring/norm_diff:1.0.0-4-gf1b014a@sha256:8aa9d2164b1e140bc32f46b2fbf5758b455766adf51dab24fd9cd25c80b728cb
+        dockerPull: localhost/norm_diff:latest
     baseCommand: ["python", "-m", "app"]
     arguments: []
     inputs:
@@ -190,7 +190,7 @@ $graph:
         networkAccess: false
     hints:
       DockerRequirement:
-        dockerPull: cr.terradue.com/earthquake-monitoring/otsu:1.0.0-4-gf1b014a@sha256:1e428320db3bf21eb7d58a6686cd61c1a21aecac7c5a2c7b24430732b2c96728
+        dockerPull: localhost/otsu:latest
     baseCommand: ["python", "-m", "app"]
     arguments: []
     inputs:
@@ -218,7 +218,7 @@ $graph:
         networkAccess: true
     hints:
       DockerRequirement:
-        dockerPull: cr.terradue.com/earthquake-monitoring/stac:1.0.0-4-gf1b014a@sha256:fcde907c1f510f502cfc852afd5cfbffa49d7066ede8fd27d666f7630a273709
+        dockerPull: localhost/stac:latest
     baseCommand: ["python", "-m", "app"]
     arguments: []
     inputs:
