@@ -5,7 +5,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends libexpat1 && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir pystac rio_stac loguru click && \
+RUN pip install --no-cache-dir "pystac==1.13.0" "rio-stac==0.11.2" "loguru==0.7.3" "click==8.2.1" && \
     python -c "import rio_stac"
 
 ADD app.py /app/app.py

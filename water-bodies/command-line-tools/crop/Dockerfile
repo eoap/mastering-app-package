@@ -5,7 +5,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends libexpat1 && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir rasterio click pystac loguru pyproj shapely && \
+RUN pip install --no-cache-dir "rasterio==1.4.3" "click==8.2.1" "pystac==1.13.0" "loguru==0.7.3" "pyproj==3.7.2" "shapely==2.1.1" && \
     python -c "import rasterio"
 
 ADD app.py /app/app.py

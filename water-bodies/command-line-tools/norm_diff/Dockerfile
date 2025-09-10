@@ -5,7 +5,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends libexpat1 && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir rasterio click loguru && \
+RUN pip install --no-cache-dir "rasterio==1.4.3" "click==8.2.1" "loguru==0.7.3" && \
     python -c "import rasterio"
 
 ADD app.py /app/app.py
