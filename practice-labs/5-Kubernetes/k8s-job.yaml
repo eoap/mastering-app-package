@@ -7,7 +7,7 @@ spec:
   ttlSecondsAfterFinished: 5
   template:
     spec:
-      serviceAccountName: default
+      serviceAccountName: calrissian-sa
       securityContext:
         runAsUser: 0
         runAsGroup: 0
@@ -17,6 +17,7 @@ spec:
           image: ghcr.io/duke-gcb/calrissian/calrissian:0.18.1
           command: ["calrissian"]
           args:
+            - --debug
             - --stdout 
             - /calrissian/results.json
             - --stderr 
@@ -45,9 +46,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-      nodeSelector:
-        'k8s.scaleway.com/pool-name': 'processing-node-pool'
-
       restartPolicy: Never
       volumes:
         - name: calrissian-volume
