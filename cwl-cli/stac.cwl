@@ -6,7 +6,7 @@ requirements:
   InlineJavascriptRequirement: {}
   EnvVarRequirement:
     envDef:
-      PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PYTHONPATH: /app
   ResourceRequirement:
     coresMax: 1
@@ -16,17 +16,17 @@ requirements:
 hints:
   DockerRequirement:
     dockerPull: localhost/stac:latest 
-baseCommand: ["python", "-m", "app"]
+baseCommand: stac
 arguments: []
 inputs:
   item:
     type: string
     inputBinding:
-      prefix: --input-item
+      prefix: --item
   raster:
     type: File
     inputBinding:
-      prefix: --water-body
+      prefix: --rasters
 outputs:
   stac_catalog:
     outputBinding:

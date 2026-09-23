@@ -6,7 +6,7 @@ requirements:
   InlineJavascriptRequirement: {}
   EnvVarRequirement:
     envDef:
-      PATH: /opt/conda/envs/env_otsu/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PYTHONPATH: /app
   ResourceRequirement:
     coresMax: 1
@@ -16,13 +16,14 @@ requirements:
 hints:
   DockerRequirement:
     dockerPull: localhost/otsu:latest 
-baseCommand: ["python", "-m", "app"]
+baseCommand: otsu
 arguments: []
 inputs:
   raster:
     type: File
     inputBinding:
       position: 1
+      prefix: --raster
 outputs:
   binary_mask_item:
     outputBinding:

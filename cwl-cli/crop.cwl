@@ -12,24 +12,29 @@ requirements:
       ramMax: 512
     NetworkAccess:
       networkAccess: true
+    SchemaDefRequirement:
+      types:
+        - $import: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml
+        - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
 hints:
   DockerRequirement:
     dockerPull: localhost/crop:latest
-baseCommand: ["python", "-m", "app"]
+baseCommand: crop
 arguments: []
 inputs:
   item:
-    type: string
+    type: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URL
     inputBinding:
         prefix: --input-item
   aoi:
-    type: string
+    type: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml#Polygon
     inputBinding:
         prefix: --aoi
   epsg:
     type: string
     inputBinding:
         prefix: --epsg
+        valueFrom: $(self.split(":").pop())
   band:
     type: string
     inputBinding:
