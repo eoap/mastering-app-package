@@ -1,14 +1,48 @@
-FROM docker.io/library/python:3.11-slim@sha256:91e9d01cf4bd56be7128c603506b6fe367ef7506f9f2ad8f3a908aeec8941bb9
+FROM rockylinux/rockylinux:10.2-minimal AS builder
 
-# System deps needed by rasterio wheels
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends libexpat1 && \
-    rm -rf /var/lib/apt/lists/*
+RUN microdnf -y update && \
+    microdnf -y install curl tar python3 python3-pip python3-setuptools gcc && \
+    microdnf clean all
 
-RUN pip install --no-cache-dir "rasterio==1.4.3" "click==8.2.1" "loguru==0.7.3" && \
-    python -c "import rasterio"
+RUN curl -L https://github.com/pypa/hatch/releases/download/hatch-v1.14.0/hatch-x86_64-unknown-linux-gnu.tar.gz \
+      -o /tmp/hatch.tar.gz && \
+    tar -xzf /tmp/hatch.tar.gz -C /tmp && \
+    install -m 0755 /tmp/hatch /usr/local/bin/hatch && \
+    rm -rf /tmp/hatch* /tmp/hatch.tar.gz
 
-ADD app.py /app/app.py
+WORKDIR /src
+COPY . /src
 
-ENTRYPOINT []
+# Build a wheel for your project (outputs into /src/dist)
+RUN hatch build -t wheel
 
+FROM rockylinux/rockylinux:10.2-minimal AS runtime
+
+
+RUN microdnf -y update && \
+microdnf -y install python3 python3-pip git && \
+microdnf clean all
+
+COPY --from=builder /usr/local/bin/hatch /usr/bin/hatch
+
+# Non-root user
+ENV HOME=/home/neo
+RUN /usr/sbin/groupadd -g 2000 neo && \
+    /usr/sbin/useradd -u 2000 -g 2000 -m -d ${HOME} -s /sbin/nologin neo && \
+    mkdir -p /app && \
+    chown -R 2000:2000 /app ${HOME}
+
+USER neo
+WORKDIR /app
+
+# Create a venv and install only wheel
+ENV VIRTUAL_ENV=/app/venv
+ENV PATH="${VIRTUAL_ENV}/bin:${PATH}:/usr/bin"
+RUN python3 -m venv /app/venv && \
+    /app/venv/bin/pip install --no-cache-dir --upgrade pip
+
+COPY --from=builder /src/dist/*.whl /app/dist/
+COPY --from=builder /src/app.py /app/app.py
+
+RUN /app/venv/bin/pip install --no-cache-dir /app/dist/*.whl && \
+    norm_diff --help
