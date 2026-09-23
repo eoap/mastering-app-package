@@ -135,7 +135,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.mccabe]
-max-complexity = 10
+max-complexity = 4
 
 [tool.hatch.envs.dev.scripts]
 typecheck = "mypy --install-types --non-interactive {args:src tests}"
