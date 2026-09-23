@@ -1,7 +1,45 @@
-cwlVersion: v1.2
 $namespaces:
-  s: https://schema.org/
-s:softwareVersion: 1.4.1
+  s: "https://schema.org/"
+"@type": "s:SoftwareApplication"
+s:name: "Water bodies detection based on NDWI and otsu threshold"
+s:description: "Water bodies detection based on NDWI and otsu threshold applied to Sentinel-2 COG STAC items"
+s:dateCreated: "2026-09-23"
+s:license:
+  "@type": "s:CreativeWork"
+  s:identifier: "CC-BY-NC-SA-1.0"
+  s:name: "Creative Commons Attribution Non Commercial Share Alike 1.0 Generic"
+  s:url: "https://spdx.org/licenses/CC-BY-NC-SA-1.0.html"
+s:keywords:
+  - "Water cycle"
+s:operatingSystem:
+  - "Linux"
+s:softwareVersion: "1.4.1"
+s:softwareHelp:
+  - "@type": "s:CreativeWork"
+    s:name: "Documentation"
+    s:url: "https://eoap.github.io/mastering-app-package"
+s:publisher:
+  "@type": "s:Organization"
+  s:name: "Terradue Srl"
+  s:email: "info@terradue.com"
+  s:identifier: "https://ror.org/0069cx113"
+s:author:
+  - "@type": "s:Role"
+    s:roleName: "Software"
+    s:additionalType: "https://credit.niso.org/contributor-roles/software/"
+    s:author:
+      "@type": "s:Person"
+      s:givenName: "Fabrice"
+      s:familyName: "Brito"
+      s:email: "info@terradue.com"
+      s:identifier: "https://orcid.org/0009-0000-1342-9736"
+      s:affiliation:
+        "@type": "s:Organization"
+        s:name: "Terradue Srl"
+        s:email: "info@terradue.com"
+        s:identifier: "https://ror.org/0069cx113"
+
+cwlVersion: v1.2
 schemas:
   - http://schema.org/version/9.0/schemaorg-current-http.rdf
 $graph:
@@ -12,33 +50,49 @@ $graph:
     requirements:
       - class: ScatterFeatureRequirement
       - class: SubworkflowFeatureRequirement
+      - class: SchemaDefRequirement
+        types:
+          - $import: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml
+          - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
     inputs:
       aoi:
         label: area of interest
         doc: area of interest as a bounding box
-        type: string
+        type: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml#Polygon
       epsg:
         label: EPSG code
         doc: EPSG code
-        type: string
+        type:
+          type: enum
+          symbols: ["EPSG:4326"]
         default: "EPSG:4326"
       stac_items:
         label: Sentinel-2 STAC items
         doc: list of Sentinel-2 COG STAC items
-        type: string[]
+        type:
+          type: array
+          items: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
       bands:
         label: bands used for the NDWI
         doc: bands used for the NDWI
-        type: string[]
+        type:
+          type: array
+          items:
+            type: enum
+            symbols: ["green", "nir", "nir08"]
         default: ["green", "nir"]
     outputs:
       - id: stac_catalog
+        label: Water bodies STAC catalog
+        doc: Directory containing the output STAC catalog, items, and water body rasters.
         outputSource:
-          - node_stac/stac_catalog
+          - step_stac/stac_catalog
         type: Directory
     steps:
-      node_water_bodies:
+      step_water_bodies:
         run: "#detect_water_body"
+        label: Detect water bodies
+        doc: Detect water bodies independently for each input STAC item.
         in:
           item: stac_items
           aoi: aoi
@@ -48,12 +102,14 @@ $graph:
           - detected_water_body
         scatter: item
         scatterMethod: dotproduct
-      node_stac:
+      step_stac:
         run: "#stac"
+        label: Create STAC catalog
+        doc: Package the detected water body rasters in a STAC catalog.
         in:
           item: stac_items
           rasters:
-            source: node_water_bodies/detected_water_body
+            source: step_water_bodies/detected_water_body
         out:
           - stac_catalog
   - class: Workflow
@@ -62,28 +118,46 @@ $graph:
     doc: Water body detection based on NDWI and otsu threshold
     requirements:
       - class: ScatterFeatureRequirement
+      - class: SchemaDefRequirement
+        types:
+          - $import: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml
+          - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
     inputs:
       aoi:
         doc: area of interest as a bounding box
-        type: string
+        label: Area of interest
+        type: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml#Polygon
       epsg:
         doc: EPSG code
-        type: string
+        label: EPSG code
+        type:
+          type: enum
+          symbols: ["EPSG:4326"]
         default: "EPSG:4326"
       bands:
         doc: bands used for the NDWI
-        type: string[]
+        label: NDWI bands
+        type:
+          type: array
+          items:
+            type: enum
+            symbols: ["green", "nir", "nir08"]
       item:
         doc: STAC item
-        type: string
+        label: Source STAC item
+        type: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
     outputs:
       - id: detected_water_body
+        label: Detected water body
+        doc: Binary GeoTIFF mask identifying water in the area of interest.
         outputSource:
-          - node_otsu/binary_mask_item
+          - step_otsu/binary_mask_item
         type: File
     steps:
-      node_crop:
+      step_crop:
         run: "#crop"
+        label: Crop spectral bands
+        doc: Crop each requested band to the area of interest.
         in:
           item: item
           aoi: aoi
@@ -93,18 +167,22 @@ $graph:
           - cropped
         scatter: band
         scatterMethod: dotproduct
-      node_normalized_difference:
+      step_normalized_difference:
         run: "#norm_diff"
+        label: Calculate NDWI
+        doc: Calculate the normalized difference from the ordered green and near-infrared rasters.
         in:
           rasters:
-            source: node_crop/cropped
+            source: step_crop/cropped
         out:
-          - ndwi
-      node_otsu:
+          - norm_diff_raster
+      step_otsu:
         run: "#otsu"
+        label: Apply Otsu threshold
+        doc: Convert the NDWI raster into a binary water body mask using Otsu thresholding.
         in:
           raster:
-            source: node_normalized_difference/ndwi
+            source: step_normalized_difference/norm_diff_raster
         out:
           - binary_mask_item
   - class: CommandLineTool
@@ -120,32 +198,49 @@ $graph:
         ramMax: 512
       NetworkAccess:
         networkAccess: true
-    hints:
+      SchemaDefRequirement:
+        types:
+          - $import: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml
+          - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
       DockerRequirement:
         dockerPull: localhost/crop:latest
-    baseCommand: ["python", "-m", "app"]
-    arguments: []
+    baseCommand: crop
     inputs:
       item:
-        type: string
+        type: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
+        label: Source STAC item
+        doc: URL of the source STAC item.
         inputBinding:
           prefix: --input-item
+          valueFrom: $(self.value)
       aoi:
-        type: string
+        type: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml#Polygon
+        label: Area of interest
+        doc: GeoJSON polygon defining the area of interest.
         inputBinding:
           prefix: --aoi
       epsg:
-        type: string
+        type:
+          type: enum
+          symbols: ["EPSG:4326"]
+        label: EPSG code
+        doc: Coordinate reference system of the area of interest.
         inputBinding:
           prefix: --epsg
       band:
-        type: string
+        type:
+          type: enum
+          symbols: ["green", "nir", "nir08"]
+        label: Spectral band
+        doc: Common name of the spectral band to crop.
         inputBinding:
           prefix: --band
     outputs:
       cropped:
         outputBinding:
           glob: '*.tif'
+        label: Cropped band
+        doc: GeoTIFF containing the selected band cropped to the area of interest.
         type: File
   - class: CommandLineTool
     id: norm_diff
@@ -160,20 +255,24 @@ $graph:
         ramMax: 512
       NetworkAccess:
         networkAccess: false
-    hints:
       DockerRequirement:
         dockerPull: localhost/norm-diff:latest
-    baseCommand: ["python", "-m", "app"]
+    baseCommand: norm_diff
     arguments: []
     inputs:
       rasters:
         type: File[]
+        label: Spectral band rasters
+        doc: Ordered green and near-infrared GeoTIFFs used to calculate NDWI.
         inputBinding:
           position: 1
+          prefix: --rasters
     outputs:
-      ndwi:
+      norm_diff_raster:
         outputBinding:
           glob: '*.tif'
+        label: NDWI raster
+        doc: GeoTIFF containing the normalized difference water index.
         type: File
   - class: CommandLineTool
     id: otsu
@@ -188,24 +287,30 @@ $graph:
         ramMax: 512
       NetworkAccess:
         networkAccess: false
-    hints:
       DockerRequirement:
         dockerPull: localhost/otsu:latest
-    baseCommand: ["python", "-m", "app"]
+    baseCommand: otsu
     arguments: []
     inputs:
       raster:
         type: File
+        label: NDWI raster
+        doc: Normalized difference water index raster to threshold.
         inputBinding:
           position: 1
     outputs:
       binary_mask_item:
         outputBinding:
           glob: '*.tif'
+        label: Water body mask
+        doc: Binary GeoTIFF mask produced by Otsu thresholding of the NDWI raster.
         type: File
   - class: CommandLineTool
     id: stac
     requirements:
+      SchemaDefRequirement:
+        types:
+          - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
       InlineJavascriptRequirement: {}
       EnvVarRequirement:
         envDef:
@@ -216,26 +321,32 @@ $graph:
         ramMax: 512
       NetworkAccess:
         networkAccess: true
-    hints:
       DockerRequirement:
         dockerPull: localhost/stac:latest
-    baseCommand: ["python", "-m", "app"]
+    baseCommand: stac
     arguments: []
     inputs:
       item:
         type:
           type: array
-          items: string
+          items: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
           inputBinding:
             prefix: --input-item
+            valueFrom: $(self.value)
+        label: Source STAC items
+        doc: Source STAC item URLs in the same order as the water body masks.
       rasters:
         type:
           type: array
           items: File
           inputBinding:
             prefix: --water-body
+        label: Water body rasters
+        doc: Binary water body masks in the same order as the source STAC items.
     outputs:
       stac_catalog:
         outputBinding:
           glob: .
+        label: Water bodies STAC catalog
+        doc: Directory containing the output STAC catalog, items, and water body rasters.
         type: Directory
