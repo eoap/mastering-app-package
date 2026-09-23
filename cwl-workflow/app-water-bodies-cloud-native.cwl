@@ -64,8 +64,8 @@ $graph:
         doc: EPSG code
         type:
           type: enum
-          symbols: ["EPSG:4326"]
-        default: "EPSG:4326"
+          symbols: ["4326"]
+        default: "4326"
       stac_items:
         label: Sentinel-2 STAC items
         doc: list of Sentinel-2 COG STAC items
@@ -132,8 +132,8 @@ $graph:
         label: EPSG code
         type:
           type: enum
-          symbols: ["EPSG:4326"]
-        default: "EPSG:4326"
+          symbols: ["4326"]
+        default: "4326"
       bands:
         doc: bands used for the NDWI
         label: NDWI bands
@@ -187,11 +187,13 @@ $graph:
           - binary_mask_item
   - class: CommandLineTool
     id: crop
+    label: "Crop Spectral Bands"
+    doc: "Crop each requested spectral band to the area of interest."
     requirements:
       InlineJavascriptRequirement: {}
       EnvVarRequirement:
         envDef:
-          PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
           PYTHONPATH: /app
       ResourceRequirement:
         coresMax: 1
@@ -219,14 +221,16 @@ $graph:
         doc: GeoJSON polygon defining the area of interest.
         inputBinding:
           prefix: --aoi
+          valueFrom: $(JSON.stringify(self))
       epsg:
         type:
           type: enum
-          symbols: ["EPSG:4326"]
+          symbols: ["4326"]
         label: EPSG code
         doc: Coordinate reference system of the area of interest.
         inputBinding:
           prefix: --epsg
+          valueFrom: $(self.split(":").pop())
       band:
         type:
           type: enum
@@ -244,11 +248,13 @@ $graph:
         type: File
   - class: CommandLineTool
     id: norm_diff
+    label: "Normalized Difference Calculation"
+    doc: "Calculate the normalized difference water index (NDWI) from the green and near-infrared spectral band rasters."
     requirements:
       InlineJavascriptRequirement: {}
       EnvVarRequirement:
         envDef:
-          PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
           PYTHONPATH: /app
       ResourceRequirement:
         coresMax: 1
@@ -261,12 +267,15 @@ $graph:
     arguments: []
     inputs:
       rasters:
-        type: File[]
+        type:
+          type: array
+          items: File
+          inputBinding:
+            prefix: --rasters
         label: Spectral band rasters
         doc: Ordered green and near-infrared GeoTIFFs used to calculate NDWI.
         inputBinding:
           position: 1
-          prefix: --rasters
     outputs:
       norm_diff_raster:
         outputBinding:
@@ -276,11 +285,13 @@ $graph:
         type: File
   - class: CommandLineTool
     id: otsu
+    label: "Otsu Thresholding"
+    doc: "Apply Otsu thresholding to the NDWI raster to generate a binary water body mask."
     requirements:
       InlineJavascriptRequirement: {}
       EnvVarRequirement:
         envDef:
-          PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
           PYTHONPATH: /app
       ResourceRequirement:
         coresMax: 1
@@ -298,6 +309,7 @@ $graph:
         doc: Normalized difference water index raster to threshold.
         inputBinding:
           position: 1
+          prefix: --raster
     outputs:
       binary_mask_item:
         outputBinding:
@@ -307,6 +319,8 @@ $graph:
         type: File
   - class: CommandLineTool
     id: stac
+    label: "STAC Generation"
+    doc: "Generate a STAC catalog for the water bodies using the source STAC items and the binary water body masks."
     requirements:
       SchemaDefRequirement:
         types:
@@ -314,7 +328,7 @@ $graph:
       InlineJavascriptRequirement: {}
       EnvVarRequirement:
         envDef:
-          PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
           PYTHONPATH: /app
       ResourceRequirement:
         coresMax: 1
@@ -331,7 +345,7 @@ $graph:
           type: array
           items: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
           inputBinding:
-            prefix: --input-item
+            prefix: --item
             valueFrom: $(self.value)
         label: Source STAC items
         doc: Source STAC item URLs in the same order as the water body masks.
@@ -340,7 +354,7 @@ $graph:
           type: array
           items: File
           inputBinding:
-            prefix: --water-body
+            prefix: --rasters
         label: Water body rasters
         doc: Binary water body masks in the same order as the source STAC items.
     outputs:
