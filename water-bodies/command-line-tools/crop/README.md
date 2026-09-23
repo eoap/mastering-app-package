@@ -1,0 +1,88 @@
+# crop
+
+Crop a STAC item's spectral-band asset to an area of interest and write a Cloud Optimized GeoTIFF (COG).
+
+## Set up with Hatch
+
+With Python 3.10 or newer and Hatch installed, run these commands from the repository root:
+
+```bash
+cd water-bodies/command-line-tools/crop
+hatch env create default
+hatch run default:crop --help
+```
+
+Hatch installs this package in editable mode together with its dependencies. To run `crop` from another directory, activate the environment before changing directories:
+
+```bash
+source "$(hatch env find default)/bin/activate"
+mkdir -p /tmp/crop-results
+cd /tmp/crop-results
+```
+
+Alternatively, install the package into an existing Python environment with `pip install -e .` from this package directory.
+
+## Crop a GeoJSON area
+
+Pass a GeoJSON geometry as a single quoted JSON string. This example uses a Polygon with coordinates in `[longitude, latitude]` order; the last coordinate repeats the first to close the ring.
+
+```bash
+crop \
+  --input-item "https://earth-search.aws.element84.com/v0/collections/sentinel-s2-l2a-cogs/items/S2B_10TFK_20210713_0_L2A" \
+  --aoi '{"type":"Polygon","coordinates":[[[-121.399,39.834],[-120.74,39.834],[-120.74,40.472],[-121.399,40.472],[-121.399,39.834]]]}' \
+  --epsg "EPSG:4326" \
+  --band green
+```
+
+This writes `crop_green.tif` in the current directory. To crop a near-infrared band, use `--band nir` or `--band nir08`, matching the common name in the item's asset metadata.
+
+All four options are required:
+
+| Option | Value |
+| --- | --- |
+| `--input-item` | STAC item URL or local path, or a staged catalog directory containing `catalog.json`. Catalog inputs use the first item found recursively. |
+| `--aoi` | GeoJSON Polygon or MultiPolygon geometry, supplied as JSON text. Pass the geometry itself, not a Feature or a filename. |
+| `--epsg` | Coordinate reference system of the AOI, such as `EPSG:4326`. The AOI is transformed to the raster's CRS before cropping. |
+| `--band` | Spectral common name: `green`, `nir`, or `nir08`. |
+
+The CLI also accepts the earlier bounding-box format:
+
+```bash
+--aoi "-121.399,39.834,-120.74,40.472"
+```
+
+The four values are `xmin,ymin,xmax,ymax` in the AOI's coordinate reference system. The CWL interface uses a GeoJSON Polygon.
+
+## Input and output behavior
+
+The selected asset must have a `data` role and a matching `common_name` in its `eo:bands` or `bands` metadata. Relative asset paths are resolved against the STAC item. Planetary Computer asset URLs are signed automatically when needed.
+
+The output is named `crop_<band>.tif`, uses LZW compression, and retains the source raster's pixel datatype, CRS, and nodata value. Running the same band again in the same directory replaces that output. Remote inputs require network access.
+
+If you activated the environment manually, leave it with `deactivate` when finished.
+
+## Use the notebook kernel
+
+From the repository root, register a local Bash kernel backed by the crop Hatch environment:
+
+```bash
+task kernel:crop
+```
+
+In VS Code, install the Microsoft Jupyter extension and select **Bash (crop Hatch)** in the notebook kernel picker. This kernel already provides `crop` and Python on its PATH.
+
+See the [crop practice notebook](../../../practice-labs/1-Application_Steps/crop.ipynb).
+
+## Run tests
+
+From this package directory:
+
+```bash
+hatch run test:test
+```
+
+The tests use local STAC items and synthetic rasters; they do not require remote imagery.
+
+## License
+
+`crop` is distributed under the [MIT license](LICENSE.txt).
