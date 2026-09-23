@@ -57,7 +57,7 @@ def test_catalog(raster_factory, tmp_path, monkeypatch, staged):
     work = tmp_path / "output"
     work.mkdir()
     monkeypatch.chdir(work)
-    result = CliRunner().invoke(stac, ["--input-item", location, "--water-body", raster])
+    result = CliRunner().invoke(stac, ["--item", location, "--rasters", raster])
     assert result.exit_code == 0, result.output
     catalog = pystac.Catalog.from_file("catalog.json")
     item = next(catalog.get_items())
@@ -69,6 +69,8 @@ def test_catalog(raster_factory, tmp_path, monkeypatch, staged):
 
 def test_mismatched_counts(raster_factory):
     raster = raster_factory("mask.tif", [[0, 1]])
-    result = CliRunner().invoke(stac, ["--input-item", "a", "--input-item", "b", "--water-body", raster])
+    result = CliRunner().invoke(
+        stac, ["--item", "a", "--item", "b", "--rasters", raster]
+    )
     assert result.exit_code == 1
     assert "same nonzero number" in result.output

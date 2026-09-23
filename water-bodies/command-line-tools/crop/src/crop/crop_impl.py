@@ -93,6 +93,7 @@ def execute(*, input_item: str, aoi: str, epsg: str, band: str) -> None:
         logger.info("Starting crop for band {}", band)
         if band not in {"green", "nir", "nir08"}:
             raise ValueError("Band must be one of green, nir, nir08")
+        epsg = f"EPSG:{epsg}" if epsg.isdigit() else epsg
         geometry = _geometry(aoi)
         logger.info("Parsed {} AOI in {}", geometry["type"], epsg)
         item = _read_item(input_item)

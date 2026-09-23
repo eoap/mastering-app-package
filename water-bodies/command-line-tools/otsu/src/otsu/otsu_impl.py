@@ -1,5 +1,7 @@
 """Otsu water mask processing."""
 
+from pathlib import Path
+
 import click
 import numpy as np
 import rasterio
@@ -17,7 +19,7 @@ def threshold(data: np.ndarray) -> np.ndarray:
     return (finite & (data > cutoff)).astype(np.uint8)
 
 
-def execute(*, raster: str) -> None:
+def execute(*, raster: str | Path) -> None:
     """Write an unsigned-byte binary mask to otsu.tif."""
     try:
         logger.info("Reading {}", raster)

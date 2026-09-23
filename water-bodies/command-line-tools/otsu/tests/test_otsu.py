@@ -34,7 +34,7 @@ def raster_factory(tmp_path):
 def test_binary_mask(raster_factory, tmp_path, monkeypatch):
     raster = raster_factory("input.tif", [[0, 0, np.nan], [10, 10, np.inf]])
     monkeypatch.chdir(tmp_path)
-    result = CliRunner().invoke(otsu, [raster])
+    result = CliRunner().invoke(otsu, ["--raster", raster])
     assert result.exit_code == 0, result.output
     with rasterio.open("otsu.tif") as output:
         np.testing.assert_array_equal(output.read(1), [[0, 0, 0], [1, 1, 0]])
@@ -46,7 +46,7 @@ def test_binary_mask(raster_factory, tmp_path, monkeypatch):
 def test_no_finite_values(raster_factory, tmp_path, monkeypatch):
     raster = raster_factory("invalid.tif", [[np.nan, np.inf]])
     monkeypatch.chdir(tmp_path)
-    result = CliRunner().invoke(otsu, [raster])
+    result = CliRunner().invoke(otsu, ["--raster", raster])
     assert result.exit_code == 1
     assert "no finite values" in result.output
     assert not (tmp_path / "otsu.tif").exists()
