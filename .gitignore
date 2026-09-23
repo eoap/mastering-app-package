@@ -2,3 +2,4 @@ env_mkdocs/*
 runs
 *.pyc
 __pycache__/
+dist/
