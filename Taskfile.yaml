@@ -1,0 +1,143 @@
+
+version: '3'
+
+vars:
+  TOOL: crop
+
+tasks:
+  kernel:crop:
+    desc: Create the crop Hatch environment and register its local Bash Jupyter kernel
+    dir: '{{.ROOT_DIR}}/water-bodies/command-line-tools/crop'
+    cmds:
+      - |
+        hatch run default:python - <<'PY'
+        import json
+        import sys
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+
+        from jupyter_client.kernelspec import KernelSpecManager
+
+        spec = {
+            "argv": [sys.executable, "-m", "bash_kernel", "-f", "{connection_file}"],
+            "display_name": "Bash (crop Hatch)",
+            "language": "bash",
+            "env": {
+                "PATH": str(Path(sys.executable).parent) + ":${PATH}",
+                "VIRTUAL_ENV": sys.prefix,
+            },
+        }
+        with TemporaryDirectory() as directory:
+            Path(directory, "kernel.json").write_text(json.dumps(spec), encoding="utf-8")
+            installed = KernelSpecManager().install_kernel_spec(
+                directory, kernel_name="bash-crop", user=True
+            )
+        print(f"Installed Bash (crop Hatch) kernel: {installed}")
+        PY
+
+  code:bootstrap:
+    internal: true
+    silent: false
+    vars:
+      WORKFLOW: ./cwl-workflow/app-water-bodies-cloud-native.cwl
+    cmds: 
+      - |
+        uv run --no-project --with transpiler-mate-runtime --with "cwl2click>=0.10.0" \
+        transpiler-mate cwl2click \
+        --clt-id {{.TOOL}} \
+        --output ./water-bodies/command-line-tools \
+        {{.WORKFLOW}}
+  
+  code:test:
+    silent: false
+    cmds:
+      - | 
+        cd ./water-bodies/command-line-tools/{{.TOOL}}
+        hatch test
+
+  code:check:
+    silent: false
+    cmds:
+      - |
+        cd ./water-bodies/command-line-tools/{{.TOOL}}
+        hatch check
+
+  code:typecheck:
+    silent: false
+    cmds:
+      - |
+        cd ./water-bodies/command-line-tools/{{.TOOL}}
+        hatch run dev:typecheck
+  
+  code:lint:
+    silent: false
+    cmds:
+      - |
+        cd ./water-bodies/command-line-tools/{{.TOOL}}
+        hatch run dev:lint
+        
+  code:security:
+    silent: false
+    cmds:
+      - |
+        cd ./water-bodies/command-line-tools/{{.TOOL}}
+        hatch run dev:security
+  
+
+  code:bootstrap:crop:
+    silent: false
+    vars:
+      TOOL: crop
+    cmds: 
+      - task: code:bootstrap 
+        vars:
+          TOOL: crop
+
+  code:bootstrap:norm_diff:
+    silent: false
+    vars:
+      TOOL: norm_diff
+    cmds: 
+      - task: code:bootstrap 
+        vars:
+          TOOL: norm_diff
+
+  code:bootstrap:otsu:
+    silent: false
+    vars:
+      TOOL: otsu
+    cmds: 
+      - task: code:bootstrap 
+        vars:
+          TOOL: otsu  
+
+  code:bootstrap:stac:
+    silent: false
+    vars:
+      TOOL: stac
+    cmds: 
+      - task: code:bootstrap 
+        vars:
+          TOOL: stac
+
+  code:test:crop:
+    silent: false
+    vars:
+      TOOL: crop
+    cmds:
+      - task: code:test 
+        vars:
+          TOOL: crop
+ 
+
+
+  cwl:validate:
+    silent: false
+    cmds:
+      - uv run --with cwltool cwltool --validate ./cwl-workflow/app-water-bodies-cloud-native.cwl
+
+
+  docs:serve:
+    silent: false
+    cmds:
+      - uv run --with "mkdocs>=1.4.2" --with mkdocs-material --with mkdocs-mermaid2-plugin --with mkdocs-glightbox==0.4.0 mkdocs serve

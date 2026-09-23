@@ -1,0 +1,116 @@
+/* Brand palette for the admin guide.
+   Deliberately different from the user guide's default blue: the two sites are
+   published side by side and the colour is the fastest way to tell, from a
+   screenshot in a ticket, which one someone is reading.
+
+   These build ON TOP of Material's own "default" (light) and "slate" (dark)
+   schemes — we only override the brand variables. Do not rename the schemes:
+   a scheme name Material does not know inherits none of the ~80 variables that
+   make dark mode readable (text, code highlighting, admonitions, shadows), and
+   the result is grey-on-grey. */
+
+/* ---------------------------------------------------------------- light --- */
+
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:        #0f4c5c;
+  --md-primary-fg-color--light: #17677b;
+  --md-primary-fg-color--dark:  #0a3644;
+  --md-primary-bg-color:        #ffffff;
+  --md-primary-bg-color--light: rgba(255, 255, 255, .7);
+
+  --md-accent-fg-color:         #0d8f8f;
+  --md-accent-fg-color--transparent: rgba(13, 143, 143, .1);
+
+  --md-typeset-a-color:         #0d7c86;
+}
+
+/* ----------------------------------------------------------------- dark --- */
+
+[data-md-color-scheme="slate"] {
+  /* Slate derives every background from this hue — 200 tints the greys petrol
+     instead of Material's default indigo. */
+  --md-hue: 200;
+
+  /* On a dark page the deep petrol has too little contrast against the body to
+     read as a header, and links in it fail WCAG AA. Lift both. */
+  --md-primary-fg-color:        #10404e;
+  --md-primary-fg-color--light: #17677b;
+  --md-primary-fg-color--dark:  #0a2c37;
+  --md-primary-bg-color:        rgba(255, 255, 255, .95);
+  --md-primary-bg-color--light: rgba(255, 255, 255, .7);
+
+  --md-accent-fg-color:         #5ee0d0;
+  --md-accent-fg-color--transparent: rgba(94, 224, 208, .1);
+
+  --md-typeset-a-color:         #4fd1c5;
+}
+
+/* --------------------------------------------------------------- shared --- */
+
+/* Keep the EOAP logo compact and preserve its natural proportions. */
+.md-header__button.md-logo :is(img, svg) {
+  height: 1.6rem;
+  width: auto;
+}
+
+/* Sidebar hierarchy. A subsection (how-to/install/) must read as a branch, not as
+   six more siblings: the parent is set in bold, and its children get an indent plus a
+   vertical rule so the eye can see where the branch starts and ends. */
+.md-nav--secondary .md-nav__title,
+.md-nav__item--section > .md-nav__link,
+.md-nav__item--nested > .md-nav__link {
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.md-nav__item--nested .md-nav--secondary,
+.md-nav__item--nested > .md-nav {
+  margin-left: .35rem;
+  padding-left: .5rem;
+  border-left: 1px solid var(--md-default-fg-color--lightest);
+}
+
+/* Tables are how most reference pages are written here — make them scan.
+   The header cell colour comes from the scheme, so it follows the toggle. */
+.md-typeset table:not([class]) th {
+  background-color: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+  font-weight: 600;
+}
+
+.md-typeset table:not([class]) td code {
+  white-space: nowrap;
+}
+
+/* Wide tables and long command lines scroll inside their own box. */
+.md-typeset .md-typeset__table {
+  overflow-x: auto;
+}
+
+/* Mermaid diagrams.
+   Material renders each diagram into a div.mermaid whose content sits in a CLOSED
+   shadow root, so no rule here can reach the <svg> — sizing is controlled by the
+   `%%{init: ...}%%` directive inside the diagram instead. With useMaxWidth:false the
+   SVG keeps its natural size rather than being scaled down to the column width, which
+   is what makes a wide left-to-right flow legible. All this rule does is give that
+   natural size somewhere to go. */
+.md-typeset .mermaid {
+  overflow-x: auto;
+  /* Centre a diagram narrower than the column; a wider one scrolls from its left edge. */
+  text-align: center;
+}
+
+/* Keep the parent of a subsection lit while you are on one of its children.
+
+   Material only puts .md-nav__link--active on the section's own index page, so opening
+   "Cloud prerequisites and DNS" left "Install the platform" looking like any other
+   entry — the chevron is in the DOM either way, but inherits plain text colour, and the
+   reader loses the one cue that says which branch they are standing in.
+
+   The hook is .md-nav__item--active, which Material DOES put on every ancestor of the
+   current page. Colouring the label as well as the link is what carries the chevron: the
+   icon is a mask painted with currentColor. */
+.md-nav__item--nested.md-nav__item--active > .md-nav__container > .md-nav__link,
+.md-nav__item--nested.md-nav__item--active > .md-nav__container > .md-nav__link .md-nav__icon {
+  color: var(--md-typeset-a-color);
+}

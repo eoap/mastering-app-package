@@ -3,6 +3,9 @@ site_name: Mastering Earth Observation Application Packaging with CWL
 theme:
     logo: imgs/icon-eoap.png
     name: material
+    features:
+      - navigation.tabs
+      - navigation.tabs.sticky
 
     palette:
     - media: "(prefers-color-scheme: light)"
@@ -19,8 +22,46 @@ plugins:
   - search
   - mermaid2:
       version: 10.6.0
+  - glightbox:
+      # The alt text of the image becomes the caption under the enlarged version.
+      auto_caption: true
+      caption_position: bottom
+      # Scroll-to-zoom and drag inside the modal: a full-width UI capture is only
+      # readable once the reader can get close to a single panel.
+      zoomable: true
+      draggable: true
+      # Never wrap these: a Mermaid diagram is an SVG the reader can already
+      # read at page size, and the modal would swallow its links.
+      skip_classes:
+        - mermaid
 
 markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  # Collapsible admonitions: long command output inside a runbook step.
+  - pymdownx.details
+  - tables
+  - attr_list
+  - md_in_html
+  # Needed by content.code.copy / .annotate and content.tabs.link.
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  # Renders ```mermaid fences natively — no CDN script, no init JS.
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
   - pymdownx.details
   - abbr
   - admonition
@@ -43,7 +84,9 @@ markdown_extensions:
   - pymdownx.highlight:
       line_spans: __span
 extra_css:
-  - styles/css/app.css
+  - extra.css
+  - stylesheets/extra.css
+
   
 extra_javascript:
   - javascripts/config.js
@@ -51,71 +94,69 @@ extra_javascript:
   
 
 nav:
-  - Introduction: 'index.md'
-  - Prerequisites: 
-    - Introduction to YAML: prerequisites/yaml.md
-    - Introduction to CWL: prerequisites/cwl.md
-  - Earth Observation Application Package:
-    - OGC Activities: app-package/ogc-context.md
-  - Introducing the application:
-    - Water bodies detection: app/water-bodies-detection.md
-    - Application Steps:
-      - Crop: 
+  - Home:
+    - Introduction: index.md
+    - Prerequisites:
+      - Introduction to YAML: prerequisites/yaml.md
+      - Introduction to CWL: prerequisites/cwl.md
+    - EO Application Package overview: app-package/ogc-context.md
+  - Build an Application:
+    - Water bodies example: app/water-bodies-detection.md
+    - Application steps:
+      - Crop:
         - Description: app/crop/app.md
         - Running the step: python-env/crop.md
-      - Normalized Difference:
+      - Normalized difference:
         - Description: app/normalized-difference/app.md
         - Running the step: python-env/norm-diff.md
       - Otsu threshold:
         - Description: app/otsu/app.md
         - Running the step: python-env/otsu.md
-      - STAC Catalog:
+      - STAC catalog:
         - Description: app/stac/app.md
         - Running the step: python-env/stac.md
-  - Package the EO Application:
-    - Creating the containers: 
+    - Containers:
       - Scope: containers/scope.md
       - Build and test the containers:
         - Crop: containers/crop.md
         - Normalized difference: containers/norm-diff.md
-        - Ostu threshold: containers/otsu.md
-        - STAC Catalog: containers/stac.md
-    - Create CWL CommandLineTools:
+        - Otsu threshold: containers/otsu.md
+        - STAC catalog: containers/stac.md
+    - CWL CommandLineTools:
       - Scope: cwl-cli/scope.md
       - Crop: cwl-cli/crop.md
       - Normalized difference: cwl-cli/norm-diff.md
-      - Ostu threshold: cwl-cli/otsu.md
-      - STAC Catalog: cwl-cli/stac.md
-    - Create the CWL Workflows:
+      - Otsu threshold: cwl-cli/otsu.md
+      - STAC catalog: cwl-cli/stac.md
+    - CWL workflows:
       - Scope: cwl-workflow/scope.md
-      - Sentinel-2 Cloud native Workflow: cwl-workflow/cloud-native.md
-      - Staged Landsat-9 Workflow:
+      - Cloud native: cwl-workflow/cloud-native.md
+      - Staged acquisitions:
         - Understanding stage-in/out: cwl-workflow/stage-in-out.md
         - CWL CommandLineTool for stage-in: cwl-workflow/stage-in.md
         - CWL CommandLineTool for stage-out: cwl-workflow/stage-out.md
         - Processing a staged Landsat-9 acquisition: cwl-workflow/staged.md
-      - Sentinel-2 Workflow of Workflow: cwl-workflow/scatter-cloud-native.md
-  - Release the EO Application:
-    - Scope: release/scope.md
-    - Continuous Integration: release/ci.md
-  - Execution Scenarios:
+      - Workflow scattering: cwl-workflow/scatter-cloud-native.md
+  - Run an Application:
     - Scope: exec/scope.md
-    - Running on a local machine:
+    - Local execution:
       - Sentinel-2: cwl-workflow/exec-cloud-native.md
       - Landsat-9: cwl-workflow/exec-stage-in.md
-    - Running CWL Workflow on Kubernetes: 
-      - Run the CWL Workflow with calrissian: kubernetes/calrissian.md 
-    - Scripting the execution:
+    - Kubernetes with Calrissian: kubernetes/calrissian.md
+    - Scripted execution:
       - cwltool API: scripted/scripted-cloud-native.md
-      - calrissian API: scripted/scripted-k8s-cloud-native.md
-    - Application benchmarking: benchmarking/calrissian-benchmark.md
-  - FAIR Application Packages: fair/best-practice.md
+      - Calrissian API: scripted/scripted-k8s-cloud-native.md
+    - Benchmarking: benchmarking/calrissian-benchmark.md
+  - Publish an Application:
+    - Release process: release/scope.md
+    - Continuous integration: release/ci.md
+    - FAIR application packages: fair/best-practice.md
   - Reference:
     - OGC Application Package Best Practice: reference/ogc-ap-bp.md
     - CWL CommandLineTool: reference/cwl-commandlinetool.md
     - CWL Workflow: reference/cwl-workflow.md
-    - Tools: 
+    - Tools:
       - cwltool: reference/cwltool.md
-      - calrissian: reference/calrissian.md
+      - Calrissian: reference/calrissian.md
 
 copyright: <a href="https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg">License CC BY-SA 4.0</a>, by <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons</a>
