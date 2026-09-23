@@ -51,7 +51,7 @@ def _geometry(aoi: str) -> dict:
             raise ValueError("AOI must be a GeoJSON polygon or xmin,ymin,xmax,ymax")
         if bounds[0] >= bounds[2] or bounds[1] >= bounds[3]:
             raise ValueError("AOI minimum coordinates must be smaller than maxima")
-        geometry = box(*bounds)
+        geometry = box(bounds[0], bounds[1], bounds[2], bounds[3])
     if geometry.geom_type not in {"Polygon", "MultiPolygon"}:
         raise ValueError("AOI must be a polygon")
     if geometry.is_empty or not geometry.is_valid:
@@ -102,9 +102,7 @@ def execute(*, input_item: str, aoi: str, epsg: str, band: str) -> None:
             projected = transform_geom(epsg, src.crs, geometry)
             logger.info("Cropping raster to the AOI")
             pixels, transform = mask(src, [projected], crop=True)
-            logger.info(
-                "Cropped raster: {} x {} pixels", pixels.shape[2], pixels.shape[1]
-            )
+            logger.info("Cropped raster: {} x {} pixels", pixels.shape[2], pixels.shape[1])
             metadata = src.meta.copy()
             metadata.update(
                 driver="COG",

@@ -3,23 +3,16 @@
 
 __all__ = []
 
-from crop.crop_impl import execute as crop_command
-
-from pathlib import Path
 
 import click
 
-
-
-
-
-
+from crop.crop_impl import execute as crop_command
 
 # None
 __all__.append("crop")
 # NOTE
 # Do not forget to add the section below in your `pyproject.toml` file
-#  
+#
 # [project.scripts]
 # crop = "crop.cli:crop"
 
@@ -30,7 +23,7 @@ crop = click.Command(
     help="""No info provided""",
     short_help="""No info provided""",
     params=[
-            click.Option(
+        click.Option(
             ["--input-item"],
             "item",
             type=click.STRING,
@@ -38,7 +31,7 @@ crop = click.Command(
             required=True,
             is_flag=False,
         ),
-            click.Option(
+        click.Option(
             ["--aoi"],
             "aoi",
             type=click.STRING,
@@ -46,7 +39,7 @@ crop = click.Command(
             required=True,
             is_flag=False,
         ),
-            click.Option(
+        click.Option(
             ["--epsg"],
             "epsg",
             type=click.STRING,
@@ -54,7 +47,7 @@ crop = click.Command(
             required=True,
             is_flag=False,
         ),
-            click.Option(
+        click.Option(
             ["--band"],
             "band",
             type=click.STRING,
@@ -62,7 +55,5 @@ crop = click.Command(
             required=True,
             is_flag=False,
         ),
-    ]
+    ],
 )
-
-
