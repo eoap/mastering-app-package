@@ -24,28 +24,75 @@ codemeta.json
 
 ## Application Package Continuous Integration
 
-A typical Continuous Integration scenario for an Application Package includes the release of the CWL document(s) and publishing the container images to a container registry.
+The release pipeline validates the CWL workflows, builds the application images,
+checks those images for known vulnerabilities, and publishes the Application
+Package as an OCI artifact. Container images and CWL artifacts can share an OCI
+registry, with separate repositories for each application step and workflow.
 
-This is depicted below: 
+The following diagram shows the target release process, including the image
+security scan and OCI publication stages being introduced:
 
-``` mermaid
+```mermaid
 graph TB
-SCM[(software repository)]
-SCM -- CWL Workflow --> A
-SCM -- codemeta.json --> B
-A(validate CWL Workflow) --> B(extract version)
-B --> C
-subgraph Build containers
+SCM[(Software repository)] --> A[Validate CWL workflows]
+SCM -- codemeta.json --> B[Extract release version]
+A --> B
+B --> C[Build container images]
 SCM -- Dockerfiles --> C
-C(build container) --> D(push container) 
-end
-D -- push --> CR[(Container Registry)] 
-D -- container sha256 --> F("update Dockerpull/metadata in CWL Workflows") 
-F -- push --> AR[(Artifact Registry)]
+C --> S[Scan images for CVEs]
+S --> G{Security policy passes?}
+G -- No --> X[Stop release and review findings]
+G -- Yes --> D[Push scanned images]
+D --> CR[(OCI registry)]
+D -- Image digests --> F[Update dockerPull and CWL metadata]
 SCM -- codemeta.json --> F
+F --> V[Validate release CWL]
+V --> P[Publish CWL as OCI artifacts]
+P --> CR
+S --> R[Retain scan reports]
 ```
 
-Below an example of a GitHub CI configuration implementing the scenario:
+### Container image security scanning
+
+Each built image will be scanned for known Common Vulnerabilities and Exposures
+(CVEs) in its operating-system packages and application dependencies. Scanning
+happens before release publication, and the image that passes the scan is the
+one pushed to the registry.
+
+The release policy must define which findings block publication, for example
+high or critical vulnerabilities. A blocking finding stops the release so that
+the affected base image or dependency can be updated, the image rebuilt, and the
+scan repeated. Any accepted exception should have a documented reason and expiry.
+
+Keep the scan report with the CI run, including the image identifier, scanner
+version, vulnerability database version or timestamp, and findings. A successful
+scan means that the image meets the policy against the database used for that
+scan; newly disclosed vulnerabilities can require rescanning published images.
+
+### Publishing CWL as OCI artifacts
+
+In the target release process, the validated CWL documents are published as OCI
+artifacts. Each artifact contains the release workflow and any local files needed
+to resolve its imports or includes. The workflow references the published
+container images through immutable digest references in `DockerRequirement.dockerPull`.
+
+The CWL artifact receives a release tag derived from `codemeta.json`. Record its
+registry digest as well: the tag identifies the release for readers, while the
+digest identifies the exact published package. The CWL artifact digest and the
+container image digests identify different objects.
+
+An OCI client such as [ORAS](https://oras.land/docs/how_to_guides/pushing_and_pulling/)
+can publish and retrieve these files. Consumers pull the CWL artifact, then pass
+the retrieved workflow to a CWL runner; the runner obtains the container images
+referenced by the workflow. See the [ORAS push command](https://oras.land/docs/commands/oras_push/)
+for file media types and artifact publication options.
+
+### Current GitHub Actions configuration
+
+The configuration below is the current repository implementation. It publishes
+container images, GitHub Actions artifacts, and GitHub release attachments.
+The CVE scan and OCI publication stages described above still need to be added
+to this workflow; GitHub artifact uploads alone do not publish CWL to an OCI registry.
 
 ```yaml linenums="1" title=".github/workflows/build.yaml"
 --8<--

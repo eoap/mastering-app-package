@@ -14,7 +14,7 @@ requirements:
 hints:
   DockerRequirement:
       dockerPull: localhost/crop:latest
-baseCommand: ["python", "-m", "app"]
+baseCommand: crop
 arguments: []
 inputs:
   item:
@@ -38,6 +38,5 @@ outputs:
     outputBinding:
         glob: '*.tif'
     type: File
-
 
 
