@@ -9,8 +9,7 @@ podman run \
     --env=HOME=/runs \
     localhost/crop:latest \
     crop \
-    --aoi \
-    "-121.399,39.834,-120.74,40.472" \
+    --aoi='{"type":"Polygon","coordinates":[[[-121.399,39.834],[-120.74,39.834],[-120.74,40.472],[-121.399,40.472],[-121.399,39.834]]]}' \
     --band \
     green \
     --epsg \
