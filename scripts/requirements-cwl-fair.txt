@@ -1,0 +1,4 @@
+-r requirements-cwl-release.txt
+cwl2citation==0.1.1
+cwl2ro-crate==0.1.1
+invenio-publish==0.1.1

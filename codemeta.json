@@ -1,7 +1,7 @@
 {
     "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
     "@type": "SoftwareSourceCode",
-    "license": "https://spdx.org/licenses/CC-BY-NC-SA-4.0",
+    "license": "https://spdx.org/licenses/CC-BY-SA-4.0",
     "codeRepository": "https://github.com/eoap/mastering-app-package.git",
     "dateCreated": "2022-09-01",
     "datePublished": "2022-09-25",
