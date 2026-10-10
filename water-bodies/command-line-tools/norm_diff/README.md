@@ -48,3 +48,9 @@ See [LICENSE.md](LICENSE.md).
 ## CLI source
 
 `src/norm_diff/cli.py` defines the console interface. Processing logic lives in `norm_diff_impl.py`. Update the CLI and CWL bindings together when changing arguments.
+
+## Developer tasks and notebook kernel
+
+From the repository root, run `task code:test TOOL=norm_diff` to test this package,
+or `task kernel:install TOOL=norm_diff` to register **Bash (norm_diff Hatch)**.
+See [developer tooling](../../../docs/development.md) for checks and CLI previews.

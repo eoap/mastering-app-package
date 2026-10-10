@@ -103,9 +103,9 @@ extra-dependencies = [
 skip-install = false
 dependencies = [
   "pytest>=8.4,<10",
-  "mypy>=2.3.0",
-  "ruff>=0.16.0",
-  "bandit>=1.9.4",
+  "mypy==1.19.1",
+  "ruff>=0.14,<1",
+  "bandit>=1.9,<2",
 ]
 
 [tool.ruff.lint]
@@ -137,6 +137,7 @@ max-complexity = 4
 
 [tool.hatch.envs.dev.scripts]
 typecheck = "mypy --install-types --non-interactive {args:src tests}"
-lint = "ruff format {args:src tests}"
-check = "ruff check --fix {args:src tests}"
+lint = "ruff format --check {args:src tests}"
+format = "ruff format {args:src tests}"
+check = "ruff check {args:src tests}"
 security = "bandit -r {args:src}"

@@ -24,3 +24,9 @@ podman build -t localhost/stage-out:latest .
 and environment settings. Build the image before running that CWL tool.
 
 Python 3.12 or newer is required. Alternatively, install with `python -m pip install -e .` in a virtual environment. The multistage image installs a Hatchling-built wheel in `/app/venv` and runs as UID/GID 2000. Licensed under [CC-BY-SA-4.0](LICENSE.md).
+
+## Developer tasks and notebook kernel
+
+From the repository root, run `task code:test TOOL=stage-out` to test this package,
+or `task kernel:install TOOL=stage-out` to register **Bash (stage-out Hatch)**.
+See [developer tooling](../../../docs/development.md) for checks and CLI previews.

@@ -48,3 +48,9 @@ See [LICENSE.md](LICENSE.md).
 ## CLI source
 
 `src/otsu/cli.py` defines the console interface. Processing logic lives in `otsu_impl.py`. Update the CLI and CWL bindings together when changing arguments.
+
+## Developer tasks and notebook kernel
+
+From the repository root, run `task code:test TOOL=otsu` to test this package,
+or `task kernel:install TOOL=otsu` to register **Bash (otsu Hatch)**.
+See [developer tooling](../../../docs/development.md) for checks and CLI previews.

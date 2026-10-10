@@ -78,3 +78,9 @@ The tests use local STAC items and synthetic rasters; they do not require remote
 ## CLI source
 
 `src/crop/cli.py` defines the console interface. Processing logic lives in `crop_impl.py`. Update the CLI and CWL bindings together when changing arguments.
+
+## Developer tasks and notebook kernel
+
+From the repository root, run `task code:test TOOL=crop` to test this package,
+or `task kernel:install TOOL=crop` to register **Bash (crop Hatch)**.
+See [developer tooling](../../../docs/development.md) for checks and CLI previews.

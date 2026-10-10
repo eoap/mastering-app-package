@@ -49,3 +49,9 @@ See [LICENSE.md](LICENSE.md).
 Alternatively, install with `python -m pip install -e .` in a Python 3.12 or newer virtual environment. The container runs as UID/GID 2000, with `stage-in` installed in `/app/venv/bin`.
 
 Failed asset downloads fail the command before catalog publication. HTTP requests have a 60-second timeout and up to three attempts.
+
+## Developer tasks and notebook kernel
+
+From the repository root, run `task code:test TOOL=stage-in` to test this package,
+or `task kernel:install TOOL=stage-in` to register **Bash (stage-in Hatch)**.
+See [developer tooling](../../../docs/development.md) for checks and CLI previews.
