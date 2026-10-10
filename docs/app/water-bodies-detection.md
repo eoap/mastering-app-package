@@ -132,4 +132,6 @@ with `--userns=keep-id` so bind-mounted output folders remain writable.
 Rebuild the four local images before running the updated CWL documents;
 previous images do not contain the installed console commands.
 
-Stage-in and stage-out retain their existing implementation.
+Stage-in and stage-out are also installed Python packages. Their CWL tools invoke
+`stage-in --reference <item>` and `stage-out <catalog-directory> <bucket> <prefix>`
+in separate images. The original `stage` image is retained for released examples.
