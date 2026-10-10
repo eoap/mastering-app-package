@@ -2,6 +2,35 @@ cwlVersion: v1.2
 $namespaces:
   s: https://schema.org/
 s:softwareVersion: 1.0.0
+# Training-example authors and creation date mirror codemeta.json.
+s:name: Water body detection based on NDWI and the otsu threshold
+s:description: Water bodies detection based on NDWI and otsu threshold applied
+  to Sentinel-2 or Landsat-9 staged acquisitions
+s:dateCreated: '2022-09-01'
+s:license:
+  s:name: Creative Commons Attribution-ShareAlike 4.0 International
+  s:url: https://creativecommons.org/licenses/by-sa/4.0/
+  s:identifier: CC-BY-SA-4.0
+s:softwareHelp:
+  s:name: Mastering Earth Observation Application Packaging with CWL
+  s:url: https://eoap.github.io/mastering-app-package
+s:publisher:
+  s:name: EO Application Packaging
+  s:identifier: https://github.com/eoap
+s:author:
+- s:givenName: Jane
+  s:familyName: Doe
+  s:email: jane.doe@acme.earth
+  s:affiliation:
+    s:name: ACME
+- s:givenName: John
+  s:familyName: Doe
+  s:email: john.doe@acme.earth
+  s:affiliation:
+    s:name: ACME
+s:softwareRequirements:
+- container runtime
+- cwl runner
 schemas:
   - http://schema.org/version/9.0/schemaorg-current-http.rdf
 $graph:

@@ -111,6 +111,7 @@ nav:
     - Application benchmarking: benchmarking/calrissian-benchmark.md
   - FAIR Application Packages: fair/best-practice.md
   - Reference:
+    - Generated CWL reference: reference/cwl/index.md
     - OGC Application Package Best Practice: reference/ogc-ap-bp.md
     - CWL CommandLineTool: reference/cwl-commandlinetool.md
     - CWL Workflow: reference/cwl-workflow.md
