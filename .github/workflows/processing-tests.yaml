@@ -29,13 +29,15 @@ jobs:
             ./water-bodies/command-line-tools/crop \
             ./water-bodies/command-line-tools/norm_diff \
             ./water-bodies/command-line-tools/otsu \
-            ./water-bodies/command-line-tools/stac
+            ./water-bodies/command-line-tools/stac \
+            ./water-bodies/command-line-tools/stage-in \
+            ./water-bodies/command-line-tools/stage-out
       - name: Test commands and processing chain
-        run: pytest --import-mode=importlib tests water-bodies/command-line-tools/{crop,norm_diff,otsu,stac}/tests
+        run: pytest --import-mode=importlib tests water-bodies/command-line-tools/{crop,norm_diff,otsu,stac,stage-in,stage-out}/tests
       - name: Validate CWL and build wheels and images
         run: |
           while IFS= read -r cwl; do cwltool --validate "$cwl"; done < <(git ls-files '*.cwl')
-          for package in crop norm_diff otsu stac; do
+          for package in crop norm_diff otsu stac stage-in stage-out; do
             python -m build --wheel --outdir /tmp/wheels "water-bodies/command-line-tools/$package"
             docker build -t "processing-$package:test" "water-bodies/command-line-tools/$package"
             docker run --rm "processing-$package:test" "$package" --help

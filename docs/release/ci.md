@@ -53,7 +53,7 @@ Below an example of a GitHub CI configuration implementing the scenario:
 --8<--
 ```
 
-The processing test workflow installs and tests the four Python packages, runs
+The processing test workflow installs and tests the six Python packages, runs
 a synthetic processing chain, validates the CWL, and builds wheels and images.
 Release image digests are written to mandatory `requirements.DockerRequirement`
 entries. `scripts/pack-cwl-release.py` selects the workflow explicitly, embeds

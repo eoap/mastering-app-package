@@ -49,7 +49,7 @@ jobs:
 
     strategy:
       matrix:
-        step: [crop, norm_diff, otsu, stac, stage]
+        step: [crop, norm_diff, otsu, stac, stage, stage-in, stage-out]
 
     steps:
     - uses: actions/checkout@v2
