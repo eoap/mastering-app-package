@@ -79,7 +79,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        step: [crop, norm_diff, otsu, stac, stage, stage-in, stage-out]
+        step: [crop, norm_diff, otsu, stac, stage-in, stage-out]
     env:
       IMAGE: ${{ needs.version.outputs.registry }}/${{ matrix.step }}
       VERSION: ${{ needs.version.outputs.version }}
