@@ -4,7 +4,7 @@ Wrap the `stac` step as a Common Workflow Language CommandLineTool and execute i
 
 ### Lab
 
-This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/CommandLineTools/stac.ipynb
+This step has a dedicated lab at `practice-labs/3-CWL-CommandLineTools/stac.ipynb`.
 
 ### CWL CommandLineTool wrapping the step
 

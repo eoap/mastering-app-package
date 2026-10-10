@@ -5,7 +5,7 @@ Wrap the `crop` step as a Common Workflow Language CommandLineTool and execute i
 
 ### Lab
 
-This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/3-CWL-CommandLineTools/crop.ipynb
+This step has a dedicated lab at `practice-labs/3-CWL-CommandLineTools/crop.ipynb`.
 
 ### How to wrap a step as a CWL CommandLineTool 
 
@@ -102,4 +102,4 @@ cwltool \
     ${WORKSPACE}/cwl-cli/crop-params.yaml
 ```
 
-`SchemaDefRequirement` imports the EOAP GeoJSON and URI record schemas. Use the YAML job above to supply structured inputs. The standalone crop tool retains string `epsg` and `band` inputs; the workflows constrain these through enums. The application still crops a rectangle using `bbox`.
+`SchemaDefRequirement` imports the EOAP GeoJSON and URI record schemas. Use the YAML job above to supply structured inputs. The standalone crop tool retains string `epsg` and `band` inputs; the workflows constrain these through enums. The binding passes the full Polygon as JSON, and the application masks pixels outside it.

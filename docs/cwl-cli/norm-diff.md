@@ -4,7 +4,7 @@ Wrap the `norm_diff` step as a Common Workflow Language CommandLineTool and exec
 
 ### Lab
 
-This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/CommandLineTools/norm-diff.ipynb
+This step has a dedicated lab at `practice-labs/3-CWL-CommandLineTools/normalized-difference.ipynb`.
 
 ### CWL CommandLineTool wrapping the step
 

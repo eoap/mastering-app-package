@@ -93,7 +93,7 @@ graph TD
 
 In certain circumstances it is necessary to provide multiple values or objects for a single key.
 
-As we've already seen in the [Maps](#Maps) section above, more than one key-value pair can be mapped to a single key.
+As we've already seen in the [Maps](#maps) section above, more than one key-value pair can be mapped to a single key.
 
 However, it is also possible to define multiple values for a key without having to provide a unique key for each value.
 

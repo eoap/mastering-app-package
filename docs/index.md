@@ -20,16 +20,16 @@ This tutorial will guide participants through step-by-step examples, mastering t
 
 To facilitate this process, participants are guided through the tutorial using interactive Jupyter Notebooks across various execution scenarios:
 
-1. **Application**: Understand the Application and execute its individual steps (i.e. `crop`, `norm_diff`, `otsu`, `stac`) along with their associated Python modules.
+1. **Application**: Understand the Application and execute its individual steps (i.e. `crop`, `norm_diff`, `otsu`, `stac`) using installed console commands in Hatch-managed Python environments.
 2. **Containers**: Build container images for each Application step with the required execution software dependencies, then run each step in its respective container.
 3. **CWL-CommandLineTool**: Prepare the CWL CommandLineTool document(s) wrapping the command line tool available in their associated container(s), and execute them with `cwltool`.
 4. **CWL-Workflow**: Prepare the CWL Workflow orchestrating CWL CommandLineTool document(s) wrapping the command line tool available container(s). Three scenarios are demonstrated:
 
     1. Workflow that reads a single STAC Item as input and orchestrates the four steps `crop`, `norm_diff`, `otsu` and `stac`.
     2. Workflow that reads a STAC Catalog of a staged EO acquisition as input, then orchestrates the four steps. A first step to stage-in the EO data is also demonstrated.
-    3. Workflow that reads multiple STAC Items as input and scatters them executing the Workflow in scenario 1. 
+    3. Workflow that reads multiple STAC Items as input and scatters them executing the Workflow in scenario 1.
 
-5. **Kubernetes**: Run the released Application Package CWL using `calrissian`, a CWL runner for kubernetes that creates a pod for each of the Workflow processing step. An additional Notebook is provided to demonstrate the use of the `calrissian` "usage report" feature to generate a resource consumption report of the execution. 
+5. **Kubernetes**: Pack and run the checked-out Application Package CWL using `calrissian`, a CWL runner for kubernetes that creates a pod for each of the Workflow processing step. An additional Notebook is provided to demonstrate the use of the `calrissian` "usage report" feature to generate a resource consumption report of the execution.
 
 ## Overview Flowchart and Key Tools
 
@@ -40,11 +40,11 @@ The tutorial is structured in several parts:
 timeline
 title Mastering EO Application Packaging with CWL
 Part 1 - Water bodies detection
-    : Short introduction 
+    : Short introduction
     : Application steps
 Part 2 - Execution in Python environments
-    : Create Python environment
-    : Run Python script 
+    : Create Hatch environment and Bash kernel
+    : Run installed console commands
 Part 3 - Package the Application 1/2
     : Create and test the containers
     : Create the CWL CommandLineTool
@@ -52,7 +52,7 @@ Part 3 - Package the Application 1/2
 Part 4 - Package the Application 2/2
     : CWL Workflow for Sentinel-2 Cloud Native processing
     : CWL Workflow for Landsat-9 processing (includes stage-in/out)
-    : CWL Workflow of workflows 
+    : CWL Workflow of workflows
 Part 5 - Release the Application
     : Continuous Integration
     : Containers published in a container registry
@@ -73,8 +73,8 @@ title Tooling
 Part 1 - Water bodies detection
     : N/A
 Part 2 - Execution in Python environments
-    : python venv
-    : python 
+    : Hatch and Task
+    : Python and Bash notebook kernels
 Part 3 - Package the Application 1/2
     : podman
     : cwltool
@@ -86,5 +86,11 @@ Part 6 - Execution Scenarios
     : cwltool
     : calrissian
 Part 7 - FAIR Application Packages
-    : N/A 
+    : N/A
 ```
+
+The current Kubernetes labs use locally built images loaded into Minikube with
+`:metadata` tags. See [the Kubernetes guide](kubernetes/calrissian.md) for setup.
+The [released cloud-native example](cwl-workflow/exec-cloud-native.md) and
+[released staged example](cwl-workflow/exec-stage-in.md) document historical
+release execution separately from the checkout-based practice notebooks.

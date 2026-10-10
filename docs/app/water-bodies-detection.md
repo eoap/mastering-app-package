@@ -114,8 +114,9 @@ The crop, normalized difference, Otsu, and STAC steps are Python packages with
 `pyproject.toml`, a `src/` layout, Hatchling wheel builds, and local tests.
 Python 3.12 or newer is required. Install a step with
 `python -m pip install -e water-bodies/command-line-tools/crop` (substitute the
-package directory for other steps). The practice notebooks create isolated
-virtual environments and install the package instead of separate dependencies.
+package directory for other steps). The application-step notebooks use isolated Hatch environments and registered
+Bash kernels; see [developer tooling](../development.md) and the linked step
+pages for setup.
 
 The installed commands are `crop`, `norm_diff`, `otsu`, and `stac`.
 Use repeated `--rasters` options for the two normalized difference inputs,

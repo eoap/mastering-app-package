@@ -4,7 +4,7 @@ Use a stage-in CWL workflow to stage a Landsat-9 acquisition
 
 ### Lab
 
-This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/Workflows/stage-in.ipynb
+This step has a dedicated lab at `practice-labs/4-CWL-Workflows/2.1-stage-in.ipynb`.
 
 ### Step 1 - Create a stage-in CWL Workflow
 

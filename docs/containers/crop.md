@@ -4,7 +4,7 @@ Create a container and run the `crop` step in the container image tagged and bui
 
 ### Lab
 
-This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/Containers/crop.ipynb
+This step has a dedicated lab at `practice-labs/2-Containers/crop.ipynb`.
 
 ### Container
 
