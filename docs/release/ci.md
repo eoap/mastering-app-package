@@ -97,3 +97,31 @@ console-command migration. The release job requires a matching version section
 in `CHANGELOG.md` and uses it as the GitHub release notes, followed by the
 verified OCI artifact references. Package versions and current CWL metadata are
 aligned to `2.0.0`; historical released CWL examples retain their old metadata.
+
+## Validate chapter 5 before a stable release
+
+Publish a candidate from `develop` with the manual release workflow:
+
+```bash
+gh workflow run build.yaml --ref develop -f channel=candidate
+```
+
+This command publishes registry artifacts and a GitHub prerelease after the
+usual tests and image scans. It does not publish the stable version or mark the
+candidate as the latest release. Candidates use a unique version such as
+`2.0.0-rc.<run-number>.<run-attempt>`. Find the actual tag in the completed run
+and GitHub Releases, then set `APPLICATION_PACKAGE_VERSION` in chapter 5.
+The release includes `typed-scatter-inputs.yaml` so inputs match the selected CWL.
+
+Test the candidate's direct Calrissian execution, Kubernetes Job, and both
+benchmark runs on the target cluster using registry-pulled images. Check package
+visibility or image-pull credentials; publication alone does not grant a cluster
+access to a private GHCR package. Record the candidate tag, source commit,
+cluster configuration, digests, outputs and reports before promoting changes.
+
+Only after these tests pass should the tested changes be merged into `main` or
+`master` for stable publication. Manual `channel=stable` also requires one of
+those branches. Stable CI rebuilds images and repeats its gates, so verify the
+final stable artifacts with a cluster smoke test as well. Candidate testing is
+an explicit release procedure; this workflow does not automatically execute the
+Kubernetes notebooks or enforce a cluster approval gate.

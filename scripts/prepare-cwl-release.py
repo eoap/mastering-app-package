@@ -25,6 +25,7 @@ def main():
     parser.add_argument('--version', required=True)
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile('cwl-workflow/typed-scatter-inputs.yaml', args.output / 'typed-scatter-inputs.yaml')
     with tempfile.TemporaryDirectory(prefix='cwl-release-') as staging_directory:
         prepared = Path(staging_directory)
         shutil.copytree('cwl-workflow', prepared, dirs_exist_ok=True)

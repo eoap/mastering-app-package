@@ -89,8 +89,9 @@ Part 7 - FAIR Application Packages
     : N/A
 ```
 
-The current Kubernetes labs use locally built images loaded into Minikube with
-`:metadata` tags. See [the Kubernetes guide](kubernetes/calrissian.md) for setup.
+The Kubernetes labs download a selected published CWL package and use
+registry-hosted images pinned by digest. Release candidates support testing
+before final publication. See [the Kubernetes guide](kubernetes/calrissian.md) for setup.
 The [released cloud-native example](cwl-workflow/exec-cloud-native.md) and
 [released staged example](cwl-workflow/exec-stage-in.md) document historical
-release execution separately from the checkout-based practice notebooks.
+historical release execution separately from the current typed workflow labs.

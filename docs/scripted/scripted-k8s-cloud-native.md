@@ -1,7 +1,7 @@
 # Script Calrissian execution
 
 Complete the [Kubernetes lab](../kubernetes/calrissian.md) first to prepare the
-packed workflow, local images, typed parameters, and shared volume. Run this
+published packed workflow, registry images, matching typed parameters, and shared volume. Run this
 example in the deployed editor's Python environment:
 
 ```python

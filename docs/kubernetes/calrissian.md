@@ -1,69 +1,46 @@
-# Run the checked-out workflow with Calrissian
+# Run a published workflow with Calrissian
 
-The lab is `practice-labs/5-Kubernetes/1-calrissian.ipynb`. It packs the current
-checkout, runs the typed scatter workflow directly with Calrissian, then submits
-the same package as a Kubernetes Job. Calrissian creates a pod for each processing
-command-line tool.
+The lab is `practice-labs/5-Kubernetes/1-calrissian.ipynb`. It downloads a
+published packed application package and its matching inputs, runs it with
+Calrissian, then submits the same package as a Kubernetes Job. Processing pods
+pull digest-pinned images from the registry on any suitably configured cluster.
 
-## Prepare the local deployment
+## Prepare the cluster
 
-Use the editor and Minikube setup described in
-`practice-labs/5-Kubernetes/README.md`. From the
-`dev-platform-eoap/mastering-app-package` deployment module directory, the
-image-loading task is:
+Install Calrissian and configure its service account and RBAC, a shared RWX
+volume mounted at `/calrissian`, and node-selector configuration. All nodes
+running processing pods must be able to pull the published images and access
+the input STAC data. Private registries additionally need image-pull credentials.
+Use your cluster's namespace, PVC and service-account names in the Job manifest.
+The runner image must contain Calrissian at the command path used by the Job;
+replace the example PDE image if your deployment uses a different runner.
 
-```bash
-task labs:kubernetes-images MINIKUBE_PROFILE=eoap-mastering-app-package-docker
-```
+The editor example uses `/workspace/mastering-app-package`. Set `WORKSPACE` to
+your own checkout location. Minikube is an optional development environment;
+local builds and image-loading tasks are not prerequisites for chapter 5.
 
-This task belongs to the deployment repository, separately from this checkout's
-developer Taskfile. Build the four current processing images in the editor first
-using the container labs, then load them into the node. Repeat image loading
-after a rebuild. The packed package uses `localhost/<tool>:metadata` tags so
-Kubernetes can use the locally loaded images.
-
-The editor and processing pods need the shared `/calrissian` volume, the
-Calrissian service account, and a node-selector configuration. The commands below
-use the deployment's `/workspace/mastering-app-package` checkout path.
-
-## Pack the current checkout
-
-Packing selects `#water-bodies` and renames the selected entrypoint to `#main`.
-The notebook then changes local image tags and copies the typed scatter job:
-
+## Download the selected release
 
 ```bash
 export WORKSPACE=/workspace/mastering-app-package
 export RUNTIME=${WORKSPACE}/runs
-mkdir -p ${RUNTIME}
-cd ${RUNTIME}
+mkdir -p "${RUNTIME}"
+cd "${RUNTIME}"
+# Default: 2.0.0 after publication. For pre-release testing, set the actual candidate tag.
+# export APPLICATION_PACKAGE_VERSION=2.0.0-rc.<run-number>.<run-attempt>
+bash "${WORKSPACE}/scripts/prepare-kubernetes-lab.sh"
 ```
 
+The helper downloads packed CWL and `typed-scatter-inputs.yaml` from the same
+GitHub release, validates them, checks the selected version and registry image
+digests, then writes the workflow and `params.yaml` under `/calrissian`.
+It fails if the release does not exist; it does not substitute a local package.
+The packed entrypoint is `#main`.
 
-```bash
-mkdir -p /calrissian
-cwltool --pack "${WORKSPACE}/cwl-workflow/app-water-bodies-cloud-native.cwl#water-bodies" > /calrissian/app-water-bodies-cloud-native.cwl
-# A non-latest tag lets Kubernetes use images loaded into the local node.
-python - <<'PYCODE'
-import json
-from pathlib import Path
-path = Path("/calrissian/app-water-bodies-cloud-native.cwl")
-package = json.loads(path.read_text())
-def use_local_images(value):
-    if isinstance(value, dict):
-        for key, child in value.items():
-            if key == "dockerPull" and isinstance(child, str) and child.startswith("localhost/") and child.endswith(":latest"):
-                value[key] = child.removesuffix(":latest") + ":metadata"
-            else:
-                use_local_images(child)
-    elif isinstance(value, list):
-        for child in value:
-            use_local_images(child)
-use_local_images(package)
-path.write_text(json.dumps(package, indent=2))
-PYCODE
-cp "${WORKSPACE}/cwl-workflow/typed-scatter-inputs.yaml" /calrissian/params.yaml
-```
+Before a final release exists, run the candidate CI workflow from `develop`,
+then select that published candidate here. Both chapter 5 notebooks and the Job
+use the same downloaded workflow and parameters. See the
+[release-candidate procedure](../release/ci.md#validate-chapter-5-before-a-stable-release).
 
 ## Execute directly
 
@@ -143,7 +120,7 @@ using the prepared package.
 
 ## Published execution
 
-The local lab uses the checkout and loaded images. Published deployments need
+This lab downloads published CWL and uses registry-hosted images. Deployments need
 accessible versioned images and a distributed application package. Historical
 release download scripts remain separate examples; they are not the preparation
 steps for this lab.

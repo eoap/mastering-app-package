@@ -1,8 +1,8 @@
-# Benchmark the checked-out workflow
+# Benchmark the published workflow
 
 The lab is `practice-labs/5-Kubernetes/2-benchmark.ipynb`. Complete the
 [Calrissian lab](../kubernetes/calrissian.md) first: it prepares
-`/calrissian/app-water-bodies-cloud-native.cwl` with local `:metadata` images.
+`/calrissian/app-water-bodies-cloud-native.cwl` with published, digest-pinned registry images.
 The benchmark runs that packed package at `#main`.
 
 Select **Python (Mastering Application Package)** in the deployed editor.
@@ -74,11 +74,11 @@ class Benchmark:
         }
 ```
 
-Read the checkout's typed scatter example and execute the first run:
+Read the input example downloaded with the selected release and execute the first run:
 
 
 ```python
-parameters = yaml.safe_load(Path("/workspace/mastering-app-package/cwl-workflow/typed-scatter-inputs.yaml").read_text())
+parameters = yaml.safe_load(Path("/calrissian/params.yaml").read_text())
 benchmark = Benchmark(parameters)
 report = benchmark.run()
 ```

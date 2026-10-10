@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Fixed
+
+- Chapter 5 downloads published CWL and matching inputs with registry-hosted,
+  digest-pinned images instead of requiring Minikube-local builds.
+- Added prerelease candidate publication for cluster testing before a stable release.
+
 ## [2.0.0] - 2026-10-10
 
 ### Breaking changes
