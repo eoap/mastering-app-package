@@ -1,4 +1,5 @@
 import os
+import time
 import click
 import pystac
 import rasterio
@@ -78,39 +79,56 @@ def crop(item_url, aoi, band, epsg):
 
     bbox = aoi2box(aoi)
 
-    with rasterio.open(asset.get_absolute_href()) as src:
+    for attempt in range(3):
+        try:
+            # Bound remote COG requests so a stalled connection cannot hang a lab.
+            with rasterio.Env(
+                GDAL_HTTP_CONNECTTIMEOUT=10,
+                GDAL_HTTP_TIMEOUT=60,
+                GDAL_HTTP_MAX_RETRY=2,
+                GDAL_HTTP_RETRY_DELAY=1,
+                GDAL_HTTP_RETRY_CODES="ALL",
+                GDAL_HTTP_MULTIRANGE="SERIAL",
+                CPL_VSIL_CURL_NON_CACHED=f"/vsicurl/{asset.get_absolute_href()}",
+            ), rasterio.open(asset.get_absolute_href()) as src:
 
-        transformer = Transformer.from_crs(epsg, src.crs, always_xy=True)
+                transformer = Transformer.from_crs(epsg, src.crs, always_xy=True)
 
-        minx, miny = transformer.transform(bbox[0], bbox[1])
-        maxx, maxy = transformer.transform(bbox[2], bbox[3])
+                minx, miny = transformer.transform(bbox[0], bbox[1])
+                maxx, maxy = transformer.transform(bbox[2], bbox[3])
 
-        transformed_bbox = box(minx, miny, maxx, maxy)
+                transformed_bbox = box(minx, miny, maxx, maxy)
 
-        logger.info(f"Crop {asset.get_absolute_href()}")
+                logger.info(f"Crop {asset.get_absolute_href()}")
 
-        out_image, out_transform = rasterio.mask.mask(
-            src, [transformed_bbox], crop=True
-        )
-        out_meta = src.meta.copy()
+                out_image, out_transform = rasterio.mask.mask(
+                    src, [transformed_bbox], crop=True
+                )
+                out_meta = src.meta.copy()
 
-        out_meta.update(
-            {
-                "height": out_image.shape[1],
-                "width": out_image.shape[2],
-                "transform": out_transform,
-                "dtype": "uint16",
-                "driver": "COG",
-                "tiled": True,
-                "compress": "lzw",
-                "blockxsize": 256,
-                "blockysize": 256,
-            }
-        )
+                out_meta.update(
+                    {
+                        "height": out_image.shape[1],
+                        "width": out_image.shape[2],
+                        "transform": out_transform,
+                        "dtype": "uint16",
+                        "driver": "COG",
+                        "tiled": True,
+                        "compress": "lzw",
+                        "blockxsize": 256,
+                        "blockysize": 256,
+                    }
+                )
 
-        with rasterio.open(f"crop_{band}.tif", "w", **out_meta) as dst_dataset:
-            logger.info(f"Write crop_{band}.tif")
-            dst_dataset.write(out_image)
+                with rasterio.open(f"crop_{band}.tif", "w", **out_meta) as dst_dataset:
+                    logger.info(f"Write crop_{band}.tif")
+                    dst_dataset.write(out_image)
+            break
+        except rasterio.errors.RasterioIOError:
+            if attempt == 2 or not asset.get_absolute_href().startswith(("http://", "https://")):
+                raise
+            logger.warning("Remote raster read failed; retrying crop ({}/3)", attempt + 2)
+            time.sleep(1)
 
     logger.info("Done!")
 

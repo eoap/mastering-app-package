@@ -181,7 +181,8 @@ $graph:
           PYTHONPATH: /app
       ResourceRequirement:
         coresMax: 1
-        ramMax: 512
+        ramMin: 2048
+        ramMax: 2048
       NetworkAccess:
         networkAccess: false
       DockerRequirement:
