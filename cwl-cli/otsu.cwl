@@ -40,7 +40,8 @@ requirements:
       PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
   ResourceRequirement:
     coresMax: 1
-    ramMax: 512
+    ramMin: 1024
+    ramMax: 1024
   NetworkAccess:
     networkAccess: false
   DockerRequirement:
