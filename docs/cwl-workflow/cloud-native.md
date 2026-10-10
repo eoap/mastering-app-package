@@ -1,9 +1,9 @@
 
 The Cloud native Workflow chains the `crop`, `norm_diff`, `otsu` and `stac` steps taking a single STAC item as input parameters:
 
-* a SpatioTemporal Asset Catalog (STAC) Item
-* a bounding box area of interest (AOI)
-* the EPSG code of the bounding box area of interest
+* a STAC item URI record with a `value` field
+* a GeoJSON Polygon area of interest (AOI), with `coordinates` and `bbox`
+* the EPSG enum value `"4326"`
 * a list of common band names (["green", "nir"])
 
 ``` mermaid
@@ -35,8 +35,19 @@ STAC Catalog`"))
 
 The CWL Workflow is shown below and the lines highlighted chain the steps:
 
-```yaml linenums="1" hl_lines="8-71" title="app-water-body-cloud-native.cwl"
+```yaml linenums="1" title="app-water-body-cloud-native.cwl"
 --8<--
 cwl-workflow/app-water-body-cloud-native.cwl
+--8<--
+```
+
+
+### Typed inputs
+
+Use a YAML job document for the local CWL definitions. AOIs require a Polygon record with `type`, `coordinates`, and `bbox`; the crop command uses the supplied bounding box. STAC references use URI records with a `value` field. Workflow EPSG values are `"4326"`, and supported bands are `green`, `nir`, and `nir08`. Staged input acquisitions retain their `Directory` type.
+
+```yaml
+--8<--
+cwl-workflow/typed-cloud-native-inputs.yaml
 --8<--
 ```

@@ -75,3 +75,29 @@ its workflow-selection requirement.
 
 Container declarations now use mandatory `DockerRequirement` entries rather
 than advisory hints, so runners must honor the specified images.
+
+## Typed EOAP inputs
+
+The CWL documents selectively adopt the semantic typing from
+`feature/enhancements`: imported GeoJSON `Polygon` and string-format `URI`
+records, an EPSG enum (`4326`), and spectral-band enums (`green`, `nir`, `nir08`).
+Staged acquisition inputs retain their `Directory` type.
+
+Use `cwl-workflow/typed-cloud-native-inputs.yaml` as an input-shape example:
+
+```sh
+cwltool --podman cwl-workflow/app-water-body-cloud-native.cwl \
+  cwl-workflow/typed-cloud-native-inputs.yaml
+```
+
+The example retains the tutorial's STAC reference; its availability is not
+verified by static validation. For the multi-acquisition workflow, supply
+`stac_items` as a list of records with a `value` field instead of `item`.
+
+The imported Polygon schema requires both `coordinates` and `bbox`. The crop
+binding passes `bbox` as comma-separated coordinates to the existing application;
+cropping remains rectangular. URI records are unwrapped through `self.value`.
+These changes require updating jobs that previously supplied plain AOI and STAC
+strings. The imports reference the schemas repository's `main` branch.
+
+Workflow enum definitions are shared through `cwl-workflow/eoap-types.yaml` and imported with `SchemaDefRequirement`. Named enum references allow cwltool to bind array inputs and preserve identical types across workflow/tool boundaries.

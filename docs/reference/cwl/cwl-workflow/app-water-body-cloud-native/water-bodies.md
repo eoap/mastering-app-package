@@ -4,7 +4,7 @@ Water bodies detection based on NDWI and otsu threshold applied to a single Sent
 
 > This software is licensed under the terms of the [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/) license - SPDX short identifier: [CC-BY-SA-4.0](https://spdx.org/licenses/CC-BY-SA-4.0)
 >
-> 2022-09-01 - 2026-10-10T18:33:17.352 Copyright [EO Application Packaging](mailto:None) - > [https://github.com/eoap](https://github.com/eoap)
+> 2022-09-01 - 2026-10-10T18:49:51.045 Copyright [EO Application Packaging](mailto:None) - > [https://github.com/eoap](https://github.com/eoap)
 
 ## Project Team
 
@@ -52,15 +52,16 @@ The are no Supported Operating Systems specified for this project.
 ### Requirements
 
 * [ScatterFeatureRequirement](https://www.commonwl.org/v1.2/Workflow.html#ScatterFeatureRequirement)
+* [SchemaDefRequirement](https://www.commonwl.org/v1.2/Workflow.html#SchemaDefRequirement)
 
 ### Inputs
 
 | Id | Type | Label | Doc |
 |----|------|-------|-----|
-| `aoi` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) | area of interest | area of interest as a bounding box |
-| `epsg` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) | EPSG code | EPSG code |
-| `bands` | `array` of [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) | bands used for the NDWI | bands used for the NDWI |
-| `item` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) | STAC item reference | Reference to a STAC item |
+| `aoi` | [Polygon](https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml#Polygon):<ul><li>`type`: [enum](https://www.commonwl.org/v1.2/Workflow.html#CommandInputEnumSchema):<ul><li>`Polygon`</li></ul></li><li>`coordinates`: `array` of `array` of `array` of [double](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li><li>`bbox`: `array` of [double](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li></ul> | area of interest | GeoJSON Polygon whose bbox defines the rectangular area to crop, in the specified coordinate reference system. |
+| `epsg` | [enum](https://www.commonwl.org/v1.2/Workflow.html#CommandInputEnumSchema):<ul><li>`4326`</li></ul> | EPSG code | EPSG code |
+| `bands` | `array` of [enum](https://www.commonwl.org/v1.2/Workflow.html#CommandInputEnumSchema):<ul><li>`green`</li><li>`nir`</li><li>`nir08`</li></ul> | bands used for the NDWI | bands used for the NDWI |
+| `item` | [URI](https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI):<ul><li>`value`: [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li></ul> | STAC item reference | Reference to a STAC item |
 
 
 ### Steps
@@ -145,10 +146,10 @@ Learn more about the [State diagram](https://en.wikipedia.org/wiki/State_diagram
 
 | Id | Option | Type |
 |----|------|-------|
-| `item` | `--input-item` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) |
-| `aoi` | `--aoi` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) |
-| `epsg` | `--epsg` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) |
-| `band` | `--band` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) |
+| `item` | `--input-item` | [URI](https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI):<ul><li>`value`: [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li></ul> |
+| `aoi` | `--aoi` | [Polygon](https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml#Polygon):<ul><li>`type`: [enum](https://www.commonwl.org/v1.2/Workflow.html#CommandInputEnumSchema):<ul><li>`Polygon`</li></ul></li><li>`coordinates`: `array` of `array` of `array` of [double](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li><li>`bbox`: `array` of [double](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li></ul> |
+| `epsg` | `--epsg` | [enum](https://www.commonwl.org/v1.2/Workflow.html#CommandInputEnumSchema):<ul><li>`4326`</li></ul> |
+| `band` | `--band` | [enum](https://www.commonwl.org/v1.2/Workflow.html#CommandInputEnumSchema):<ul><li>`green`</li><li>`nir`</li><li>`nir08`</li></ul> |
 
 ### Execution usage example:
 
@@ -226,7 +227,7 @@ python -m app \
 
 | Id | Option | Type |
 |----|------|-------|
-| `item` | `--input-item` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) |
+| `item` | `--input-item` | [URI](https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI):<ul><li>`value`: [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType)</li></ul> |
 | `rasters` | `--water-body` | [File](https://www.commonwl.org/v1.2/Workflow.html#File) |
 
 ### Execution usage example:

@@ -4,7 +4,7 @@ Run the `app-water-body.1.0.0.cwl` released application package using `cwltool` 
 
 ### Lab
 
-This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/Workflows/staged.ipynb
+This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/4-CWL-Workflows/2.2-staged.ipynb
 
 ### Step 1 - Configure the workspace
 
@@ -185,3 +185,5 @@ and
                            PRE LC09_L2SP_042033_20231015_02_T1/
 2023-11-02 08:46:04        549 catalog.json
 ```
+
+These commands target downloaded release packages and retain those releases' input format. For local typed CWL files, use the YAML job examples in the workflow authoring labs.

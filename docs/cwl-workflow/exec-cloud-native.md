@@ -4,7 +4,7 @@ Run the `app-water-body-cloud-native.1.0.0.cwl` released application package usi
 
 ### Lab
 
-This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/Workflows/cloud-native.ipynb
+This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/4-CWL-Workflows/1-cloud-native.ipynb
 
 ### Step 1 - Configure the workspace
 
@@ -60,3 +60,6 @@ The folder `/workspace/mastering-app-package/runs` contains:
 
 2 directories, 4 files
 ```
+
+
+These commands target downloaded release packages and retain those releases' input format. For local typed CWL files, use the YAML job examples in the workflow authoring labs.
