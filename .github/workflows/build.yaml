@@ -10,7 +10,8 @@ on:
     - 'water-bodies/**'
     - .github/**
     - docs/**
-    - cwl-workflow/*.cwl
+    - cwl-workflow/**
+    - scripts/pack-cwl-release.py
     - codemeta.json
 jobs:
   validate:
@@ -109,7 +110,7 @@ jobs:
           shatag=$( docker inspect ${tag} | yq -r '.[0]["RepoDigests"][0]' )
           for cwl in $(ls cwl-workflow/*.cwl)
           do
-            s="${step}" t="${shatag}" yq -i eval '(.$graph[] | select (.id == env(s)) ).hints.DockerRequirement.dockerPull = env(t)' $cwl
+            s="${step}" t="${shatag}" yq -i eval '(.$graph[] | select (.id == env(s)) ).requirements.DockerRequirement.dockerPull = env(t)' $cwl
           done
         done
     - run: |
@@ -117,18 +118,19 @@ jobs:
         do
           r=$( cat codemeta.json | jq -r ".codeRepository" ) yq -i eval '."s:codeRepository" = {"URL" : env(r)}' $cwl
           v="${{needs.version.outputs.app-version}}" yq -i eval '."s:softwareVersion" = env(v)' $cwl
-          n=$(cat codemeta.json | jq -r '(.author[0].givenName + " " + .author[0].familyName)') \
-          e=$(cat codemeta.json | jq -r '.author[0].email') \
-          a=$(cat codemeta.json | jq -r '.author[0].affiliation["name"]') \
-          yq eval -i  '."s:author" += [{"class": "s:Person", "s.name": env(n), "s.email": env(e), "s.affiliation": env(a)}]' $cwl
+
         done
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - run: python -m pip install cwltool
     - name: Cleanup downloads folder
       run: rm -rf downloads/*
     - run: |
         mkdir downloads
         for cwl in "app-water-bodies-cloud-native" "app-water-body-cloud-native" "app-water-body"
         do
-          cp cwl-workflow/${cwl}.cwl downloads/${cwl}.${{needs.version.outputs.app-version}}.cwl
+          python scripts/pack-cwl-release.py cwl-workflow/${cwl}.cwl downloads/${cwl}.${{needs.version.outputs.app-version}}.cwl
         done
     - uses: actions/upload-artifact@v4
       with:
