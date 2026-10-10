@@ -38,6 +38,8 @@ inputs:
     type: string
     label: STAC item reference
     doc: URI of the STAC item whose assets are downloaded.
+    inputBinding:
+      prefix: --reference
 outputs:
   staged:
     type: Directory
@@ -45,55 +47,13 @@ outputs:
       glob: .
     label: Staged acquisition
     doc: Directory containing the staged STAC catalog, item, and downloaded assets.
-baseCommand:
-  - python
-  - stage.py
-arguments:
-  - $( inputs.reference )
+baseCommand: stage-in
 requirements:
   DockerRequirement:
-    dockerPull: localhost/stage:latest
+    dockerPull: localhost/stage-in:latest
   InlineJavascriptRequirement: {}
   NetworkAccess:
     networkAccess: true
-  InitialWorkDirRequirement:
-    listing:
-      - entryname: stage.py
-        entry: |-
-          import pystac
-          import stac_asset
-          import asyncio
-          import os
-          import sys
-
-          config = stac_asset.Config(warn=True)
-
-          async def main(href: str):
-              
-              item = pystac.read_file(href)
-              
-              os.makedirs(item.id, exist_ok=True)
-              cwd = os.getcwd()
-              
-              os.chdir(item.id)
-              item = await stac_asset.download_item(item=item, directory=".", config=config)
-              os.chdir(cwd)
-              
-              cat = pystac.Catalog(
-                  id="catalog",
-                  description=f"catalog with staged {item.id}",
-                  title=f"catalog with staged {item.id}",
-              )
-              cat.add_item(item)
-              
-              cat.normalize_hrefs("./")
-              cat.save(catalog_type=pystac.CatalogType.SELF_CONTAINED)
-
-              return cat
-
-          href = sys.argv[1]
-
-          cat = asyncio.run(main(href))
-
-
-
+  EnvVarRequirement:
+    envDef:
+      PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
