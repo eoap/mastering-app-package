@@ -16,19 +16,19 @@ s:publisher:
   s:name: EO Application Packaging
   s:identifier: https://github.com/eoap
 s:author:
-- s:givenName: Jane
-  s:familyName: Doe
-  s:email: jane.doe@acme.earth
-  s:affiliation:
-    s:name: ACME
-- s:givenName: John
-  s:familyName: Doe
-  s:email: john.doe@acme.earth
-  s:affiliation:
-    s:name: ACME
+  - s:givenName: Jane
+    s:familyName: Doe
+    s:email: jane.doe@acme.earth
+    s:affiliation:
+      s:name: ACME
+  - s:givenName: John
+    s:familyName: Doe
+    s:email: john.doe@acme.earth
+    s:affiliation:
+      s:name: ACME
 s:softwareRequirements:
-- container runtime
-- cwl runner
+  - container runtime
+  - cwl runner
 s:softwareVersion: 1.1.0
 
 class: CommandLineTool
@@ -36,16 +36,20 @@ id: main
 inputs:
   reference:
     type: string
+    label: STAC item reference
+    doc: URI of the STAC item whose assets are downloaded.
 outputs:
   staged:
     type: Directory
     outputBinding:
       glob: .
-baseCommand: 
-- python
-- stage.py
+    label: Staged acquisition
+    doc: Directory containing the staged STAC catalog, item, and downloaded assets.
+baseCommand:
+  - python
+  - stage.py
 arguments:
-- $( inputs.reference )
+  - $( inputs.reference )
 requirements:
   DockerRequirement:
     dockerPull: localhost/stage:latest

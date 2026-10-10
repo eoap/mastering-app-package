@@ -41,5 +41,37 @@ preserved; standalone tools use CodeMeta's application version.
 
 The generated pages retain upstream template output, including generation
 timestamps, links for optional fields rendered as `None`, and references to UML
-and OGC API schema images. cwl2markdown does not generate those images; they
-require separate transpilers and renderers.
+and OGC API schema images. The corresponding images are generated separately
+with cwl2puml and rendered locally with PlantUML.
+
+## EOAP validation
+
+Validate both `water-bodies` and `detect_water_body` in the multi-workflow
+document explicitly using their fragments. Package, metadata, and staging
+profiles use these reviewed applicability configurations:
+
+| Entrypoint | Staging configuration |
+| --- | --- |
+| `app-water-body.cwl` | `validation/staging-staged.json` |
+| `app-water-body-cloud-native.cwl` | `validation/staging-cloud-native.json` |
+| `app-water-bodies-cloud-native.cwl#water-bodies` | `validation/staging-cloud-native.json` |
+| `app-water-bodies-cloud-native.cwl#detect_water_body` | `validation/staging-detection.json` |
+
+The staged workflow accepts acquisition directories at its entrypoint and in
+the crop and catalog tools. Cloud-native inputs are remote STAC references;
+their internal raster files are intermediate products, not staged acquisition
+directories. The three top-level packages expose a Directory-based STAC catalog
+produced by the catalog tool. The nested detection workflow returns an
+intermediate raster file and declares no package staging boundary.
+
+The validator always flags `EOAP.REQ14.COVERAGE` for declared staged outputs:
+execution evidence is needed to prove that all produced EO files are collected.
+These review findings remain even when Directory type checks pass.
+
+Standalone command-line tools have no package Workflow entrypoint. Use
+`cwltool --validate <tool.cwl>` for their CWL validity; their metadata is also
+checked by the EOAP validator, but package and staging checks are blocked by
+its workflow-selection requirement.
+
+Container declarations now use mandatory `DockerRequirement` entries rather
+than advisory hints, so runners must honor the specified images.

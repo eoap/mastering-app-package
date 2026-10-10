@@ -3,8 +3,7 @@ $namespaces:
   s: https://schema.org/
 # Training-example authors and creation date mirror codemeta.json.
 s:name: Otsu threshold
-s:description: Detect water bodies by applying the Otsu threshold to a water
-  index raster.
+s:description: Detect water bodies by applying the Otsu threshold to a water index raster.
 s:dateCreated: '2022-09-01'
 s:license:
   s:name: Creative Commons Attribution-ShareAlike 4.0 International
@@ -17,19 +16,19 @@ s:publisher:
   s:name: EO Application Packaging
   s:identifier: https://github.com/eoap
 s:author:
-- s:givenName: Jane
-  s:familyName: Doe
-  s:email: jane.doe@acme.earth
-  s:affiliation:
-    s:name: ACME
-- s:givenName: John
-  s:familyName: Doe
-  s:email: john.doe@acme.earth
-  s:affiliation:
-    s:name: ACME
+  - s:givenName: Jane
+    s:familyName: Doe
+    s:email: jane.doe@acme.earth
+    s:affiliation:
+      s:name: ACME
+  - s:givenName: John
+    s:familyName: Doe
+    s:email: john.doe@acme.earth
+    s:affiliation:
+      s:name: ACME
 s:softwareRequirements:
-- container runtime
-- cwl runner
+  - container runtime
+  - cwl runner
 s:softwareVersion: 1.1.0
 
 class: CommandLineTool
@@ -45,9 +44,8 @@ requirements:
     ramMax: 512
   NetworkAccess:
     networkAccess: false
-hints:
   DockerRequirement:
-    dockerPull: localhost/otsu:latest 
+    dockerPull: localhost/otsu:latest
 baseCommand: ["python", "-m", "app"]
 arguments: []
 inputs:
@@ -55,8 +53,12 @@ inputs:
     type: File
     inputBinding:
       position: 1
+    label: Water index raster
+    doc: Normalized difference water index raster to threshold.
 outputs:
   binary_mask_item:
     outputBinding:
       glob: '*.tif'
     type: File
+    label: Water body mask
+    doc: Binary raster mask identifying detected water bodies.

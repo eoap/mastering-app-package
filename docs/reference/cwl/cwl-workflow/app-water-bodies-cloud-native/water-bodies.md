@@ -4,7 +4,7 @@ Water bodies detection based on NDWI and otsu threshold applied to Sentinel-2 CO
 
 > This software is licensed under the terms of the [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/) license - SPDX short identifier: [CC-BY-SA-4.0](https://spdx.org/licenses/CC-BY-SA-4.0)
 >
-> 2022-09-01 - 2026-10-10T18:20:08.520 Copyright [EO Application Packaging](mailto:None) - > [https://github.com/eoap](https://github.com/eoap)
+> 2022-09-01 - 2026-10-10T18:33:15.457 Copyright [EO Application Packaging](mailto:None) - > [https://github.com/eoap](https://github.com/eoap)
 
 ## Project Team
 
@@ -68,15 +68,15 @@ The are no Supported Operating Systems specified for this project.
 
 | Id | Runs | Label | Doc |
 |----|------|-------|-----|
-| [node_water_bodies](#detect_water_body) | `#detect_water_body` | None | None |
-| [node_stac](#stac) | `#stac` | None | None |
+| [node_water_bodies](#detect_water_body) | `#detect_water_body` | Process acquisitions | Run water body detection for each input STAC item. |
+| [node_stac](#stac) | `#stac` | Catalog results | Create a STAC catalog describing the detected water bodies. |
 
 
 ### Outputs
 
 | Id | Type | Label | Doc |
 |----|------|-------|-----|
-| `stac_catalog` | [Directory](https://www.commonwl.org/v1.2/Workflow.html#Directory) | None | None |
+| `stac_catalog` | [Directory](https://www.commonwl.org/v1.2/Workflow.html#Directory) | Results STAC catalog | Directory containing the results STAC catalog and its referenced raster assets. |
 
 
 ### OGC API - Processes
@@ -148,26 +148,26 @@ Learn more about the [State diagram](https://en.wikipedia.org/wiki/State_diagram
 
 | Id | Type | Label | Doc |
 |----|------|-------|-----|
-| `aoi` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) | None | area of interest as a bounding box |
-| `epsg` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) | None | EPSG code |
-| `bands` | `array` of [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) | None | bands used for the NDWI |
-| `item` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) | None | STAC item |
+| `aoi` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) | Area of interest | area of interest as a bounding box |
+| `epsg` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) | Coordinate reference system | EPSG code |
+| `bands` | `array` of [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) | NDWI bands | bands used for the NDWI |
+| `item` | [string](https://www.commonwl.org/v1.2/Workflow.html#CWLType) | STAC item | STAC item |
 
 
 ### Steps
 
 | Id | Runs | Label | Doc |
 |----|------|-------|-----|
-| [node_crop](#crop) | `#crop` | None | None |
-| [node_normalized_difference](#norm_diff) | `#norm_diff` | None | None |
-| [node_otsu](#otsu) | `#otsu` | None | None |
+| [node_crop](#crop) | `#crop` | Crop bands | Crop the selected bands to the area of interest. |
+| [node_normalized_difference](#norm_diff) | `#norm_diff` | Compute NDWI | Compute the normalized difference water index from the cropped bands. |
+| [node_otsu](#otsu) | `#otsu` | Detect water bodies | Apply the Otsu threshold to produce a binary water body mask. |
 
 
 ### Outputs
 
 | Id | Type | Label | Doc |
 |----|------|-------|-----|
-| `detected_water_body` | [File](https://www.commonwl.org/v1.2/Workflow.html#File) | None | None |
+| `detected_water_body` | [File](https://www.commonwl.org/v1.2/Workflow.html#File) | Detected water body | Binary raster mask produced by the nested water body detection workflow. |
 
 
 ### OGC API - Processes

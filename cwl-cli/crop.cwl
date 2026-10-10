@@ -16,34 +16,33 @@ s:publisher:
   s:name: EO Application Packaging
   s:identifier: https://github.com/eoap
 s:author:
-- s:givenName: Jane
-  s:familyName: Doe
-  s:email: jane.doe@acme.earth
-  s:affiliation:
-    s:name: ACME
-- s:givenName: John
-  s:familyName: Doe
-  s:email: john.doe@acme.earth
-  s:affiliation:
-    s:name: ACME
+  - s:givenName: Jane
+    s:familyName: Doe
+    s:email: jane.doe@acme.earth
+    s:affiliation:
+      s:name: ACME
+  - s:givenName: John
+    s:familyName: Doe
+    s:email: john.doe@acme.earth
+    s:affiliation:
+      s:name: ACME
 s:softwareRequirements:
-- container runtime
-- cwl runner
+  - container runtime
+  - cwl runner
 s:softwareVersion: 1.1.0
 
 class: CommandLineTool
 id: crop
 requirements:
-    InlineJavascriptRequirement: {}
-    EnvVarRequirement:
-      envDef:
-        PYTHONPATH: /app
-    ResourceRequirement:
-      coresMax: 1
-      ramMax: 512
-    NetworkAccess:
-      networkAccess: true
-hints:
+  InlineJavascriptRequirement: {}
+  EnvVarRequirement:
+    envDef:
+      PYTHONPATH: /app
+  ResourceRequirement:
+    coresMax: 1
+    ramMax: 512
+  NetworkAccess:
+    networkAccess: true
   DockerRequirement:
     dockerPull: localhost/crop:latest
 baseCommand: ["python", "-m", "app"]
@@ -52,24 +51,34 @@ inputs:
   item:
     type: string
     inputBinding:
-        prefix: --input-item
+      prefix: --input-item
+    label: STAC item
+    doc: STAC item reference identifying the source acquisition.
   aoi:
     type: string
     inputBinding:
-        prefix: --aoi
+      prefix: --aoi
+    label: Area of interest
+    doc: Bounding box delimiting the area to process, expressed in the specified coordinate reference system.
   epsg:
     type: string
     inputBinding:
-        prefix: --epsg
+      prefix: --epsg
+    label: Coordinate reference system
+    doc: EPSG code of the coordinate reference system used for the area of interest.
   band:
     type: string
     inputBinding:
-        prefix: --band
+      prefix: --band
+    label: Raster band
+    doc: Name of the STAC asset band to crop.
 outputs:
   cropped:
     outputBinding:
-        glob: '*.tif'
+      glob: '*.tif'
     type: File
 
 
 
+    label: Cropped raster
+    doc: Raster band cropped to the area of interest.

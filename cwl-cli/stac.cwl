@@ -16,19 +16,19 @@ s:publisher:
   s:name: EO Application Packaging
   s:identifier: https://github.com/eoap
 s:author:
-- s:givenName: Jane
-  s:familyName: Doe
-  s:email: jane.doe@acme.earth
-  s:affiliation:
-    s:name: ACME
-- s:givenName: John
-  s:familyName: Doe
-  s:email: john.doe@acme.earth
-  s:affiliation:
-    s:name: ACME
+  - s:givenName: Jane
+    s:familyName: Doe
+    s:email: jane.doe@acme.earth
+    s:affiliation:
+      s:name: ACME
+  - s:givenName: John
+    s:familyName: Doe
+    s:email: john.doe@acme.earth
+    s:affiliation:
+      s:name: ACME
 s:softwareRequirements:
-- container runtime
-- cwl runner
+  - container runtime
+  - cwl runner
 s:softwareVersion: 1.1.0
 
 class: CommandLineTool
@@ -44,9 +44,8 @@ requirements:
     ramMax: 512
   NetworkAccess:
     networkAccess: true
-hints:
   DockerRequirement:
-    dockerPull: localhost/stac:latest 
+    dockerPull: localhost/stac:latest
 baseCommand: ["python", "-m", "app"]
 arguments: []
 inputs:
@@ -54,12 +53,18 @@ inputs:
     type: string
     inputBinding:
       prefix: --input-item
+    label: STAC item
+    doc: STAC item reference identifying the source acquisition.
   raster:
     type: File
     inputBinding:
       prefix: --water-body
+    label: Water index raster
+    doc: Normalized difference water index raster to threshold.
 outputs:
   stac_catalog:
     outputBinding:
       glob: .
     type: Directory
+    label: Results STAC catalog
+    doc: Directory containing the results STAC catalog and its referenced raster assets.
