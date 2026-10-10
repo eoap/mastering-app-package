@@ -1,2 +1,7 @@
 env_mkdocs/*
 runs
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.whl
