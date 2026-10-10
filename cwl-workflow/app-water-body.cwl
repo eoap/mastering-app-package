@@ -1,7 +1,7 @@
 cwlVersion: v1.2
 $namespaces:
   s: https://schema.org/
-s:softwareVersion: 1.0.0
+s:softwareVersion: 2.0.0
 # Training-example authors and creation date mirror codemeta.json.
 s:name: Water body detection based on NDWI and the otsu threshold
 s:description: Water bodies detection based on NDWI and otsu threshold applied to Sentinel-2 or Landsat-9 staged acquisitions

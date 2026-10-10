@@ -29,7 +29,7 @@ s:author:
 s:softwareRequirements:
   - container runtime
   - cwl runner
-s:softwareVersion: 1.1.0
+s:softwareVersion: 2.0.0
 
 class: CommandLineTool
 id: crop

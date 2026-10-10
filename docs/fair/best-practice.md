@@ -61,8 +61,8 @@ Check the following before a real publication:
 can retain their individual development versions; the release preparation job
 sets the version and repository on copies before packing. Generate release
 citations and crates from those final copies, so all published outputs agree.
-The current `1.1.0` CodeMeta version is already released and must be bumped for
-a new publication through CI.
+The prepared release version is `2.0.0`. Subsequent releases must use a new
+version; CI rejects existing tags and published versions.
 
 The [release tutorial](../release/ci.md) explains that process. Keep generated
 CodeMeta separate from the CI input: the

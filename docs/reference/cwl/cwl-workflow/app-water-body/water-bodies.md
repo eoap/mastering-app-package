@@ -1,10 +1,10 @@
-# Water body detection based on NDWI and the otsu threshold v1.0.0
+# Water body detection based on NDWI and the otsu threshold v2.0.0
 
 Water bodies detection based on NDWI and otsu threshold applied to Sentinel-2 or Landsat-9 staged acquisitions
 
 > This software is licensed under the terms of the [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/) license - SPDX short identifier: [CC-BY-SA-4.0](https://spdx.org/licenses/CC-BY-SA-4.0)
 >
-> 2022-09-01 - 2026-10-10T20:29:49.248 Copyright [EO Application Packaging](mailto:None) - > [https://github.com/eoap](https://github.com/eoap)
+> 2022-09-01 - 2026-10-10T21:46:43.796 Copyright [EO Application Packaging](mailto:None) - > [https://github.com/eoap](https://github.com/eoap)
 
 ## Project Team
 
