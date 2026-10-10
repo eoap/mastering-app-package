@@ -25,41 +25,26 @@ end
 
 ### Code
 
-The `norm_diff` script is a command-line tool for performing a normalized difference between two raster images. 
+Computes (first - second) / (first + second) from exactly two rasters supplied with repeated --rasters options. Dimensions, transforms, and coordinate systems must match. The output norm_diff.tif is a float32, LZW-compressed COG; zero denominators produce nonfinite values handled by the threshold step.
 
-It uses the `click`, `rasterio`, and `numpy` libraries to perform the calculation and save the result as a GeoTIFF file. 
+The installed console interface is:
 
-Here's an overview of what the script does:
+```text
+Usage: norm_diff [OPTIONS]
 
-* It defines a command-line interface using the `click` library, with two arguments for providing the file paths of the two raster images that you want to calculate the normalized difference for.
-
-* The `normalized_difference` function is the main entry point. It opens the two input raster files specified as arguments.
-
-* It reads the data from the first raster (specified by `rasters[0]`) using `rasterio`, and it also copies the metadata (e.g., `projection`, `geotransform`) of this raster to be used for the output.
-
-* It then opens the second raster (specified by `rasters[1]`) and reads its data.
-
-* It updates the data type in the metadata to `"float32"` because the normalized difference result will be a floating-point image.
-
-* It creates an output raster named "norm_diff.tif" using `rasterio`. This output raster will have the same metadata as the first input raster, but it will be of data type `float32`.
-
-* It calculates the normalized difference between the two input arrays `(array1 - array2) / (array1 + array2)` and writes it to the output raster using `dst_dataset.write()`.
-
-The script is executable as a command-line tool as its usage is:
-
-```
-Usage: app.py [OPTIONS] RASTERS...
-
-  Performs a normalized difference
+  Calculate the normalized difference water index (NDWI) from the green and
+  near-infrared spectral band rasters.
 
 Options:
-  --help  Show this message and exit.
+  --rasters FILE  Ordered green and near-infrared GeoTIFFs used to calculate
+                  NDWI.  [default: (rasters); required]
+  --help          Show this message and exit.
 ```
 
-The Python code is provided here:
+The processing implementation is:
 
-```python linenums="1" title="water-bodies/command-line-tools/norm_diff/app.py"
+```python linenums="1" title="norm_diff_impl.py"
 --8<--
-water-bodies/command-line-tools/norm_diff/app.py
+water-bodies/command-line-tools/norm_diff/src/norm_diff/norm_diff_impl.py
 --8<--
 ```

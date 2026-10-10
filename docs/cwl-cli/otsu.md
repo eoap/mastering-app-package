@@ -4,7 +4,7 @@ Wrap the `crop` step as a Common Workflow Language CommandLineTool and exectute 
 
 ### Lab
 
-This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/CommandLineTools/otsu.ipynb
+This step has a dedicated lab at `practice-labs/3-CWL-CommandLineTools/otsu.ipynb`.
 
 ### CWL CommandLineTool wrapping the step
 

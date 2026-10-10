@@ -32,3 +32,7 @@ To facilitate this process, participants are guided through the tutorial using i
 The webpage of the documentation is https://eoap.github.io/mastering-app-package/. 
 
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+## Developer tooling
+
+See [developer tooling](docs/development.md) for Task commands, Hatch environments,
+and Bash notebook kernels. Run `task --list` from the repository root.

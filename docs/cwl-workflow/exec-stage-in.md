@@ -2,9 +2,15 @@
 
 Run the `app-water-body.1.0.0.cwl` released application package using `cwltool` on a staged Landsat-9 acquisition.
 
-### Lab
+### Relationship to the current lab
 
-This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/Workflows/staged.ipynb
+This page demonstrates a historical released package using the download and
+execution scripts below. Its input format and container versions belong to
+that release.
+
+The current notebook, `practice-labs/4-CWL-Workflows/2.2-staged.ipynb`,
+runs the checked-out typed CWL and locally built images instead. Follow the
+[current workflow guide](staged.md) for its job format and commands.
 
 ### Step 1 - Configure the workspace
 
@@ -185,3 +191,5 @@ and
                            PRE LC09_L2SP_042033_20231015_02_T1/
 2023-11-02 08:46:04        549 catalog.json
 ```
+
+These commands target downloaded release packages and retain those releases' input format. For local typed CWL files, use the YAML job examples in the workflow authoring labs.

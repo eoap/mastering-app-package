@@ -26,63 +26,31 @@ end
 
 ### Code
 
-The `crop.py` script is a command-line tool that takes as input
+Crops a selected STAC asset to a GeoJSON Polygon or bounding box. The asset must have a data role and matching eo:bands or bands common_name. Relative asset paths are resolved against the item; staged catalogs select their first item. Planetary Computer URLs are signed when needed. The geometry is transformed into the raster CRS and rasterio masks pixels outside it. Remote reads use bounded retries and timeouts. The output crop_<band>.tif retains the source datatype and nodata value and uses LZW-compressed COG format.
 
-* a SpatioTemporal Asset Catalog (STAC) Item
-* a bounding box area of interest (AOI), an EPSG code
-* a common band name as input
+The installed console interface is:
 
-and then crops the specified band from the asset associated with the common band name to the specified AOI. 
+```text
+Usage: crop [OPTIONS]
 
-It uses various Python libraries like `pystac`, `rasterio`, `pyproj`, `shapely`, and `loguru`.
-
-Here is an overview of the script's functionality:
-
-* It defines a function `aoi2box` to convert an AOI expressed as a bounding box string into a list of floats.
-
-* It defines a function `get_asset` to retrieve the asset of a STAC Item that is defined with a common band name. It iterates through the assets and checks if a band has the specified common name.
-
-* It defines a command-line interface using `click`, with options for providing the input STAC Item URL, AOI, EPSG code, and common band name.
-
-* The `crop` function is the main entry point. It reads the STAC Item specified by the input URL and retrieves the asset associated with the common band name. It then crops the asset to the specified AOI using the rasterio library.
-
-* It transforms the bounding box coordinates to match the EPSG code provided.
-
-* It performs the cropping using the `rasterio.mask.mask` function.
-
-* It writes the cropped image to a GeoTIFF file with a filename like "crop_bandname.tif."
-
-The script is executable as a command-line tool as its usage is:
-
-```
-Usage: app.py [OPTIONS]
-
-  Crops a STAC Item asset defined with its common band name
+  Crop each requested spectral band to the area of interest.
 
 Options:
-  --input-item TEXT  STAC Item URL or staged STAC catalog  [required]
-  --aoi TEXT         Area of interest expressed as a bounding box  [required]
-  --epsg TEXT        EPSG code  [required]
-  --band TEXT        Common band name  [required]
-  --help             Show this message and exit.
+  --input-item TEXT         URL of the source STAC item.  [default: (item);
+                            required]
+  --aoi TEXT                GeoJSON polygon defining the area of interest.
+                            [default: (aoi); required]
+  --epsg [4326]             Coordinate reference system of the area of
+                            interest.  [default: (epsg); required]
+  --band [green|nir|nir08]  Common name of the spectral band to crop.
+                            [default: (band); required]
+  --help                    Show this message and exit.
 ```
 
-To use this script, you would typically run it from the command line, providing the necessary input options such as the STAC Item URL, AOI, EPSG code, and common band name: 
+The processing implementation is:
 
-```
-python app.py \
-  --input-item "https://earth-search.aws.element84.com/v0/collections/sentinel-s2-l2a-cogs/items/S2B_10TFK_20210713_0_L2A" \
-  --aoi "-121.399,39.834,-120.74,40.472" \
-  --epsg "EPSG:4326" \
-  --band "green" 
-```
-
-It will then crop the specified band from the STAC asset and save it as a GeoTIFF file.
-
-The Python code is provided here:
-
-```python linenums="1" title="water-bodies/command-line-tools/crop/app.py"
+```python linenums="1" title="crop_impl.py"
 --8<--
-water-bodies/command-line-tools/crop/app.py
+water-bodies/command-line-tools/crop/src/crop/crop_impl.py
 --8<--
 ```

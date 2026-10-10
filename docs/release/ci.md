@@ -30,19 +30,17 @@ This is depicted below:
 
 ``` mermaid
 graph TB
-SCM[(software repository)]
-SCM -- CWL Workflow --> A
-SCM -- codemeta.json --> B
-A(validate CWL Workflow) --> B(extract version)
-B --> C
-subgraph Build containers
-SCM -- Dockerfiles --> C
-C(build container) --> D(push container) 
-end
-D -- push --> CR[(Container Registry)] 
-D -- container sha256 --> F("update Dockerpull/metadata in CWL Workflows") 
-F -- push --> AR[(Artifact Registry)]
-SCM -- codemeta.json --> F
+SCM[(software repository)] --> T(Test packages and validate CWL)
+T --> V(Check new release version)
+V --> B(Build images)
+B --> S(Scan images)
+S --> CR[(Push images to GHCR)]
+CR --> P(Update metadata and image digests)
+P --> C(Pack and validate CWL)
+C --> A(Generate annotations with cwl2oci)
+A --> O[(Publish CWL with ORAS)]
+O --> R(Pull by digest and verify)
+R --> G(Publish GitHub release and assets)
 ```
 
 Below an example of a GitHub CI configuration implementing the scenario:
@@ -52,3 +50,50 @@ Below an example of a GitHub CI configuration implementing the scenario:
 .github/workflows/build.yaml
 --8<--
 ```
+
+The processing test workflow installs and tests the six Python packages, runs
+a synthetic processing chain, validates the CWL, and builds wheels and images.
+Release image digests are written to mandatory `requirements.DockerRequirement`
+entries. `scripts/pack-cwl-release.py` selects the workflow explicitly, embeds
+the schema imports, preserves package metadata, and validates the downloaded
+artifact as a standalone CWL file.
+
+The release workflow calls the processing test workflow before publishing anything.
+Set a new version in `codemeta.json`; an existing GitHub release or tag is rejected.
+The workflow runs on changes to release inputs on `main` or `master`, or manually
+with `workflow_dispatch`. Concurrent releases are serialized.
+
+Each image is built and scanned with Trivy before it is pushed. Fixable HIGH and
+CRITICAL vulnerabilities block publication; the JSON report is retained as a run
+artifact, including on scan failure. Unfixed vulnerabilities do not block this
+gate. The image jobs record immutable GHCR references for the packaging job,
+which updates mandatory Docker requirements and release metadata in isolated
+copies of the workflows. Repository source files are not rewritten.
+
+After packing and validation, pinned `transpiler-mate-runtime` and `cwl2oci`
+generate the OCI annotations from each final CWL document's `#main` entrypoint.
+The generated `$manifest` structure is passed directly to ORAS. The entrypoint
+annotation is normalized from the runtime's process identifier to the artifact filename
+plus `#main`; source and revision identify the repository and release commit.
+These annotations describe the CWL artifacts; they are not Docker image labels.
+
+ORAS publishes the three workflows at
+`ghcr.io/<owner>/<repository>/cwl/<workflow>:<version>`, using the project's
+`application/cwl` artifact and layer media type. Existing image and CWL tags are
+rejected rather than replaced. Each artifact is pulled by digest, compared with
+the packed file, checked against the generated annotations, and validated again. `oci-artifacts.txt` records immutable
+references. CWL files, annotation JSON files, OCI manifests, and that inventory are attached to
+a GitHub draft release, which is published only after every verification and
+asset upload succeeds. A failed upload leaves a draft for inspection.
+
+The workflow uses `GITHUB_TOKEN` with `packages: write` only for registry jobs
+and `contents: write` only for release creation. GHCR must allow the repository's
+token to publish these packages. A failure after image or OCI publication can
+leave registry artifacts without a GitHub release; inspect the failed run and
+use a new version for the next release. Registry publication is not transactional.
+
+For the prepared `2.0.0` release, the changelog documents the typed-input and
+console-command migration. The release job requires a matching version section
+in `CHANGELOG.md` and uses it as the GitHub release notes, followed by the
+verified OCI artifact references. Package versions and current CWL metadata are
+aligned to `2.0.0`; historical released CWL examples retain their old metadata.

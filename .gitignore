@@ -1,2 +1,11 @@
 env_mkdocs/*
 runs
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.whl
+*.puml
+dist/
+site/
+.venv-fair/

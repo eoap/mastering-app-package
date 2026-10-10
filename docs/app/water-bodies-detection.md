@@ -106,3 +106,33 @@ And one Landsat-9 acquisition:
 Each `Command Line Tool` step such as `crop`, `Normalized difference`, `Otsu threshold` and `Create STAC` runs a simple Python script in a dedicated container.
 
 
+
+
+## Processing packages
+
+The crop, normalized difference, Otsu, and STAC steps are Python packages with
+`pyproject.toml`, a `src/` layout, Hatchling wheel builds, and local tests.
+Python 3.12 or newer is required. Install a step with
+`python -m pip install -e water-bodies/command-line-tools/crop` (substitute the
+package directory for other steps). The application-step notebooks use isolated Hatch environments and registered
+Bash kernels; see [developer tooling](../development.md) and the linked step
+pages for setup.
+
+The installed commands are `crop`, `norm_diff`, `otsu`, and `stac`.
+Use repeated `--rasters` options for the two normalized difference inputs,
+`otsu --raster norm_diff.tif`, and `stac --item source.json --rasters otsu.tif`.
+Crop accepts Polygon JSON or a bounding box, with `--epsg 4326`; CWL passes the
+full Polygon. Pixels outside the polygon are masked, and the source pixel type
+is retained. Planetary Computer assets are signed when needed; remote reads
+have bounded timeouts and retries.
+
+The Dockerfiles build wheels in a separate builder and install them in
+`/app/venv` on the pinned Python 3.12 slim base. Images run as UID/GID 2000
+and expose console commands on PATH. The Podman examples map the host user
+with `--userns=keep-id` so bind-mounted output folders remain writable.
+Rebuild the four local images before running the updated CWL documents;
+previous images do not contain the installed console commands.
+
+Stage-in and stage-out are also installed Python packages. Their CWL tools invoke
+`stage-in --reference <item>` and `stage-out <catalog-directory> <bucket> <prefix>`
+in separate images. The original `stage` image is retained for released examples.

@@ -1,0 +1,3 @@
+transpiler-mate-runtime==1.3.0
+cwl2oci==0.1.1
+cwltool==3.2.20260720092025

@@ -4,7 +4,7 @@ Create a container and run the `otsu` step in the container image tagged `localh
 
 ### Lab
 
-This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/Containers/otsu.ipynb
+This step has a dedicated lab at `practice-labs/2-Containers/otsu.ipynb`.
 
 ### Container
 

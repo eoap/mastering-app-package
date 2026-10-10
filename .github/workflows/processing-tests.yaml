@@ -1,0 +1,51 @@
+name: Processing packages
+on:
+  workflow_call:
+  pull_request:
+    paths:
+      - 'water-bodies/command-line-tools/**'
+      - 'cwl-cli/**'
+      - 'cwl-workflow/**'
+      - 'tests/**'
+      - 'scripts/*cwl-release*'
+      - 'scripts/check-oci-annotations.py'
+      - '.github/workflows/build.yaml'
+      - '.github/workflows/processing-tests.yaml'
+  push:
+    branches: [main, master]
+    paths:
+      - 'water-bodies/command-line-tools/**'
+      - 'cwl-cli/**'
+      - 'cwl-workflow/**'
+      - 'tests/**'
+      - 'scripts/*cwl-release*'
+      - 'scripts/check-oci-annotations.py'
+      - '.github/workflows/build.yaml'
+      - '.github/workflows/processing-tests.yaml'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install packages and test tools
+        run: |
+          python -m pip install pytest build cwltool \
+            ./water-bodies/command-line-tools/crop \
+            ./water-bodies/command-line-tools/norm_diff \
+            ./water-bodies/command-line-tools/otsu \
+            ./water-bodies/command-line-tools/stac \
+            ./water-bodies/command-line-tools/stage-in \
+            ./water-bodies/command-line-tools/stage-out
+      - name: Test commands and processing chain
+        run: pytest --import-mode=importlib tests water-bodies/command-line-tools/{crop,norm_diff,otsu,stac,stage-in,stage-out}/tests
+      - name: Validate CWL and build wheels and images
+        run: |
+          while IFS= read -r cwl; do cwltool --validate "$cwl"; done < <(git ls-files '*.cwl')
+          for package in crop norm_diff otsu stac stage-in stage-out; do
+            python -m build --wheel --outdir /tmp/wheels "water-bodies/command-line-tools/$package"
+            docker build -t "processing-$package:test" "water-bodies/command-line-tools/$package"
+            docker run --rm "processing-$package:test" "$package" --help
+          done
