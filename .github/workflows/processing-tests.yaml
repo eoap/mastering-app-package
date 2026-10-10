@@ -1,11 +1,15 @@
 name: Processing packages
 on:
+  workflow_call:
   pull_request:
     paths:
       - 'water-bodies/command-line-tools/**'
       - 'cwl-cli/**'
       - 'cwl-workflow/**'
       - 'tests/**'
+      - 'scripts/*cwl-release*'
+      - 'scripts/check-oci-annotations.py'
+      - '.github/workflows/build.yaml'
       - '.github/workflows/processing-tests.yaml'
   push:
     branches: [main, master]
@@ -14,6 +18,9 @@ on:
       - 'cwl-cli/**'
       - 'cwl-workflow/**'
       - 'tests/**'
+      - 'scripts/*cwl-release*'
+      - 'scripts/check-oci-annotations.py'
+      - '.github/workflows/build.yaml'
       - '.github/workflows/processing-tests.yaml'
 jobs:
   test:
