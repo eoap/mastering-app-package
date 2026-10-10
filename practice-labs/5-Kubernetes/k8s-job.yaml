@@ -4,7 +4,7 @@ kind: Job
 metadata:
   name: water-bodies-detection
 spec:
-  ttlSecondsAfterFinished: 5
+  ttlSecondsAfterFinished: 3600
   template:
     spec:
       serviceAccountName: calrissian-sa
@@ -14,8 +14,9 @@ spec:
         fsGroup: 0
       containers:
         - name: calrissian
-          image: ghcr.io/duke-gcb/calrissian/calrissian:0.18.1
-          command: ["calrissian"]
+          image: eoepca/pde-code-server:amd64
+          imagePullPolicy: IfNotPresent
+          command: ["/opt/calrissian-venv/bin/calrissian"]
           args:
             - --debug
             - --stdout 
@@ -23,9 +24,9 @@ spec:
             - --stderr 
             - /calrissian/app.log
             - --max-ram 
-            - 4G
+            - 3G
             - --max-cores 
-            - "8"
+            - "2"
             - --tmp-outdir-prefix 
             - /calrissian/tmp/ 
             - --outdir
@@ -36,7 +37,7 @@ spec:
             - /calrissian/logs
             - --pod-nodeselectors 
             - /calrissian/pod-node-selector.yaml
-            - /calrissian/app-water-bodies-cloud-native.1.1.0.cwl#water-bodies
+            - /calrissian/app-water-bodies-cloud-native.cwl#main
             - /calrissian/params.yaml
           volumeMounts:
             - name: calrissian-volume
@@ -51,4 +52,4 @@ spec:
         - name: calrissian-volume
           persistentVolumeClaim:
             claimName: calrissian-claim    
-  backoffLimit: 3
+  backoffLimit: 0
