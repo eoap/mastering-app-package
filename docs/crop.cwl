@@ -37,7 +37,6 @@ requirements:
   InlineJavascriptRequirement: {}
   EnvVarRequirement:
     envDef:
-      PYTHONPATH: /app
       PROJ_LIB: /opt/conda/envs/env_crop/share/proj/
   ResourceRequirement:
     coresMax: 1
@@ -48,7 +47,7 @@ requirements:
     types:
       - $import: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml
       - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
-baseCommand: ["python", "-m", "app"]
+baseCommand: crop
 arguments: []
 inputs:
   item:
@@ -62,13 +61,14 @@ inputs:
     type: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml#Polygon
     inputBinding:
       prefix: --aoi
-      valueFrom: $(self.bbox.join(","))
+      valueFrom: $(JSON.stringify(self))
     label: Area of interest
-    doc: GeoJSON Polygon whose bbox defines the rectangular area to crop, in the specified coordinate reference system.
+    doc: GeoJSON Polygon defining the area to crop; raster pixels outside the polygon are masked.
   epsg:
     type: string
     inputBinding:
       prefix: --epsg
+      valueFrom: $(self.split(":").pop())
     label: Coordinate reference system
     doc: EPSG code of the coordinate reference system used for the area of interest.
   band:

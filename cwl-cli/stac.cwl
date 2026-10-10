@@ -37,8 +37,7 @@ requirements:
   InlineJavascriptRequirement: {}
   EnvVarRequirement:
     envDef:
-      PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-      PYTHONPATH: /app
+      PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
   ResourceRequirement:
     coresMax: 1
     ramMax: 512
@@ -46,19 +45,19 @@ requirements:
     networkAccess: true
   DockerRequirement:
     dockerPull: localhost/stac:latest
-baseCommand: ["python", "-m", "app"]
+baseCommand: stac
 arguments: []
 inputs:
   item:
     type: string
     inputBinding:
-      prefix: --input-item
+      prefix: --item
     label: STAC item
     doc: STAC item reference identifying the source acquisition.
   raster:
     type: File
     inputBinding:
-      prefix: --water-body
+      prefix: --rasters
     label: Water index raster
     doc: Normalized difference water index raster to threshold.
 outputs:

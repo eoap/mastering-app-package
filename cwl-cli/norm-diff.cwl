@@ -37,8 +37,7 @@ requirements:
   InlineJavascriptRequirement: {}
   EnvVarRequirement:
     envDef:
-      PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-      PYTHONPATH: /app
+      PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
   ResourceRequirement:
     coresMax: 1
     ramMin: 2048
@@ -47,11 +46,15 @@ requirements:
     networkAccess: false
   DockerRequirement:
     dockerPull: localhost/norm-diff:latest
-baseCommand: ["python", "-m", "app"]
+baseCommand: norm_diff
 arguments: []
 inputs:
   rasters:
-    type: File[]
+    type:
+      type: array
+      items: File
+      inputBinding:
+        prefix: --rasters
     inputBinding:
       position: 1
     label: Input rasters

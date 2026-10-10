@@ -37,8 +37,7 @@ requirements:
   InlineJavascriptRequirement: {}
   EnvVarRequirement:
     envDef:
-      PATH: /opt/conda/envs/env_otsu/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-      PYTHONPATH: /app
+      PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
   ResourceRequirement:
     coresMax: 1
     ramMax: 512
@@ -46,13 +45,14 @@ requirements:
     networkAccess: false
   DockerRequirement:
     dockerPull: localhost/otsu:latest
-baseCommand: ["python", "-m", "app"]
+baseCommand: otsu
 arguments: []
 inputs:
   raster:
     type: File
     inputBinding:
       position: 1
+      prefix: --raster
     label: Water index raster
     doc: Normalized difference water index raster to threshold.
 outputs:

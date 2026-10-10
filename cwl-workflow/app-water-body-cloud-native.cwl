@@ -47,7 +47,7 @@ $graph:
     inputs:
       aoi:
         label: area of interest
-        doc: GeoJSON Polygon whose bbox defines the rectangular area to crop, in the specified coordinate reference system.
+        doc: GeoJSON Polygon defining the area to crop; raster pixels outside the polygon are masked.
         type: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml#Polygon
       epsg:
         label: EPSG code
@@ -120,8 +120,7 @@ $graph:
       InlineJavascriptRequirement: {}
       EnvVarRequirement:
         envDef:
-          PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-          PYTHONPATH: /app
+          PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       ResourceRequirement:
         coresMax: 1
         ramMax: 512
@@ -134,7 +133,7 @@ $graph:
           - $import: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml
           - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
           - $import: eoap-types.yaml
-    baseCommand: ["python", "-m", "app"]
+    baseCommand: crop
     arguments: []
     inputs:
       item:
@@ -148,9 +147,9 @@ $graph:
         type: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml#Polygon
         inputBinding:
           prefix: --aoi
-          valueFrom: $(self.bbox.join(","))
+          valueFrom: $(JSON.stringify(self))
         label: Area of interest
-        doc: GeoJSON Polygon whose bbox defines the rectangular area to crop, in the specified coordinate reference system.
+        doc: GeoJSON Polygon defining the area to crop; raster pixels outside the polygon are masked.
       epsg:
         type: 'eoap-types.yaml#EPSGCode'
         inputBinding:
@@ -177,8 +176,7 @@ $graph:
       InlineJavascriptRequirement: {}
       EnvVarRequirement:
         envDef:
-          PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-          PYTHONPATH: /app
+          PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       ResourceRequirement:
         coresMax: 1
         ramMin: 2048
@@ -187,11 +185,15 @@ $graph:
         networkAccess: false
       DockerRequirement:
         dockerPull: localhost/norm-diff:latest
-    baseCommand: ["python", "-m", "app"]
+    baseCommand: norm_diff
     arguments: []
     inputs:
       rasters:
-        type: File[]
+        type:
+          type: array
+          items: File
+          inputBinding:
+            prefix: --rasters
         inputBinding:
           position: 1
         label: Input rasters
@@ -209,8 +211,7 @@ $graph:
       InlineJavascriptRequirement: {}
       EnvVarRequirement:
         envDef:
-          PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-          PYTHONPATH: /app
+          PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       ResourceRequirement:
         coresMax: 1
         ramMax: 512
@@ -218,13 +219,14 @@ $graph:
         networkAccess: false
       DockerRequirement:
         dockerPull: localhost/otsu:latest
-    baseCommand: ["python", "-m", "app"]
+    baseCommand: otsu
     arguments: []
     inputs:
       raster:
         type: File
         inputBinding:
           position: 1
+          prefix: --raster
         label: Water index raster
         doc: Normalized difference water index raster to threshold.
     outputs:
@@ -240,8 +242,7 @@ $graph:
       InlineJavascriptRequirement: {}
       EnvVarRequirement:
         envDef:
-          PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-          PYTHONPATH: /app
+          PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       ResourceRequirement:
         coresMax: 1
         ramMax: 512
@@ -252,20 +253,20 @@ $graph:
       SchemaDefRequirement:
         types:
           - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
-    baseCommand: ["python", "-m", "app"]
+    baseCommand: stac
     arguments: []
     inputs:
       item:
         type: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
         inputBinding:
-          prefix: --input-item
+          prefix: --item
           valueFrom: $(self.value)
         label: STAC item
         doc: STAC item reference identifying the source acquisition.
       rasters:
         type: File
         inputBinding:
-          prefix: --water-body
+          prefix: --rasters
         label: Input rasters
         doc: Raster files used for normalized difference computation or catalog generation.
     outputs:
