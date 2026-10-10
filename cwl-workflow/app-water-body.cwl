@@ -39,20 +39,26 @@ $graph:
     doc: Water bodies detection based on NDWI and otsu threshold applied to Sentinel-2 or Landsat-9 staged acquisitions
     requirements:
       - class: ScatterFeatureRequirement
+      - class: SchemaDefRequirement
+        types:
+          - $import: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml
+          - $import: eoap-types.yaml
     inputs:
       aoi:
         label: area of interest
-        doc: area of interest as a bounding box
-        type: string
+        doc: GeoJSON Polygon whose bbox defines the rectangular area to crop, in the specified coordinate reference system.
+        type: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml#Polygon
       epsg:
         label: EPSG code
         doc: EPSG code
-        type: string
-        default: "EPSG:4326"
+        type: 'eoap-types.yaml#EPSGCode'
+        default: "4326"
       bands:
         label: bands used for the NDWI
         doc: bands used for the NDWI
-        type: string[]
+        type:
+          type: array
+          items: 'eoap-types.yaml#SpectralBand'
         default: ["green", "nir"]
       item:
         doc: Reference to a STAC item
@@ -122,6 +128,10 @@ $graph:
         networkAccess: true
       DockerRequirement:
         dockerPull: localhost/crop:latest
+      SchemaDefRequirement:
+        types:
+          - $import: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml
+          - $import: eoap-types.yaml
     baseCommand: ["python", "-m", "app"]
     arguments: []
     inputs:
@@ -132,19 +142,21 @@ $graph:
         label: STAC item
         doc: Directory containing the staged acquisition STAC catalog and assets.
       aoi:
-        type: string
+        type: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml#Polygon
         inputBinding:
           prefix: --aoi
+          valueFrom: $(self.bbox.join(","))
         label: Area of interest
-        doc: Bounding box delimiting the area to process, expressed in the specified coordinate reference system.
+        doc: GeoJSON Polygon whose bbox defines the rectangular area to crop, in the specified coordinate reference system.
       epsg:
-        type: string
+        type: 'eoap-types.yaml#EPSGCode'
         inputBinding:
           prefix: --epsg
+          valueFrom: $(self.split(":").pop())
         label: Coordinate reference system
         doc: EPSG code of the coordinate reference system used for the area of interest.
       band:
-        type: string
+        type: 'eoap-types.yaml#SpectralBand'
         inputBinding:
           prefix: --band
         label: Raster band

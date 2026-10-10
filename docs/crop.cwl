@@ -44,21 +44,27 @@ requirements:
     ramMax: 512
   DockerRequirement:
     dockerPull: localhost/crop:latest
+  SchemaDefRequirement:
+    types:
+      - $import: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml
+      - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
 baseCommand: ["python", "-m", "app"]
 arguments: []
 inputs:
   item:
-    type: string
+    type: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
     inputBinding:
       prefix: --input-item
+      valueFrom: $(self.value)
     label: STAC item
     doc: STAC item reference identifying the source acquisition.
   aoi:
-    type: string
+    type: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml#Polygon
     inputBinding:
       prefix: --aoi
+      valueFrom: $(self.bbox.join(","))
     label: Area of interest
-    doc: Bounding box delimiting the area to process, expressed in the specified coordinate reference system.
+    doc: GeoJSON Polygon whose bbox defines the rectangular area to crop, in the specified coordinate reference system.
   epsg:
     type: string
     inputBinding:

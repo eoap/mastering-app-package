@@ -19,4 +19,4 @@ aoi:
     - -120.74
     - 40.472
 epsg: EPSG:4326
-band: nir
+band: green

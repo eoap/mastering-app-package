@@ -1,5 +1,3 @@
-item:
-  value: https://earth-search.aws.element84.com/v0/collections/sentinel-s2-l2a-cogs/items/S2B_10TFK_20210713_0_L2A
 aoi:
   type: Polygon
   coordinates:
@@ -18,5 +16,10 @@ aoi:
     - 39.834
     - -120.74
     - 40.472
-epsg: EPSG:4326
-band: nir
+epsg: '4326'
+bands:
+  - green
+  - nir
+stac_items:
+  - value: https://earth-search.aws.element84.com/v0/collections/sentinel-s2-l2a-cogs/items/S2B_10TFK_20210713_0_L2A
+  - value: https://earth-search.aws.element84.com/v0/collections/sentinel-s2-l2a-cogs/items/S2B_10TFK_20210723_0_L2A
