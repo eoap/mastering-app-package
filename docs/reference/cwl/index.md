@@ -95,8 +95,7 @@ verified by static validation. For the multi-acquisition workflow, supply
 `stac_items` as a list of records with a `value` field instead of `item`.
 
 The imported Polygon schema requires both `coordinates` and `bbox`. The crop
-binding passes `bbox` as comma-separated coordinates to the existing application;
-cropping remains rectangular. URI records are unwrapped through `self.value`.
+binding serializes the full Polygon as JSON; pixels outside the polygon are masked. URI records are unwrapped through `self.value`.
 These changes require updating jobs that previously supplied plain AOI and STAC
 strings. The imports reference the schemas repository's `main` branch.
 

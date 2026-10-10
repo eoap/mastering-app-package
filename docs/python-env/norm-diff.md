@@ -22,7 +22,7 @@ source /workspace/mastering-app-package/scripts/setup.sh
 
 ### Step 2 - Create the Python virtual environment
 
-The required Python modules are installed using `pip`:
+Install the Python package and its pinned dependencies in the virtual environment using `pip`:
 
 ```bash linenums="1" hl_lines="3" title="terminal"
 --8<--

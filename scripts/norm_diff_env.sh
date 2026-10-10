@@ -1,3 +1,3 @@
 python -m venv env_norm_diff
 source env_norm_diff/bin/activate
-pip install --no-cache-dir rasterio click loguru
+python -m pip install -e "${WORKSPACE}/water-bodies/command-line-tools/norm_diff"
