@@ -1,47 +1,49 @@
-# Test the checked-out CWL on Minikube
+# Run a published application package on Kubernetes
 
-These notebooks use the current checkout, including `feature/metadata`, rather
-than downloading an older released application package. No new CWL release is
-needed for local validation. Notebook 1 packs the typed workflow and rewrites
-its container tags to `localhost/<tool>:metadata`; notebook 2 benchmarks that
-same package through the Calrissian CLI and its JSON usage report.
+Chapter 5 uses a published packed CWL application and registry-hosted container
+images pinned by digest. It runs on any Kubernetes cluster configured for
+Calrissian; building images locally or loading them into Minikube is not required.
 
-With the editor deployed by `dev-platform-eoap/mastering-app-package`, run from
-that deployment module directory:
+Prepare Calrissian, its service account and RBAC, a shared RWX PVC mounted at
+`/calrissian`, and the node-selector file expected by the notebooks. Nodes need
+registry and STAC-data access. Adjust the namespace, PVC, service-account names,
+and Calrissian runner image in `k8s-job.yaml` for your deployment. The example
+runner command is `/opt/calrissian-venv/bin/calrissian`.
+
+Notebook 1 downloads the selected release's CWL and matching typed scatter
+parameters, validates them, then runs Calrissian directly and through a Job.
+Notebook 2 benchmarks that same workflow and `/calrissian/params.yaml`.
+
+The default release version is `2.0.0`, once published. Before the final release,
+select an already published candidate in notebook 1's Bash environment:
 
 ```bash
-task labs LAB='[1-4]*' MINIKUBE_PROFILE=eoap-mastering-app-package-docker
-task labs:kubernetes-images MINIKUBE_PROFILE=eoap-mastering-app-package-docker
-task labs LAB=5-Kubernetes MINIKUBE_PROFILE=eoap-mastering-app-package-docker
+export APPLICATION_PACKAGE_VERSION=2.0.0-rc.<run-number>.<run-attempt>
 ```
 
-Chapter 2 builds the four tool images using Podman inside the editor. The image
-loading task copies those images into the Minikube node; the `metadata` tag
-avoids Kubernetes' default pull behavior for `latest`. Run the loading task
-again after rebuilding an image. Notebook 1 runs both the installed Calrissian
-command and a Kubernetes Job using the same local PDE image as the editor.
-The local Job example uses `eoepca/pde-code-server:amd64`; change its image when
-using a different PDE build. Each notebook uses the checked-out typed scatter
-parameters. The Job is recreated on repeat runs, and the benchmark stores each
-run's parameters, outputs, tool logs, and usage report under `/calrissian/benchmark-*`.
-The Job retains its status for an hour, and the notebook reports a failed Job
-instead of waiting only for success. Retry the lab explicitly after a transient
-network failure.
+Use the actual candidate tag from GitHub Releases. The preparation helper fails
+explicitly if the selected release is unavailable. It does not fall back to
+local images, an older release, or a different input contract.
 
-Published deployments still need accessible, versioned container images and a
-published or otherwise distributed application package. This local test path
-does not publish images, a CWL release, or the working branch.
+## Test before releasing
 
-Validation on 10 October 2026 passed all 18 practice notebooks on profile
-`eoap-mastering-app-package-docker`, including the direct Calrissian run,
-Kubernetes Job, both benchmark executions, Gantt chart, and report tables.
-The packaged-tool snapshot was `b5275c0` with fixes `ffc625f` and `de098fb`.
-The concurrent Hatch notebooks and environments were also copied into the
-editor: all four chapter 1 notebooks and `task code:test:all` (29 tests) passed.
-The Hatch changes remain WIP. A separate stage-out CWL roundtrip passed against
-SeaweedFS, checking uploaded catalog, item, and asset content before cleanup.
+1. Publish a candidate using the release workflow on `develop`, with
+   `channel=candidate`. It produces a GitHub prerelease and digest-pinned images
+   and CWL under a unique `2.0.0-rc.<run-number>.<run-attempt>` version.
+2. Confirm the images are accessible to the target cluster. GHCR package
+   visibility and credentials must allow its nodes to pull them.
+3. Set that candidate version, execute both notebooks and the Job, and verify
+   results, logs, usage reports, and benchmark outputs.
+4. Record the candidate tag, source commit, cluster, image digests and results.
+   Resolve failures and publish a fresh candidate before retesting.
+5. Merge the tested changes into the release branch only after this validation.
+   CI then builds and publishes the stable `2.0.0` artifacts from that branch.
 
-Otsu needed 1024 MiB rather than 512 MiB; normalized difference retains 2048 MiB.
-Remote raster reads needed bounded retries. Successful chapter 5 notebooks are
-in `/workspace/lab-results/20261010T192341432327Z/`, copied to the host at
-`/tmp/mastering-metadata-packaged-kubernetes`.
+Stable publication rebuilds the images; it does not promote candidate digests.
+Run a smoke test against the stable release before presenting it as the lab's
+validated default. Any source changes after candidate testing require another
+candidate test.
+
+The previous local Minikube runs established developer validation only; they
+are not evidence that nodes can pull the published images. Local image loading
+can remain an optional development technique outside this lab's default path.

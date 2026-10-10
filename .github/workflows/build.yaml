@@ -12,6 +12,12 @@ on:
       - 'codemeta.json'
       - 'CHANGELOG.md'
   workflow_dispatch:
+    inputs:
+      channel:
+        description: Publish a candidate for Kubernetes lab testing or a stable release
+        type: choice
+        options: [candidate, stable]
+        default: candidate
 permissions:
   contents: read
 concurrency:
@@ -27,12 +33,15 @@ jobs:
     outputs:
       version: ${{ steps.metadata.outputs.version }}
       registry: ${{ steps.metadata.outputs.registry }}
+      base-version: ${{ steps.metadata.outputs.base-version }}
+      candidate: ${{ steps.metadata.outputs.candidate }}
     steps:
       - uses: actions/checkout@v4
       - id: metadata
         name: Check version and publication targets
         env:
           GH_TOKEN: ${{ github.token }}
+          CHANNEL: ${{ inputs.channel }}
         shell: bash
         run: |
           version=$(jq -er '.version' codemeta.json)
@@ -41,6 +50,16 @@ jobs:
             echo "::error::CHANGELOG.md must describe release $version."
             exit 1
           }
+          echo "base-version=$version" >> "$GITHUB_OUTPUT"
+          candidate=false
+          if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch && "$CHANNEL" == candidate ]]; then
+            version="$version-rc.$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT"
+            candidate=true
+          elif [[ "$GITHUB_REF" != refs/heads/main && "$GITHUB_REF" != refs/heads/master ]]; then
+            echo "::error::Stable releases must run from main or master. Use candidate on develop."
+            exit 1
+          fi
+          echo "candidate=$candidate" >> "$GITHUB_OUTPUT"
           registry="ghcr.io/${GITHUB_REPOSITORY,,}"
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "registry=$registry" >> "$GITHUB_OUTPUT"
@@ -195,6 +214,8 @@ jobs:
     env:
       VERSION: ${{ needs.version.outputs.version }}
       GH_TOKEN: ${{ github.token }}
+      BASE_VERSION: ${{ needs.version.outputs.base-version }}
+      CANDIDATE: ${{ needs.version.outputs.candidate }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -203,7 +224,7 @@ jobs:
           path: downloads
       - name: Create draft, attach verified assets, and publish
         run: |
-          awk -v version="$VERSION" '
+          awk -v version="$BASE_VERSION" '
             index($0, "## [" version "]") == 1 { found=1; active=1 }
             active && /^## / && index($0, "## [" version "]") != 1 { active=0 }
             active { print }
@@ -211,7 +232,11 @@ jobs:
           ' CHANGELOG.md > /tmp/release-notes.md
           printf '\n### OCI artifacts\n\n' >> /tmp/release-notes.md
           cat downloads/oci-artifacts.txt >> /tmp/release-notes.md
+          flags=()
+          if [[ "$CANDIDATE" == true ]]; then
+            flags+=(--prerelease --latest=false)
+          fi
           gh release create "$VERSION" --target "$GITHUB_SHA" --title "$VERSION" \
-            --draft --notes-file /tmp/release-notes.md
+            --draft "${flags[@]}" --notes-file /tmp/release-notes.md
           gh release upload "$VERSION" downloads/*
           gh release edit "$VERSION" --draft=false
