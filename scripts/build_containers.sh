@@ -4,3 +4,5 @@ podman build --format docker -t localhost/crop:latest ${WORKSPACE}/water-bodies/
 podman build --format docker -t localhost/norm-diff:latest ${WORKSPACE}/water-bodies/command-line-tools/norm_diff
 podman build --format docker -t localhost/otsu:latest ${WORKSPACE}/water-bodies/command-line-tools/otsu
 podman build --format docker -t localhost/stac:latest ${WORKSPACE}/water-bodies/command-line-tools/stac
+podman build --format docker -t localhost/stage-in:latest ${WORKSPACE}/water-bodies/command-line-tools/stage-in
+podman build --format docker -t localhost/stage-out:latest ${WORKSPACE}/water-bodies/command-line-tools/stage-out

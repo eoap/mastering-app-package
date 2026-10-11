@@ -1,0 +1,115 @@
+version: '3'
+
+vars:
+  TOOL: crop
+  WORKFLOW: '{{.ROOT_DIR}}/cwl-workflow/app-water-bodies-cloud-native.cwl'
+  GENERATED_DIR: '{{.ROOT_DIR}}/runs/generated-cli'
+
+tasks:
+  default:
+    desc: List available developer tasks
+    cmds: [task --list]
+
+  code:test:
+    desc: Run one package's tests (TOOL=crop, norm_diff, otsu, stac, stage-in, stage-out)
+    dir: '{{.ROOT_DIR}}/water-bodies/command-line-tools/{{.TOOL}}'
+    cmds: ['hatch run dev:pytest tests {{.CLI_ARGS}}']
+
+  code:check:
+    desc: Check Python lint rules without modifying files
+    dir: '{{.ROOT_DIR}}/water-bodies/command-line-tools/{{.TOOL}}'
+    cmds: ['hatch run dev:check {{.CLI_ARGS}}']
+
+  code:lint:
+    desc: Check Python formatting without modifying files
+    dir: '{{.ROOT_DIR}}/water-bodies/command-line-tools/{{.TOOL}}'
+    cmds: ['hatch run dev:lint {{.CLI_ARGS}}']
+
+  code:format:
+    desc: Format Python source and tests
+    dir: '{{.ROOT_DIR}}/water-bodies/command-line-tools/{{.TOOL}}'
+    cmds: ['hatch run dev:format {{.CLI_ARGS}}']
+
+  code:typecheck:
+    desc: Run package type checks
+    dir: '{{.ROOT_DIR}}/water-bodies/command-line-tools/{{.TOOL}}'
+    cmds: ['hatch run dev:typecheck {{.CLI_ARGS}}']
+
+  code:security:
+    desc: Run Bandit on package source
+    dir: '{{.ROOT_DIR}}/water-bodies/command-line-tools/{{.TOOL}}'
+    cmds: ['hatch run dev:security {{.CLI_ARGS}}']
+
+  code:test:all:
+    desc: Run tests for all six packages
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - for package in crop norm_diff otsu stac stage-in stage-out; do task code:test TOOL="$package" || exit; done
+      - task: code:test:pipeline
+
+  code:test:pipeline:
+    desc: Test the installed processing commands as a complete chain
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - >-
+        uv run --no-project --with pytest
+        --with-editable ./water-bodies/command-line-tools/crop
+        --with-editable ./water-bodies/command-line-tools/norm_diff
+        --with-editable ./water-bodies/command-line-tools/otsu
+        --with-editable ./water-bodies/command-line-tools/stac
+        pytest tests {{.CLI_ARGS}}
+
+  code:test:crop:
+    desc: Run crop package tests
+    cmds: [{task: 'code:test', vars: {TOOL: crop}}]
+
+  code:bootstrap:
+    desc: Generate a CLI preview from CWL into runs/generated-cli (TOOL selects the CWL tool ID)
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - >-
+        uv run --no-project --with 'transpiler-mate-runtime==1.3.0' --with 'cwl2click>=0.10.0'
+        transpiler-mate cwl2click --clt-id '{{.TOOL}}' --output '{{.GENERATED_DIR}}' '{{.WORKFLOW}}'
+
+  code:bootstrap:crop:
+    desc: Generate the crop CLI preview
+    cmds: [{task: 'code:bootstrap', vars: {TOOL: crop}}]
+  code:bootstrap:norm_diff:
+    desc: Generate the normalized difference CLI preview
+    cmds: [{task: 'code:bootstrap', vars: {TOOL: norm_diff}}]
+  code:bootstrap:otsu:
+    desc: Generate the Otsu CLI preview
+    cmds: [{task: 'code:bootstrap', vars: {TOOL: otsu}}]
+  code:bootstrap:stac:
+    desc: Generate the STAC CLI preview
+    cmds: [{task: 'code:bootstrap', vars: {TOOL: stac}}]
+
+  kernel:install:
+    desc: Register a Hatch-backed Bash kernel (TOOL selects the package)
+    dir: '{{.ROOT_DIR}}/water-bodies/command-line-tools/{{.TOOL}}'
+    cmds:
+      - hatch run default:python '{{.ROOT_DIR}}/scripts/register-hatch-kernel.py' '{{.TOOL}}' {{.CLI_ARGS}}
+
+  kernel:crop:
+    desc: Register the Bash (crop Hatch) notebook kernel
+    cmds: [{task: 'kernel:install', vars: {TOOL: crop}}]
+
+  cwl:validate:
+    desc: Validate every tracked CWL document
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - >-
+        git ls-files -z '*.cwl' | xargs -0 -n 1
+        uv run --no-project --with cwltool cwltool --validate
+
+  docs:serve:
+    desc: Preview the current documentation
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - uv run --no-project --with-requirements scripts/requirements-docs.txt mkdocs serve {{.CLI_ARGS}}
+
+  docs:build:
+    desc: Build the current documentation
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - uv run --no-project --with-requirements scripts/requirements-docs.txt mkdocs build {{.CLI_ARGS}}

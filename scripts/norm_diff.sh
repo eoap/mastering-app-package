@@ -3,7 +3,6 @@ export RUNTIME=${WORKSPACE}/runs
 mkdir -p ${RUNTIME}
 cd ${RUNTIME}
 
-python \
-    ${WORKSPACE}/water-bodies/command-line-tools/norm_diff/app.py \
-    crop_green.tif \
-    crop_nir.tif
+norm_diff \
+    --rasters crop_green.tif \
+    --rasters crop_nir.tif

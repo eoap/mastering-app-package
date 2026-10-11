@@ -4,49 +4,34 @@ Use a stage-in CWL workflow to stage a Landsat-9 acquisition
 
 ### Lab
 
-This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/Workflows/stage-in.ipynb
+This step has a dedicated lab at `practice-labs/4-CWL-Workflows/2.1-stage-in.ipynb`.
 
 ### Step 1 - Create a stage-in CWL Workflow
 
 Below a `stage-in.cwl` CWL (Common Workflow Language) document for a command-line tool that executes a Python script. 
 
-The document is designed to use a container and execute a Python script named "stage.py":
+The document invokes the installed `stage-in --reference <item>` command in
+`localhost/stage-in:latest`. The reference remains a string, so existing job
+documents continue to work.
 
-```yaml linenums="1" hl_lines="26-59" title="stage-in.cwl"
+```yaml linenums="1" title="stage-in.cwl"
 --8<--
 cwl-cli/stage-in.cwl
 --8<--
 ```
 
-The `stage.py` Python script uses the `pystac` and `stac_asset` libraries to stage STAC Items, download them, and create a STAC Catalog. 
-It's designed to be run from the command line, taking the URL of a STAC Item as a command-line argument. 
+The Python package reads a STAC Item, downloads its assets with `stac-asset`,
+and writes a self-contained `catalog.json` with relative asset links. It keeps
+the working directory unchanged and validates that the item ID is a directory
+name. HTTP downloads have a 60-second request timeout and up to three attempts.
+Failed asset downloads fail the command before publishing a catalog. Progress
+and errors are logged to stderr.
 
-Here's a breakdown of what the script does:
-
-* The script imports the necessary libraries: `pystac`, `stac_asset`, `asyncio`, `os`, and `sys`.
-
-* It sets up the configuration for the stac_asset library with `warn=True`.
-
-* The script defines an `async` function named `main`, which takes a STAC Item URL (href) as an argument.
-
-* Inside the `main` function:
-
-    * It reads the STAC Item using `pystac.read_file(href)` and stores it in the item variable.
-    * It creates a directory with the same name as the STAC Item's ID if it doesn't exist using `os.makedirs(item.id, exist_ok=True)`.
-    * It temporarily changes the current working directory to the newly created directory using `os.chdir(item.id)`.
-    * It downloads the STAC Item's assets to the current directory using `stac_asset.download_item(item=item, directory=".", config=config)`.
-    * It returns the STAC Item.
-
-After defining the `main` function, the script sets the href variable to the first command-line argument provided (`sys.argv[1]`).
-
-* It uses `asyncio.run` to execute the main function asynchronously with the specified href.
-
-* In the `main` function, a new STAC Catalog is created:
-
-    * It's given the ID "catalog" and a description and title that mention the staged STAC Item.
-    * The staged STAC Item is added to the catalog.
-    * The catalog's hrefs are normalized relative to the current working directory.
-    * The catalog is saved as a self-contained catalog.
+```python linenums="1" title="stage_in_impl.py"
+--8<--
+water-bodies/command-line-tools/stage-in/src/stage/stage_in_impl.py
+--8<--
+```
 
 ### Step 2 - Create a container for the stage-in
 

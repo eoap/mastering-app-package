@@ -1,0 +1,11 @@
+{
+  "inputs": {
+    "water-bodies": ["item"],
+    "crop": ["item"],
+    "stac": ["item"]
+  },
+  "outputs": {
+    "water-bodies": ["stac_catalog"],
+    "stac": ["stac_catalog"]
+  }
+}

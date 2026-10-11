@@ -4,7 +4,7 @@ Create a container and run the `norm_diff` step in the container image tagged `l
 
 ### Lab
 
-This step has a dedicated lab available at /workspace/mastering-app-package/practice-labs/Containers/norm-diff.ipynb
+This step has a dedicated lab at `practice-labs/2-Containers/normalized-difference.ipynb`.
 
 ### Container
 

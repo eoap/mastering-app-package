@@ -1,0 +1,6 @@
+- name: EPSGCode
+  type: enum
+  symbols: ["4326"]
+- name: SpectralBand
+  type: enum
+  symbols: [green, nir, nir08]

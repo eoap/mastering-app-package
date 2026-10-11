@@ -1,127 +1,241 @@
-## Application Package Software Configuration Management
+# Publish a FAIR application package
 
-The SCM has the task of tracking and controlling changes in the software as a part of the larger cross-disciplinary field of configuration management. 
+A reusable application package needs a clear description, identifiable software
+and containers, instructions for running it, and a way to credit its authors.
+This tutorial turns the water-bodies workflow into a citable research object
+using [Transpiler-Mate](https://github.com/transpiler-mate) plugins.
 
-SCM practices include revision control and the establishment of baselines.
+The exercise generates files locally. The final, optional exercise publishes a
+record to **Zenodo Sandbox**. Keep sandbox identifiers separate from production
+release metadata.
 
-The Application Package code is hosted on a repository publicly accessible (Github, Bitbucket, a GitLab instance, an institutional software forge, etc.) using one of the version control systems supported by (Subversion, Mercurial and Git)
+## What you will produce
 
-The Application Package code include, at the top level of the source code tree, the following files:
+| Result | Purpose | Generator |
+| --- | --- | --- |
+| Packed CWL | Executable workflow with embedded tool and schema definitions | Release CI / cwltool |
+| OCI annotations and immutable registry reference | Describe and retrieve a specific workflow artifact | cwl2oci / ORAS |
+| CFF, BibTeX, RIS and CSL-JSON citations | Credit the workflow's authors and identify its version | cwl2citation |
+| Workflow RO-Crate ZIP | Package the workflow, metadata and supporting files | cwl2rocrate |
+| Sandbox record and DOI | Practise depositing and identifying the package | invenio-publish |
 
-* README containing a description of the software (name, purpose, pointers to website, documentation, development platform, contact, and support information, …)
-* AUTHORS, a list of all the persons to be credited for the software.
-* LICENSE, the project license terms. For Open Source Licenses, the standard SPDX license names are used. For large software projects and developers, the REUSE (https://reuse.software/) process and tools can be an option to look at.
-* codemeta.json, a linked data metadata file that helps index the source code in the Software Heritage archive and provides an easy way to link to other related research outputs.
+These outputs support FAIR practices; generating them does not automatically
+make the workflow discoverable in a catalog or preserve every dependency.
 
-The code meta project motivation (https://codemeta.github.io/) is reported below:
+## Prepare the environment
 
-**Research relies heavily on scientific software, and a large and growing fraction of researchers are engaged in developing software as part of their own research (Hannay et al 2009). Despite this, infrastructure to support the preservation, discovery, reuse, and attribution of software lags substantially behind that of other research products such as journal articles and research data. This lag is driven not so much by a lack of technology as it is by a lack of unity: existing mechanisms to archive, document, index, share, discover, and cite software contributions are heterogeneous among both disciplines and archives and rarely meet best practices (Howison 2015). Fortunately, a rapidly growing movement to improve preservation, discovery, reuse, and attribution of academic software is now underway: a recent NIH report; conferences and working groups of FORCE11, WSSSPE & Software Sustainability Institute; and the rising adoption of repositories like GitHub, Zenodo, figshare & DataONE by academic software developers. Now is the time to improve how these resources can communicate to each other.**
+Run from the repository root, with Python 3.12 available:
 
-CodeMeta developed the translations from the different vocabularies. The CodeMeta vocabulary is an extension of the SoftwareApplication and SoftwareSourceCode classes found in the vocabulary of the Schema.org initiative [schema]. Metadata information conformant to the CodeMeta vocabulary can be represented in JSON format, named codemeta.json, like the example below with the information for Water Bodies Detection application.
-
-```json linenums="1" title="codemeta.json"
---8<--
-codemeta.json
---8<--
+```bash
+python3.12 -m venv .venv-fair
+source .venv-fair/bin/activate
+python -m pip install -r scripts/requirements-cwl-fair.txt
+mkdir -p runs/fair
 ```
 
-## Application Package Software identification and traceability
+The pinned plugins share the `transpiler-mate` executable. The RO-Crate plugin's
+package name is `cwl2ro-crate`, but its command is `cwl2rocrate`.
 
-In a Reproducible FAIR Workflow scenario, ensuring that the code behind the application is uniquely identified and traceable is necessary. Even if software configuration management systems have become a common tool for tracking and controlling changes in the software, the FAIR publication of applications also needs methods for software citation, software retrieval, and long-term preservation. This is achieved with the issuing of a persistent identifier.
+## Check the metadata before generating artifacts
 
-The persistent identifier provides a long-lasting reference to source code and is usually understood as an actionable and accessible reference over the Internet that retrieves the necessary files. As such, the persistent component is dependent on the service commitment to resolve the identifier and the dedicated storage lifespan.
+The workflow's document-level `s:` fields describe the application. Its selected
+process defines the executable interface. Inspect both:
 
-Several initiatives provide this persistent dual functionality of identification and archivation. This Best Practice identifies one solution with Software Heritage. Software Heritage is a non-profit multi-stakeholder initiative unveiled in 2016 by the French Institute for Research in Computer Science and Automation (Inria) and supported by UNESCO. The mission of Software Heritage is to collect, preserve, and share all software that is publicly available in source code form, with the goal of building a common shared infrastructure at the service of industry, research, culture, and society.
-
-The __Software Heritage__ provides SoftWare Heritage persistent IDentifiers (SWHIDs) and ensures preservation of the software source code by crawling code hosting platforms, like GitHub, GitLab.com, or Bitbucket, and package archives, like npm or PyPI, ingested into a special data structure, a Merkle DAG, that is the core of the archive.
-
-To obtain a SWHID, the code must be hosted on a publicly accessible repository (Github, Bitbucket, a GitLab instance, an institutional software forge, etc.) using one of the version control systems supported by Software Heritage (Subversion, Mercurial, and Git).
-
-## Application Package Containers identification
-
-A Reproducible FAIR Workflow scenario also requires that the application container(s) is(are) uniquely identified and traceable. 
-
-Using the sha256 signature of the container, containers have an identifier.
-
-Example:
-
-```yaml
-- class: CommandLineTool
-  id: crop
-
-  hints:
-    DockerRequirement:
-      dockerPull: docker.io/terradue/crop@sha256:ec2d8e71ab5834cb9db01c5001bde9c3d6038d0418ad085726b051b4359750e1
+```bash
+sed -n '1,38p' cwl-workflow/app-water-bodies-cloud-native.cwl
+cat codemeta.json
 ```
 
-## Application Package metadata
+Check the following before a real publication:
 
-The OGC Best Practices for EO Application Packages (OGC 20-089) recommends that to enrich the application package with new concepts, these should originate from schema.org and be linked with their RDF encoding. While OGC 20-089 only enforces the version element as a mandatory, it already suggest several additional elements that are key for the Reproducible FAIR Workflows scenario such as the following.
+- Replace Jane Doe and John Doe training examples with the actual authors and
+  affiliations. Preserve their intended order in citations.
+- Match the license in `LICENSE.md`, CodeMeta and CWL. This repository uses
+  `CC-BY-SA-4.0`; the SPDX URL in CodeMeta and the CWL license identifier must agree.
+- Give the package a meaningful name, description, source repository and help URL.
+- Distinguish creation dates from release dates. Do not present `dateCreated`
+  as the publication date of a new version.
+- Use a new release version and check that the generated artifacts describe it.
 
-* **author**: The main author of the Application Package - https://schema.org/author.
-* **citation**: A citation or reference to a publication, web page, scholarly article, etc. https://schema.org/citation.
-* **codeRepository**: Link to the repository where the Application code is located (e.g., SVN, github). https://schema.org/codeRepository.
-* **contributor**: A secondary contributor to the Application Package https://schema.org/contributor.
-* **dateCreated**: The date on which the Application Package was created. https://schema.org/dateCreated.
-* **keywords**: Keywords used to describe this application. Multiple entries in a keywords list are delimited by commas. https://schema.org/keywords.
-* **license**: An URL to the license document that applies to this application. https://schema.org/license.
-* **releaseNotes**: Description of what changed in this version. https://schema.org/releaseNotes.
+`codemeta.json` currently supplies the release version to CI. Source workflows
+can retain their individual development versions; the release preparation job
+sets the version and repository on copies before packing. Generate release
+citations and crates from those final copies, so all published outputs agree.
+The prepared release version is `2.0.0`. Subsequent releases must use a new
+version; CI rejects existing tags and published versions.
 
-All these elements can be obtained from the CodeMeta vocabulary (i.e., codemeta.json) and can be directly added when defining the Application Package (e.g. during the Continuous Integration).
+The [release tutorial](../release/ci.md) explains that process. Keep generated
+CodeMeta separate from the CI input: the
+[cwl2codemeta plugin](https://github.com/transpiler-mate/cwl2codemeta) converts CWL
+metadata to CodeMeta 3.0, while this repository's root file uses CodeMeta 2.0.
+Switching the authoritative metadata source requires an explicit migration.
 
-Example:
+## Select and pack the workflow
 
-```
-cwlVersion: v1.2
-$graph:
-...
-$namespaces:
-  s: https://schema.org/
-s:author:
-- class: s:Person
-  s:affiliation: Planet Earth
-  s:email: john.doe@somedomain.org
-  s:name: Doe, John
-s:contributor:
-- class: s:Person
-  s:affiliation: Planet Earth
-  s:email: jane.doe@somedomain.org
-  s:name: Doe, Jane
-s:softwareVersion: 1.1.6
-schemas:
-- http://schema.org/version/9.0/schemaorg-current-http.rdf
+For a local practice run, pack the checked-out scattering workflow:
+
+```bash
+python scripts/pack-cwl-release.py \
+  cwl-workflow/app-water-bodies-cloud-native.cwl \
+  runs/fair/workflow.cwl
+export FAIR_WORKFLOW="$(pwd)/runs/fair/workflow.cwl"
+cwltool --validate "${FAIR_WORKFLOW}#main"
 ```
 
-## Application Package identification and traceability
+The source entrypoint is `#water-bodies`; the packing script selects it and
+renames it to `#main`. It also preserves package metadata and embeds imported
+schema definitions.
 
-In a Reproducible FAIR Workflow scenario, it is necessary to ensure that the Application Package is uniquely identified and traceable. 
+For a release exercise, substitute the verified packed CWL downloaded from
+GitHub or pulled from GHCR for `FAIR_WORKFLOW`. The local practice file still
+contains development image references. Release files use immutable image
+references recorded by CI.
 
-The assignment of a DOI to the application package extends the metadata section of the Application Package CWL with:
+A container or workflow reference ending in `@sha256:...` identifies registry
+content. Retention and access still depend on the registry. A source commit,
+a workflow artifact digest, a Software Heritage identifier and a DOI identify
+different objects; record the relationships between them.
 
+## Generate citations
+
+Generate citations from the selected workflow's document-level metadata:
+
+```bash
+transpiler-mate cwl2citation \
+  --code-repository https://github.com/eoap/mastering-app-package.git \
+  --output runs/fair/citations \
+  "${FAIR_WORKFLOW}#main"
 ```
-sameAs: URL of a reference Web page that unambiguously indicates the item’s identity. https://schema.org/sameAs.
+
+Inspect `CITATION.cff`, `citation.bib`, `citation.ris`, `citation.csl.json` and
+`citation.txt` under `runs/fair/citations`. Check the authors, title and version.
+CFF and CSL-JSON are schema-validated by the plugin. An absent DOI remains absent;
+this command does not register one.
+
+The plugin rejects existing output files. Use a fresh destination for another
+run. For a real repository release, review the generated `CITATION.cff` before
+placing it at the repository root; this local exercise leaves it under `runs/`.
+See the [citation plugin documentation](https://github.com/transpiler-mate/cwl2citation)
+for release dates, citation styles and individual output formats.
+
+## Package a Workflow RO-Crate
+
+Include the generated citation and a runnable input example with the workflow:
+
+```bash
+transpiler-mate cwl2rocrate \
+  --output runs/fair/workflow-crate \
+  --zip \
+  --attach runs/fair/citations/CITATION.cff \
+  --attach cwl-workflow/typed-cloud-native-inputs.yaml \
+  "${FAIR_WORKFLOW}#main"
 ```
 
-Example
+Inspect `runs/fair/workflow-crate/ro-crate-metadata.json`, its packed
+`workflow.cwl`, and the files under `attachments/`. The ZIP is written beside
+the directory as `runs/fair/workflow-crate.zip`.
 
-```yaml hl_lines="16"
-cwlVersion: v1.2
-$graph:
-...
-$namespaces:
-  s: https://schema.org/
-s:author:
-- class: s:Person
-  s:affiliation: Planet Earth
-  s:email: john.doe@somedomain.org
-  s:name: Doe, John
-s:contributor:
-- class: s:Person
-  s:affiliation: Planet Earth
-  s:email: jane.doe@somedomain.org
-  s:name: Doe, Jane
-s:sameas: https://doi.org/10.5072/zenodo.1107209
-s:softwareVersion: 1.1.6
-schemas:
-- http://schema.org/version/9.0/schemaorg-current-http.rdf
+The plugin validates the crate against the bundled REQUIRED-level profiles.
+Validation can need network access for JSON-LD contexts. Use a new output
+location when repeating the exercise.
+
+A Workflow RO-Crate describes and packages the workflow. It does not execute it
+or download referenced container images and external STAC assets. The input
+example can reference external data whose availability must be considered
+separately. See the [RO-Crate plugin documentation](https://github.com/transpiler-mate/cwl2ro-crate)
+for attachment and validation details.
+
+## Optional: publish to Zenodo Sandbox
+
+This step creates and **publishes** a sandbox record. Review the workflow's
+metadata and attachments first. Obtain a token from your own
+[Zenodo Sandbox](https://sandbox.zenodo.org/) account; production Zenodo tokens
+and records are separate.
+
+Read the token without putting it into shell history:
+
+```bash
+read -rsp 'Zenodo Sandbox token: ' INVENIO_TOKEN
+printf '\n'
+export INVENIO_TOKEN
+transpiler-mate invenio-publish \
+  --base-url https://sandbox.zenodo.org/ \
+  --auth-token "$INVENIO_TOKEN" \
+  --attach "$FAIR_WORKFLOW" \
+  --attach runs/fair/workflow-crate.zip \
+  --attach runs/fair/citations/CITATION.cff \
+  "${FAIR_WORKFLOW}#main"
+unset INVENIO_TOKEN
+```
+
+Without a DOI in `s:identifier`, the plugin creates a record, reserves a DOI,
+uploads attachments and publishes. With an existing DOI there, it creates and
+publishes a new version. Review the resulting record and its download links.
+See [invenio-publish](https://github.com/transpiler-mate/invenio-publish) for the
+metadata contract and versioning workflow.
+
+Keep the returned sandbox DOI in your practice notes. For a production deposit,
+record the real identifier in the corresponding release metadata and maintain
+a distinction between an individual version's DOI and a concept DOI.
+`cwl2citation --doi <doi>` can generate a fresh citation set after publication.
+The deposit already uploaded above contains the original citation files;
+regenerating local citations does not update that record automatically.
+
+Schema.org's identity-link property is case-sensitive: use `s:sameAs`, not
+`s:sameas`. The citation and publication plugins use `s:identifier` for DOI
+handling. Keep these fields consistent when both are present. Generating
+[DataCite metadata](https://github.com/transpiler-mate/cwl2datacite) is another
+export operation; it does not itself register a DOI.
+
+## Connect the exercise to release CI
+
+The current [CI workflow](../release/ci.md) already publishes packed CWL,
+`cwl2oci` annotations, OCI manifests and immutable artifact references. Citation
+and RO-Crate generation in this exercise remain local; CI does not yet generate
+or deposit them.
+
+A future release job can generate citations and a Workflow RO-Crate from the
+same verified packed CWL, then attach those outputs to the GitHub release.
+Zenodo publication should be a separately configured publication step with
+explicit credentials and a policy for identifying new versions.
+
+## Continue with discovery and execution provenance
+
+| Extension | Exercise | What it establishes |
+| --- | --- | --- |
+| [cwl2ogcrecords](https://github.com/transpiler-mate/cwl2ogcrecords) | Generate a record and ingest it into an OGC API – Records catalog | Searchable application metadata once cataloged |
+| [cwl2ogc](https://github.com/transpiler-mate/cwl2ogc) | Generate process descriptors and JSON Schemas | A machine-readable interface for OGC API – Processes integration |
+| [cwl2inputs](https://github.com/transpiler-mate/cwl2inputs) | Generate and complete an input template | A starting point for running the workflow |
+| [cwl2sbom](https://github.com/transpiler-mate/cwl2sbom) | Inventory digest-pinned release images for an explicit platform | Declared container dependencies, image SBOMs and coverage information |
+
+SBOM generation complements CI vulnerability scanning. It does not publish or
+sign its output, and it does not inventory all possible runtime downloads or
+host tools. Retain the coverage report with the SBOMs.
+
+To describe an actual execution, capture CWLProv using your normal runner and
+input settings, then convert that execution directory:
+
+```bash
+cwltool --provenance runs/fair/execution.provenance \
+  "${FAIR_WORKFLOW}#main" cwl-workflow/typed-cloud-native-inputs.yaml
+transpiler-mate cwl2rocrate \
+  --run runs/fair/execution.provenance \
+  --output runs/fair/run-crate --zip \
+  "${FAIR_WORKFLOW}#main"
+```
+
+Run this advanced exercise only after configuring the container runtime and
+input data as described in the workflow labs. Use the exact workflow that was
+executed. The plugin checks the CWLProv bag and workflow match; it does not
+execute the workflow or invent execution records. Recorded data may make the
+result much larger than a Workflow RO-Crate.
+
+Source preservation remains a separate activity. Archive the source repository
+with [Software Heritage](https://www.softwareheritage.org/) and record its SWHID
+alongside the release commit, workflow digest and publication identifier.
+
+Deactivate the tutorial environment when finished:
+
+```bash
+deactivate
 ```

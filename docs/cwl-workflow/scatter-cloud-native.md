@@ -34,18 +34,28 @@ STAC Catalog`"))
 
 Below a CWL Workflow implementing this scenario:
 
-```yaml linenums="1" hl_lines="18-21 33-43"
+```yaml linenums="1"
 --8<--
-cwl-workflow/app-water-bodies-cloud-native.cwl:8:58
+cwl-workflow/app-water-bodies-cloud-native.cwl
 --8<--
 ```
 
 The `stac` CommandLineTool is updated to manage arrays:
 
-```yaml linenums="200" hl_lines="19-23 25-29"
---8<--
-cwl-workflow/app-water-bodies-cloud-native.cwl:200:234
---8<--
+```yaml
+item:
+  type:
+    type: array
+    items: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml#URI
+    inputBinding:
+      prefix: --input-item
+      valueFrom: $(self.value)
+rasters:
+  type:
+    type: array
+    items: File
+    inputBinding:
+      prefix: --water-body
 ```
 
 To run this CWL document, one would do:
@@ -53,5 +63,15 @@ To run this CWL document, one would do:
 ```bash
 --8<--
 scripts/cwl-workflow-cloud-native-scatter.sh
+--8<--
+```
+
+### Typed inputs
+
+Use a YAML job document for the local CWL definitions. AOIs require a Polygon record with `type`, `coordinates`, and `bbox`; the crop command uses the supplied bounding box. STAC references use URI records with a `value` field. Workflow EPSG values are `"4326"`, and supported bands are `green`, `nir`, and `nir08`. Staged input acquisitions retain their `Directory` type.
+
+```yaml
+--8<--
+cwl-workflow/typed-scatter-inputs.yaml
 --8<--
 ```

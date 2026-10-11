@@ -7,13 +7,10 @@ podman \
     --mount=type=bind,source=/workspace/mastering-app-package/runs/crop_nir.tif,target=/inputs/crop_nir.tif,readonly \
     --workdir=/runs \
     --read-only=true \
-    --user=1001:100 \
+    --user="$(id -u):$(id -g)" \
     --rm \
     --env=HOME=/runs \
-    --env=PYTHONPATH=/app \
     localhost/norm-diff:latest \
-    python \
-    -m \
-    app \
-    /inputs/crop_green.tif \
-    /inputs/crop_nir.tif
+    norm_diff \
+    --rasters /inputs/crop_green.tif \
+    --rasters /inputs/crop_nir.tif
