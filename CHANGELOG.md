@@ -4,6 +4,8 @@
 
 ### Fixed
 
+- Stage-out recursively uploads directory assets and complete Zarr v2/v3 stores, including root metadata and sibling overviews when an asset references a subgroup; published STAC root links no longer reference temporary directories.
+
 - Chapter 5 downloads published CWL and matching inputs with registry-hosted,
   digest-pinned images instead of requiring Minikube-local builds.
 - Added prerelease candidate publication for cluster testing before a stable release.

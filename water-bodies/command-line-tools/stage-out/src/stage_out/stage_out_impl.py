@@ -36,53 +36,65 @@ class S3StacIO(DefaultStacIO):
             super().write_text(dest, txt, *args, **kwargs)
 
 
+def asset_key(href: str, item_id: str, subfolder: str) -> str:
+    """Keep relative file paths within the item's upload prefix."""
+    parsed = urlparse(href)
+    relative = (
+        posixpath.basename(parsed.path)
+        if parsed.scheme or posixpath.isabs(parsed.path)
+        else parsed.path
+    )
+    relative = posixpath.normpath(relative)
+    if relative == ".." or relative.startswith("../"):
+        relative = posixpath.basename(relative)
+    return posixpath.normpath(posixpath.join(subfolder, item_id, relative))
+
+
+def local_asset_path(asset: pystac.Asset) -> Path:
+    """Resolve filesystem paths and decoded local file URIs."""
+    location = urlparse(asset.get_absolute_href())
+    if location.scheme not in ("", "file") or location.netloc not in ("", "localhost"):
+        raise ValueError("Stage-out requires local filesystem assets")
+    return Path(unquote(location.path))
+
+
+def upload_directory(local: Path, client: Any, bucket: str, prefix: str) -> str:
+    """Upload complete stores even when the asset references a subgroup."""
+    store = next(
+        (
+            part
+            for part in (local, *local.parents)
+            if part.name.endswith(".zarr")
+            and any((part / marker).is_file() for marker in ("zarr.json", ".zgroup"))
+        ),
+        local,
+    )
+    store_key = posixpath.join(prefix, store.name)
+    files = sorted(path for path in store.rglob("*") if path.is_file())
+    if not files:
+        raise ValueError(f"Empty directory asset: {store}")
+    for path in files:
+        client.upload_file(
+            str(path),
+            bucket,
+            posixpath.join(store_key, path.relative_to(store).as_posix()),
+        )
+    suffix = local.relative_to(store).as_posix()
+    return store_key if suffix == "." else posixpath.join(store_key, suffix)
+
+
 def upload_assets(item: pystac.Item, client: Any, bucket: str, subfolder: str) -> None:
     """Upload assets before rewriting their references."""
     if Path(item.id).name != item.id or item.id in {"", ".", ".."}:
         raise ValueError("STAC item id must be a single directory name")
     for asset in item.assets.values():
-        parsed = urlparse(asset.href)
-        relative = (
-            posixpath.basename(parsed.path)
-            if parsed.scheme or posixpath.isabs(parsed.path)
-            else parsed.path
-        )
-        relative = posixpath.normpath(relative)
-        if relative == ".." or relative.startswith("../"):
-            relative = posixpath.basename(relative)
-        key = posixpath.normpath(posixpath.join(subfolder, item.id, relative))
+        key = asset_key(asset.href, item.id, subfolder)
+        local = local_asset_path(asset)
         logger.info("Uploading asset to s3://{}/{}", bucket, key)
-        absolute = asset.get_absolute_href()
-        location = urlparse(absolute)
-        if location.scheme not in ("", "file") or location.netloc not in (
-            "",
-            "localhost",
-        ):
-            raise ValueError("Stage-out requires local filesystem assets")
-        local = Path(unquote(location.path))
         if local.is_dir():
-            # An asset may refer to a group inside a store; upload the entire
-            # enclosing store so root conventions and sibling overviews survive.
-            store = next(
-                (
-                    part
-                    for part in (local, *local.parents)
-                    if part.name.endswith(".zarr") and (part / "zarr.json").is_file()
-                ),
-                local,
+            key = upload_directory(
+                local, client, bucket, posixpath.join(subfolder, item.id)
             )
-            store_key = posixpath.join(subfolder, item.id, store.name)
-            files = sorted(path for path in store.rglob("*") if path.is_file())
-            if not files:
-                raise ValueError(f"Empty directory asset: {store}")
-            for path in files:
-                client.upload_file(
-                    str(path),
-                    bucket,
-                    posixpath.join(store_key, path.relative_to(store).as_posix()),
-                )
-            suffix = local.relative_to(store).as_posix()
-            key = store_key if suffix == "." else posixpath.join(store_key, suffix)
         else:
             client.upload_file(str(local), bucket, key)
         asset.href = f"s3://{bucket}/{key}"
