@@ -159,7 +159,7 @@ jobs:
           pattern: digest-*
           merge-multiple: true
           path: digests
-      - name: Prepare and validate packed release CWL
+      - name: Prepare and validate standalone release CWL
         run: python scripts/prepare-cwl-release.py --digests digests --output downloads --version "$VERSION"
       - name: Authenticate to GHCR
         env:
@@ -169,14 +169,16 @@ jobs:
         shell: bash
         run: |
           : > downloads/oci-artifacts.txt
-          for name in app-water-bodies-cloud-native app-water-body-cloud-native app-water-body; do
+          for name in app-water-bodies-cloud-native app-water-body-cloud-native app-water-body stage-in stage-out; do
             file="$name.$VERSION.cwl"
             annotations="$name.$VERSION.annotations.json"
             transpiler-mate cwl2oci \
               --image-source "https://github.com/$GITHUB_REPOSITORY" \
               --image-revision "$GITHUB_SHA" \
               --output "downloads/$annotations" "downloads/$file#main"
-            python scripts/check-oci-annotations.py "downloads/$annotations" "$file" "$VERSION"
+            cwl_type=Workflow
+            if [[ "$name" == stage-in || "$name" == stage-out ]]; then cwl_type=CommandLineTool; fi
+            python scripts/check-oci-annotations.py "downloads/$annotations" "$file" "$VERSION" "$cwl_type"
             target="$REGISTRY/cwl/$name:$VERSION"
             oras repo tags "$REGISTRY/cwl/$name" > /tmp/cwl-tags 2>/tmp/registry-error || {
               grep -Eq 'NAME_UNKNOWN|name unknown|404' /tmp/registry-error || { cat /tmp/registry-error; exit 1; }
