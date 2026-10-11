@@ -53,15 +53,14 @@ def _bbox_geometry(aoi: str) -> Polygon:
     return box(bounds[0], bounds[1], bounds[2], bounds[3])
 
 
-def _geometry(aoi: str) -> dict:
-    geometry = (
-        shape(json.loads(aoi)) if aoi.lstrip().startswith("{") else _bbox_geometry(aoi)
-    )
+def _geometry(aoi: str) -> dict[str, object]:
+    geometry = shape(json.loads(aoi)) if aoi.lstrip().startswith("{") else _bbox_geometry(aoi)
     if geometry.geom_type not in {"Polygon", "MultiPolygon"}:
         raise ValueError("AOI must be a polygon")
     if geometry.is_empty or not geometry.is_valid:
         raise ValueError("AOI must be a nonempty, valid polygon")
-    return mapping(geometry)
+    result: dict[str, object] = mapping(geometry)
+    return result
 
 
 def _asset(item: pystac.Item, common_name: str) -> pystac.Asset:
@@ -102,15 +101,18 @@ def execute(*, input_item: str, aoi: str, epsg: str, band: str) -> None:
         logger.info("Opening raster for item {}, band {}", item.id, band)
         for attempt in range(3):
             try:
-                with rasterio.Env(
-                    GDAL_HTTP_CONNECTTIMEOUT=10,
-                    GDAL_HTTP_TIMEOUT=60,
-                    GDAL_HTTP_MAX_RETRY=2,
-                    GDAL_HTTP_RETRY_DELAY=1,
-                    GDAL_HTTP_RETRY_CODES="ALL",
-                    GDAL_HTTP_MULTIRANGE="SERIAL",
-                    CPL_VSIL_CURL_NON_CACHED=f"/vsicurl/{href}",
-                ), rasterio.open(href) as src:
+                with (
+                    rasterio.Env(
+                        GDAL_HTTP_CONNECTTIMEOUT=10,
+                        GDAL_HTTP_TIMEOUT=60,
+                        GDAL_HTTP_MAX_RETRY=2,
+                        GDAL_HTTP_RETRY_DELAY=1,
+                        GDAL_HTTP_RETRY_CODES="ALL",
+                        GDAL_HTTP_MULTIRANGE="SERIAL",
+                        CPL_VSIL_CURL_NON_CACHED=f"/vsicurl/{href}",
+                    ),
+                    rasterio.open(href) as src,
+                ):
                     if src.crs is None:
                         raise ValueError("Selected raster has no coordinate reference system")
                     logger.info(
@@ -124,9 +126,7 @@ def execute(*, input_item: str, aoi: str, epsg: str, band: str) -> None:
                     projected = transform_geom(epsg, src.crs, geometry)
                     logger.info("Cropping raster to the AOI")
                     pixels, transform = mask(src, [projected], crop=True)
-                    logger.info(
-                        "Cropped raster: {} x {} pixels", pixels.shape[2], pixels.shape[1]
-                    )
+                    logger.info("Cropped raster: {} x {} pixels", pixels.shape[2], pixels.shape[1])
                     metadata = src.meta.copy()
                     metadata.update(
                         driver="COG",

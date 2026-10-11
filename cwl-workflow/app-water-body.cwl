@@ -42,7 +42,12 @@ $graph:
       - class: SchemaDefRequirement
         types:
           - $import: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml
-          - $import: eoap-types.yaml
+          - name: '#EPSGCode'
+            type: enum
+            symbols: ["4326"]
+          - name: '#SpectralBand'
+            type: enum
+            symbols: [green, nir, nir08]
     inputs:
       aoi:
         label: area of interest
@@ -51,14 +56,14 @@ $graph:
       epsg:
         label: EPSG code
         doc: EPSG code
-        type: 'eoap-types.yaml#EPSGCode'
+        type: '#EPSGCode'
         default: "4326"
       bands:
         label: bands used for the NDWI
         doc: bands used for the NDWI
         type:
           type: array
-          items: 'eoap-types.yaml#SpectralBand'
+          items: '#SpectralBand'
         default: ["green", "nir"]
       item:
         doc: Reference to a STAC item
@@ -130,7 +135,12 @@ $graph:
       SchemaDefRequirement:
         types:
           - $import: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml
-          - $import: eoap-types.yaml
+          - name: '#EPSGCode'
+            type: enum
+            symbols: ["4326"]
+          - name: '#SpectralBand'
+            type: enum
+            symbols: [green, nir, nir08]
     baseCommand: crop
     arguments: []
     inputs:
@@ -148,14 +158,14 @@ $graph:
         label: Area of interest
         doc: GeoJSON Polygon defining the area to crop; raster pixels outside the polygon are masked.
       epsg:
-        type: 'eoap-types.yaml#EPSGCode'
+        type: '#EPSGCode'
         inputBinding:
           prefix: --epsg
           valueFrom: $(self.split(":").pop())
         label: Coordinate reference system
         doc: EPSG code of the coordinate reference system used for the area of interest.
       band:
-        type: 'eoap-types.yaml#SpectralBand'
+        type: '#SpectralBand'
         inputBinding:
           prefix: --band
         label: Raster band

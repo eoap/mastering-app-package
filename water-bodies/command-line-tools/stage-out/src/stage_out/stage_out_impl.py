@@ -92,17 +92,13 @@ def upload_assets(item: pystac.Item, client: Any, bucket: str, subfolder: str) -
         local = local_asset_path(asset)
         logger.info("Uploading asset to s3://{}/{}", bucket, key)
         if local.is_dir():
-            key = upload_directory(
-                local, client, bucket, posixpath.join(subfolder, item.id)
-            )
+            key = upload_directory(local, client, bucket, posixpath.join(subfolder, item.id))
         else:
             client.upload_file(str(local), bucket, key)
         asset.href = f"s3://{bucket}/{key}"
 
 
-def upload_catalog(
-    catalog: pystac.Catalog, client: Any, bucket: str, subfolder: str
-) -> str:
+def upload_catalog(catalog: pystac.Catalog, client: Any, bucket: str, subfolder: str) -> str:
     """Upload assets and publish the rewritten catalog documents."""
     catalog.set_root(catalog)
     items = list(catalog.get_items(recursive=True))
@@ -118,12 +114,14 @@ def upload_catalog(
 
 def execute(catalog: Path, bucket: str, subfolder: str) -> str:
     """Copy the input catalog, upload it, and return its S3 URL."""
+    # CWL supplies legacy lowercase environment names; preserve that contract.
+    environment = dict(os.environ)
     client = boto3.client(
         "s3",
-        aws_access_key_id=os.environ["aws_access_key_id"],
-        aws_secret_access_key=os.environ["aws_secret_access_key"],
-        region_name=os.environ["aws_region_name"],
-        endpoint_url=os.environ["aws_endpoint_url"],
+        aws_access_key_id=environment["aws_access_key_id"],
+        aws_secret_access_key=environment["aws_secret_access_key"],
+        region_name=environment["aws_region_name"],
+        endpoint_url=environment["aws_endpoint_url"],
     )
     with TemporaryDirectory(prefix="stage-out-") as directory:
         copied = Path(directory) / "catalog"

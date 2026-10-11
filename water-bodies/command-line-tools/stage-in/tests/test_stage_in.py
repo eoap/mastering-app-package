@@ -1,6 +1,6 @@
 """Test stage-in with local STAC assets."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pystac
@@ -18,7 +18,7 @@ def test_stages_local_item(tmp_path, monkeypatch):
         "scene",
         geometry=None,
         bbox=None,
-        datetime=datetime(2026, 1, 1, tzinfo=timezone.utc),
+        datetime=datetime(2026, 1, 1, tzinfo=UTC),
         properties={},
     )
     item.add_asset("data", pystac.Asset("./data.txt", roles=["data"]))
@@ -57,7 +57,7 @@ def test_reference_required():
 
 
 def test_failed_download_does_not_publish_catalog(tmp_path, monkeypatch):
-    item = pystac.Item("missing", None, None, datetime(2026, 1, 1, tzinfo=timezone.utc), {})
+    item = pystac.Item("missing", None, None, datetime(2026, 1, 1, tzinfo=UTC), {})
     item.add_asset("data", pystac.Asset(str(tmp_path / "absent.tif")))
     source = tmp_path / "source.json"
     item.save_object(dest_href=str(source))

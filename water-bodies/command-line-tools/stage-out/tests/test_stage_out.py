@@ -38,9 +38,7 @@ def client(monkeypatch):
     ):
         monkeypatch.setenv(name, "test")
     client = Mock()
-    monkeypatch.setattr(
-        "stage_out.stage_out_impl.boto3.client", lambda *a, **kw: client
-    )
+    monkeypatch.setattr("stage_out.stage_out_impl.boto3.client", lambda *a, **kw: client)
     return client
 
 

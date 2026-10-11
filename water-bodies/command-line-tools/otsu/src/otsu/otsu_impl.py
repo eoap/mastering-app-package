@@ -16,7 +16,8 @@ def threshold(data: np.ndarray) -> np.ndarray:
         raise ValueError("Raster has no finite values for Otsu thresholding")
     cutoff = threshold_otsu(data[finite])
     logger.info("Otsu threshold: {}", cutoff)
-    return (finite & (data > cutoff)).astype(np.uint8)
+    result: np.ndarray = (finite & (data > cutoff)).astype(np.uint8)
+    return result
 
 
 def execute(*, raster: str | Path) -> None:

@@ -21,7 +21,11 @@ async def stage_item(reference: str) -> pystac.Catalog:
         raise ValueError("STAC item id must be a single directory name")
     directory.mkdir(exist_ok=True)
     logger.info("Downloading assets for {} into {}", item.id, directory.resolve())
-    item = await stac_asset.download_item(item=item, directory=directory.resolve(), config=stac_asset.Config(http_client_timeout=60, http_max_attempts=3))
+    item = await stac_asset.download_item(
+        item=item,
+        directory=directory.resolve(),
+        config=stac_asset.Config(http_client_timeout=60, http_max_attempts=3),
+    )
     catalog = pystac.Catalog(
         id="catalog",
         description=f"catalog with staged {item.id}",
