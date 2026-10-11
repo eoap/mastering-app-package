@@ -55,6 +55,7 @@ skip-install = true
 installer = "uv"
 post-install-commands = ["uv pip install --require-hashes -r requirements/development.txt", "uv pip install --no-deps --no-build-isolation -e ."]
 template = "dev"
+python = "3.12"
 
 [tool.hatch.envs.dev.scripts]
 check = ["bootstrap", "format-check", "lint-check", "typecheck", "security"]

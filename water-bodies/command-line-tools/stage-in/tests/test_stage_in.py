@@ -84,7 +84,7 @@ def test_timeout_is_reported_without_publishing_catalog(tmp_path, monkeypatch):
 
 
 def test_stages_only_selected_asset(tmp_path, monkeypatch):
-    item = pystac.Item("scene", None, None, datetime(2026, 1, 1, tzinfo=timezone.utc), {})
+    item = pystac.Item("scene", None, None, datetime(2026, 1, 1, tzinfo=UTC), {})
     for key in ("needed", "unused"):
         asset = tmp_path / (key + ".txt")
         asset.write_text(key)
