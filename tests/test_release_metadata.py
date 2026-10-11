@@ -9,8 +9,9 @@ import pytest
 CHECKER = Path(__file__).resolve().parents[1] / 'scripts/check-oci-annotations.py'
 
 
+@pytest.mark.parametrize('kind', ['Workflow', 'CommandLineTool'])
 @pytest.mark.parametrize('entrypoint', ['main', '#main', 'file:///runner/work/release.cwl#main'])
-def test_annotation_entrypoint_is_portable(tmp_path, entrypoint):
+def test_annotation_entrypoint_is_portable(tmp_path, entrypoint, kind):
     annotations = {key: 'value' for key in (
         'org.opencontainers.image.title', 'org.opencontainers.image.description',
         'org.opencontainers.image.licenses', 'org.opencontainers.image.source',
@@ -19,11 +20,11 @@ def test_annotation_entrypoint_is_portable(tmp_path, entrypoint):
     annotations.update({
         'org.opencontainers.image.version': '2.0.0',
         'org.cwl.entrypoint': entrypoint,
-        'org.cwl.type': 'Workflow',
+        'org.cwl.type': kind,
     })
     path = tmp_path / 'annotations.json'
     path.write_text(json.dumps({'$manifest': annotations}))
-    subprocess.run([sys.executable, str(CHECKER), str(path), 'workflow.cwl', '2.0.0'], check=True)
+    subprocess.run([sys.executable, str(CHECKER), str(path), 'workflow.cwl', '2.0.0', kind], check=True)
     actual = json.loads(path.read_text())['$manifest']
     assert actual == {**annotations, 'org.cwl.entrypoint': 'workflow.cwl#main'}
     # A version mismatch must prevent publishing the artifact.

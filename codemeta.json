@@ -7,10 +7,10 @@
     "datePublished": "2022-09-25",
     "dateModified": "2026-10-10",
     "name": "Water Bodies Detection",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "The Water Bodies Detection is an Application that uses the NDWI index and the Otsu threshold to detect water bodies using Sentinel-2 or Landsat-9 data",
     "developmentStatus": "active",
-    "downloadUrl": "https://github.com/eoap/mastering-app-package/releases/tag/2.0.0",
+    "downloadUrl": "https://github.com/eoap/mastering-app-package/releases/tag/2.0.1",
     "relatedLink": [
         "https://eoap.github.io/mastering-app-package"
     ],
@@ -19,10 +19,14 @@
         "name": "Terradue"
     },
     "keywords": [
-        "NDWI", "Landsat-9", "Sentinel-2", "Water Bodies"
+        "NDWI",
+        "Landsat-9",
+        "Sentinel-2",
+        "Water Bodies"
     ],
     "programmingLanguage": [
-        "Python", "CWL"
+        "Python",
+        "CWL"
     ],
     "softwareRequirements": [
         "container runtime",
