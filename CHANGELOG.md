@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.1] - 2026-10-11
+
+### Fixed
+
+- Stage-in defaults to a 300-second HTTP timeout, accepts `--http-timeout`, and reports transfer timeouts as command failures without publishing an incomplete catalog. `--asset` limits downloads to explicitly selected STAC asset keys.
+- Publish standalone stage-in/out CWL with matching immutable container references as GHCR OCI artifacts for reuse by other learning modules.
+- Bundle module-defined release schemas explicitly without invoking cwltool packing.
+
 ## Unreleased
 
 ### Fixed

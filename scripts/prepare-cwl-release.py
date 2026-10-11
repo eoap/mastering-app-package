@@ -57,6 +57,19 @@ def main():
                 str(args.output / f'{name}.{args.version}.cwl'),
             ], check=True)
 
+        for name in ('stage-in', 'stage-out'):
+            document = yaml.load((Path('cwl-cli') / f'{name}.cwl').read_text())
+            reference = (args.digests / f'{name}.txt').read_text().strip()
+            if not re.fullmatch(r'ghcr\.io/[a-z0-9_./-]+@sha256:[a-f0-9]{64}', reference):
+                raise ValueError(f'Invalid staging image reference: {reference}')
+            document['requirements']['DockerRequirement']['dockerPull'] = reference
+            document['s:softwareVersion'] = args.version
+            document['s:codeRepository'] = repository
+            document['id'] = 'main'
+            output = args.output / f'{name}.{args.version}.cwl'
+            with output.open('w') as stream: yaml.dump(document, stream)
+            subprocess.run(['cwltool','--validate',str(output)+'#main'],check=True)
+
 
 if __name__ == '__main__':
     main()
