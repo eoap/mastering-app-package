@@ -61,6 +61,9 @@ def test_upload_preserves_input_and_publishes_links(catalog_directory, client):
         == "s3://bucket/results/run/water/mask.tif"
     )
     assert "results/run/catalog.json" in documents
+    for document in documents.values():
+        for link in document["links"]:
+            assert not link["href"].startswith("/tmp/")
     assert (catalog_directory / "water" / "water.json").read_bytes() == original
 
 
@@ -84,7 +87,9 @@ def test_absolute_asset_keeps_destination_prefix(catalog_directory, client):
     item_path.write_text(json.dumps(data))
     execute(catalog_directory, "bucket", "results/run")
     assert client.upload_file.call_args.args[1:] == (
-        "bucket", "results/run/water/mask.tif")
+        "bucket",
+        "results/run/water/mask.tif",
+    )
 
 
 def test_cli_reports_upload_failure(catalog_directory, client):
@@ -93,3 +98,34 @@ def test_cli_reports_upload_failure(catalog_directory, client):
     assert result.exit_code == 1
     assert "Error: Upload failed" in result.output
     client.put_object.assert_not_called()
+
+
+def test_zarr_group_uploads_complete_store(catalog_directory, client):
+    store = catalog_directory / "water" / "output.zarr"
+    for relative in (
+        "zarr.json",
+        "measurements/zarr.json",
+        "measurements/ndwi/c/0/0/0",
+        "overviews/0/zarr.json",
+    ):
+        path = store / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"data")
+    item_path = catalog_directory / "water" / "water.json"
+    original = json.loads(item_path.read_text())
+    original["assets"] = {"measurements": {"href": "output.zarr/measurements"}}
+    item_path.write_text(json.dumps(original))
+    execute(catalog_directory, "bucket", "run")
+    keys = {call.args[2] for call in client.upload_file.call_args_list}
+    assert "run/water/output.zarr/zarr.json" in keys
+    assert "run/water/output.zarr/overviews/0/zarr.json" in keys
+    assert "run/water/output.zarr/measurements/ndwi/c/0/0/0" in keys
+    documents = {
+        call.kwargs["Key"]: json.loads(call.kwargs["Body"])
+        for call in client.put_object.call_args_list
+    }
+    assert (
+        documents["run/water/water.json"]["assets"]["measurements"]["href"]
+        == "s3://bucket/run/water/output.zarr/measurements"
+    )
+    assert json.loads(item_path.read_text()) == original
