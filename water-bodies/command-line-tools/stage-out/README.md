@@ -30,3 +30,10 @@ Python 3.12 or newer is required. Alternatively, install with `python -m pip ins
 From the repository root, run `task code:test TOOL=stage-out` to test this package,
 or `task kernel:install TOOL=stage-out` to register **Bash (stage-out Hatch)**.
 See [developer tooling](../../../docs/development.md) for checks and CLI previews.
+
+Directory assets are uploaded recursively. If an asset references a subgroup
+inside a Zarr v3 store, stage-out uploads the entire enclosing `.zarr` directory,
+including root metadata, coordinate arrays and sibling overviews. The rewritten
+asset URI retains the subgroup suffix. STAC root and parent links are normalized
+to the S3 publication rather than the temporary working copy. Asset upload
+failures prevent metadata publication. Original local catalogs remain unchanged.

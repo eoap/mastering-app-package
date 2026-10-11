@@ -9,9 +9,9 @@ spec:
     spec:
       serviceAccountName: calrissian-sa
       securityContext:
-        runAsUser: 0
-        runAsGroup: 0
-        fsGroup: 0
+        runAsUser: 1001
+        runAsGroup: 100
+        fsGroup: 100
       containers:
         - name: calrissian
           image: eoepca/pde-code-server:amd64
@@ -28,7 +28,7 @@ spec:
             - --max-cores 
             - "2"
             - --tmp-outdir-prefix 
-            - /calrissian/tmp/ 
+            - /calrissian/job-tmp-
             - --outdir
             - /calrissian/results
             - --usage-report 

@@ -24,7 +24,9 @@ def stage_out(catalog: Path, bucket: str, subfolder: str) -> None:
     try:
         result = execute(catalog, bucket, subfolder)
     except KeyError as exc:
-        raise click.ClickException(f"Missing environment setting: {exc.args[0]}") from exc
+        raise click.ClickException(
+            f"Missing environment setting: {exc.args[0]}"
+        ) from exc
     except (ValueError, OSError, pystac.STACError, BotoCoreError, ClientError) as exc:
         raise click.ClickException(str(exc)) from exc
     click.echo(result)

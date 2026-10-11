@@ -44,6 +44,7 @@ path = "src/stage_out/__about__.py"
 [tool.hatch.envs.types]
 extra-dependencies = [
   "mypy==1.19.1",
+  "boto3-stubs[s3]>=1.35,<2",
 ]
 
 
@@ -103,6 +104,7 @@ skip-install = false
 dependencies = [
   "pytest>=8.4,<10",
   "mypy==1.19.1",
+  "boto3-stubs[s3]>=1.35,<2",
   "ruff>=0.14,<1",
   "bandit>=1.9,<2",
 ]

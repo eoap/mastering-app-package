@@ -7,7 +7,10 @@ Calrissian; building images locally or loading them into Minikube is not require
 Prepare Calrissian, its service account and RBAC, a shared RWX PVC mounted at
 `/calrissian`, and the node-selector file expected by the notebooks. Nodes need
 registry and STAC-data access. Adjust the namespace, PVC, service-account names,
-and Calrissian runner image in `k8s-job.yaml` for your deployment. The example
+and Calrissian runner image in `k8s-job.yaml` for your deployment. Match the
+Job's UID/GID to the editor user so its catalog and assets remain readable.
+The PDE example uses UID 1001 and GID 100, with a separate `job-tmp-` prefix.
+The notebook checks catalog readability after Job completion. The example
 runner command is `/opt/calrissian-venv/bin/calrissian`.
 
 Notebook 1 downloads the selected release's CWL and matching typed scatter
