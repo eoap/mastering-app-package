@@ -1,6 +1,6 @@
 """Test stage-in with local STAC assets."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pystac
@@ -18,7 +18,7 @@ def test_stages_local_item(tmp_path, monkeypatch):
         "scene",
         geometry=None,
         bbox=None,
-        datetime=datetime(2026, 1, 1, tzinfo=timezone.utc),
+        datetime=datetime(2026, 1, 1, tzinfo=UTC),
         properties={},
     )
     item.add_asset("data", pystac.Asset("./data.txt", roles=["data"]))
@@ -57,7 +57,7 @@ def test_reference_required():
 
 
 def test_failed_download_does_not_publish_catalog(tmp_path, monkeypatch):
-    item = pystac.Item("missing", None, None, datetime(2026, 1, 1, tzinfo=timezone.utc), {})
+    item = pystac.Item("missing", None, None, datetime(2026, 1, 1, tzinfo=UTC), {})
     item.add_asset("data", pystac.Asset(str(tmp_path / "absent.tif")))
     source = tmp_path / "source.json"
     item.save_object(dest_href=str(source))
@@ -65,3 +65,37 @@ def test_failed_download_does_not_publish_catalog(tmp_path, monkeypatch):
     result = CliRunner().invoke(stage_in, ["--reference", str(source)])
     assert result.exit_code == 1
     assert not (tmp_path / "catalog.json").exists()
+
+
+def test_timeout_is_reported_without_publishing_catalog(tmp_path, monkeypatch):
+    from stage import stage_in_impl
+
+    async def timeout(*args, **kwargs):
+        raise TimeoutError("transfer deadline exceeded")
+
+    monkeypatch.setattr(stage_in_impl, "stage_item", timeout)
+    monkeypatch.chdir(tmp_path)
+    result = CliRunner().invoke(
+        stage_in, ["--reference", "https://example.invalid/item.json", "--http-timeout", "900"]
+    )
+    assert result.exit_code == 1
+    assert "transfer deadline exceeded" in result.output
+    assert not (tmp_path / "catalog.json").exists()
+
+
+def test_stages_only_selected_asset(tmp_path, monkeypatch):
+    item = pystac.Item("scene", None, None, datetime(2026, 1, 1, tzinfo=UTC), {})
+    for key in ("needed", "unused"):
+        asset = tmp_path / (key + ".txt")
+        asset.write_text(key)
+        item.add_asset(key, pystac.Asset(str(asset)))
+    source = tmp_path / "item.json"
+    item.save_object(dest_href=str(source))
+    output = tmp_path / "output"
+    output.mkdir()
+    monkeypatch.chdir(output)
+    result = CliRunner().invoke(stage_in, ["--reference", str(source), "--asset", "needed"])
+    assert result.exit_code == 0, result.output
+    staged = next(pystac.Catalog.from_file(str(output / "catalog.json")).get_items())
+    assert set(staged.assets) == {"needed"}
+    assert not (output / "scene/unused.txt").exists()

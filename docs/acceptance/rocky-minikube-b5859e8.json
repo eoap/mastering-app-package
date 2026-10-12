@@ -1,0 +1,12 @@
+{
+  "source_commit": "b5859e8832e403b6a6939eaf96039e18323f1910",
+  "cluster": "eoap-mastering-app-package-docker",
+  "published_candidate_acceptance_passed": false,
+  "leaf_unit_tests_passed": 34,
+  "root_tests_passed": 12,
+  "processing_smoke_jobs_passed": 6,
+  "runtime_uid": 2000,
+  "runtime_pip_removed": true,
+  "full_notebook_acceptance_passed": false,
+  "notebook_failure": "Public Sentinel-2 S3 range transfer timed out; independently reproduced on host"
+}

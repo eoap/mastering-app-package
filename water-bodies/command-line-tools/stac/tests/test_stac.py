@@ -1,6 +1,6 @@
 """Exercise raster processing with local fixtures."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -42,7 +42,7 @@ def test_catalog(raster_factory, tmp_path, monkeypatch, staged):
         "scene",
         geometry=None,
         bbox=None,
-        datetime=datetime(2026, 1, 1, tzinfo=timezone.utc),
+        datetime=datetime(2026, 1, 1, tzinfo=UTC),
         properties={},
     )
     source.set_self_href(str(tmp_path / "source.json"))
@@ -69,8 +69,6 @@ def test_catalog(raster_factory, tmp_path, monkeypatch, staged):
 
 def test_mismatched_counts(raster_factory):
     raster = raster_factory("mask.tif", [[0, 1]])
-    result = CliRunner().invoke(
-        stac, ["--item", "a", "--item", "b", "--rasters", raster]
-    )
+    result = CliRunner().invoke(stac, ["--item", "a", "--item", "b", "--rasters", raster])
     assert result.exit_code == 1
     assert "same nonzero number" in result.output

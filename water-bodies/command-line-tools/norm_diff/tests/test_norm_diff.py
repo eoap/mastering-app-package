@@ -38,9 +38,7 @@ def test_normalized_difference(raster_factory, tmp_path, monkeypatch):
     result = CliRunner().invoke(norm_diff, ["--rasters", a, "--rasters", b])
     assert result.exit_code == 0, result.output
     with rasterio.open("norm_diff.tif") as output:
-        np.testing.assert_allclose(
-            output.read(1), [[0.5, np.nan], [-0.5, 0]], equal_nan=True
-        )
+        np.testing.assert_allclose(output.read(1), [[0.5, np.nan], [-0.5, 0]], equal_nan=True)
         assert output.tags(ns="IMAGE_STRUCTURE")["LAYOUT"] == "COG"
         assert output.count == 1
 

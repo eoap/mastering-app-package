@@ -1,0 +1,5 @@
+stac-asset==0.4.7
+click==8.5.0
+pystac==1.15.2
+boto3==1.40.18
+loguru==0.7.3

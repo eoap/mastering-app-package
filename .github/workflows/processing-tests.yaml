@@ -32,22 +32,34 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install packages and test tools
+      - uses: astral-sh/setup-uv@v6
+      - name: Install locked package environments and run quality gates
+        shell: bash
         run: |
-          python -m pip install pytest build cwltool \
-            ./water-bodies/command-line-tools/crop \
-            ./water-bodies/command-line-tools/norm_diff \
-            ./water-bodies/command-line-tools/otsu \
-            ./water-bodies/command-line-tools/stac \
-            ./water-bodies/command-line-tools/stage-in \
-            ./water-bodies/command-line-tools/stage-out
-      - name: Test commands and processing chain
-        run: pytest --import-mode=importlib tests water-bodies/command-line-tools/{crop,norm_diff,otsu,stac,stage-in,stage-out}/tests
+          set -euo pipefail
+          for package in crop norm_diff otsu stac stage-in stage-out; do
+            package_dir="$PWD/water-bodies/command-line-tools/$package"
+            uv venv "$package_dir/.venv" --python 3.12
+            uv pip install --python "$package_dir/.venv/bin/python" --require-hashes -r "$package_dir/requirements/development.txt"
+            uv pip install --python "$package_dir/.venv/bin/python" --no-deps --no-build-isolation -e "$package_dir"
+            (
+              cd "$package_dir"
+              .venv/bin/ruff format --check src tests
+              .venv/bin/ruff check src tests
+              .venv/bin/mypy src
+              .venv/bin/bandit -r src -ll
+              .venv/bin/pytest -q
+            )
+            echo "$package_dir/.venv/bin" >> "$GITHUB_PATH"
+          done
+      - name: Test processing chain and release metadata
+        run: pytest --import-mode=importlib tests
       - name: Validate CWL and build wheels and images
         run: |
-          while IFS= read -r cwl; do cwltool --validate "$cwl"; done < <(git ls-files '*.cwl')
+          uv tool run --from cwltool==3.1.20260315121657 cwltool --version
+          while IFS= read -r cwl; do uv tool run --from cwltool==3.1.20260315121657 cwltool --validate "$cwl"; done < <(git ls-files '*.cwl')
           for package in crop norm_diff otsu stac stage-in stage-out; do
-            python -m build --wheel --outdir /tmp/wheels "water-bodies/command-line-tools/$package"
+            (cd "water-bodies/command-line-tools/$package" && .venv/bin/hatch build -t wheel)
             docker build -t "processing-$package:test" "water-bodies/command-line-tools/$package"
             docker run --rm "processing-$package:test" "$package" --help
           done

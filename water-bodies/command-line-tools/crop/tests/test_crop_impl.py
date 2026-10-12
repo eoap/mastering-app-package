@@ -1,7 +1,7 @@
 """Exercise the unchanged generated CLI with real local STAC and raster inputs."""
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import numpy as np
 import pystac
@@ -37,7 +37,7 @@ def source(tmp_path):
             "coordinates": [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]],
         },
         bbox=[0, 0, 10, 10],
-        datetime=datetime.now(timezone.utc),
+        datetime=datetime.now(UTC),
         properties={},
     )
     item.add_asset(
