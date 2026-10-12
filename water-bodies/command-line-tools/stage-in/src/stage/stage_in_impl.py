@@ -23,10 +23,10 @@ def _positive_env_int(name: str, default: int) -> int:
     return value
 
 
-async def stage_item(reference: str) -> pystac.Catalog:
+async def stage_item(reference: str, *, http_timeout: float | None = None, asset_keys: tuple[str, ...] = ()) -> pystac.Catalog:
     """Stage an item's assets under its ID and write catalog.json."""
     # Timeout is in seconds; attempts includes the initial download attempt.
-    timeout = _positive_env_int("STAGE_IN_HTTP_TIMEOUT", 300)
+    timeout = http_timeout if http_timeout is not None else _positive_env_int("STAGE_IN_HTTP_TIMEOUT", 300)
     attempts = _positive_env_int("STAGE_IN_HTTP_MAX_ATTEMPTS", 3)
     config = stac_asset.Config(
         http_client_timeout=timeout,
@@ -37,6 +37,10 @@ async def stage_item(reference: str) -> pystac.Catalog:
     item = pystac.read_file(reference)
     if not isinstance(item, pystac.Item):
         raise ValueError("Reference must point to a STAC item")
+    if asset_keys:
+        missing = set(asset_keys) - item.assets.keys()
+        if missing: raise ValueError(f"Unknown STAC asset keys: {sorted(missing)}")
+        item.assets = {key: item.assets[key] for key in asset_keys}
     directory = Path(item.id)
     if directory.name != item.id or item.id in {"", ".", ".."}:
         raise ValueError("STAC item id must be a single directory name")
@@ -57,10 +61,10 @@ async def stage_item(reference: str) -> pystac.Catalog:
     return catalog
 
 
-def execute(*, reference: str) -> None:
+def execute(*, reference: str, http_timeout: float | None = None, asset_keys: tuple[str, ...] = ()) -> None:
     """Synchronous callback for the stage-in console command."""
     try:
-        asyncio.run(stage_item(reference))
-    except (ValueError, OSError, pystac.STACError, DownloadError, AssetOverwriteError) as exc:
+        asyncio.run(stage_item(reference, http_timeout=http_timeout, asset_keys=asset_keys))
+    except (TimeoutError, ValueError, OSError, pystac.STACError, DownloadError, AssetOverwriteError) as exc:
         logger.error("Stage-in failed: {}", exc)
         raise click.ClickException(str(exc)) from exc
