@@ -1,6 +1,7 @@
 """Download a STAC item and package its assets in a local catalog."""
 
 import asyncio
+import os
 from pathlib import Path
 
 import click
@@ -10,8 +11,28 @@ from loguru import logger
 from stac_asset.errors import AssetOverwriteError, DownloadError
 
 
+def _positive_env_int(name: str, default: int) -> int:
+    """Read a positive integer setting, reporting invalid values clearly."""
+    raw = os.environ.get(name, str(default))
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise ValueError(f"{name} must be a positive integer, got {raw!r}") from exc
+    if value <= 0:
+        raise ValueError(f"{name} must be a positive integer, got {raw!r}")
+    return value
+
+
 async def stage_item(reference: str) -> pystac.Catalog:
     """Stage an item's assets under its ID and write catalog.json."""
+    # Timeout is in seconds; attempts includes the initial download attempt.
+    timeout = _positive_env_int("STAGE_IN_HTTP_TIMEOUT", 300)
+    attempts = _positive_env_int("STAGE_IN_HTTP_MAX_ATTEMPTS", 3)
+    config = stac_asset.Config(
+        http_client_timeout=timeout,
+        http_max_attempts=attempts,
+    )
+    logger.info("Stage-in HTTP timeout: {} seconds; max attempts: {}", timeout, attempts)
     logger.info("Reading input STAC item")
     item = pystac.read_file(reference)
     if not isinstance(item, pystac.Item):
@@ -21,7 +42,9 @@ async def stage_item(reference: str) -> pystac.Catalog:
         raise ValueError("STAC item id must be a single directory name")
     directory.mkdir(exist_ok=True)
     logger.info("Downloading assets for {} into {}", item.id, directory.resolve())
-    item = await stac_asset.download_item(item=item, directory=directory.resolve(), config=stac_asset.Config(http_client_timeout=60, http_max_attempts=3))
+    item = await stac_asset.download_item(
+        item=item, directory=directory.resolve(), config=config
+    )
     catalog = pystac.Catalog(
         id="catalog",
         description=f"catalog with staged {item.id}",
