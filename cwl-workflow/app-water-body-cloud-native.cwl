@@ -1,7 +1,7 @@
 cwlVersion: v1.2
 $namespaces:
   s: https://schema.org/
-s:softwareVersion: 2.0.0
+s:softwareVersion: 2.0.2
 # Training-example authors and creation date mirror codemeta.json.
 s:name: Water bodies detection based on NDWI and the otsu threshold
 s:description: Water bodies detection based on NDWI and otsu threshold applied to a single Sentinel-2 COG STAC item
@@ -43,7 +43,12 @@ $graph:
         types:
           - $import: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml
           - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
-          - $import: eoap-types.yaml
+          - name: '#EPSGCode'
+            type: enum
+            symbols: ["4326"]
+          - name: '#SpectralBand'
+            type: enum
+            symbols: [green, nir, nir08]
     inputs:
       aoi:
         label: area of interest
@@ -52,14 +57,14 @@ $graph:
       epsg:
         label: EPSG code
         doc: EPSG code
-        type: 'eoap-types.yaml#EPSGCode'
+        type: 'EPSGCode'
         default: "4326"
       bands:
         label: bands used for the NDWI
         doc: bands used for the NDWI
         type:
           type: array
-          items: 'eoap-types.yaml#SpectralBand'
+          items: 'SpectralBand'
         default: ["green", "nir"]
       item:
         doc: Reference to a STAC item
@@ -122,7 +127,9 @@ $graph:
         envDef:
           PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       ResourceRequirement:
+        coresMin: 1
         coresMax: 1
+        ramMin: 512
         ramMax: 512
       NetworkAccess:
         networkAccess: true
@@ -132,7 +139,12 @@ $graph:
         types:
           - $import: https://raw.githubusercontent.com/eoap/schemas/main/geojson.yaml
           - $import: https://raw.githubusercontent.com/eoap/schemas/main/string_format.yaml
-          - $import: eoap-types.yaml
+          - name: '#EPSGCode'
+            type: enum
+            symbols: ["4326"]
+          - name: '#SpectralBand'
+            type: enum
+            symbols: [green, nir, nir08]
     baseCommand: crop
     arguments: []
     inputs:
@@ -151,14 +163,14 @@ $graph:
         label: Area of interest
         doc: GeoJSON Polygon defining the area to crop; raster pixels outside the polygon are masked.
       epsg:
-        type: 'eoap-types.yaml#EPSGCode'
+        type: 'EPSGCode'
         inputBinding:
           prefix: --epsg
           valueFrom: $(self.split(":").pop())
         label: Coordinate reference system
         doc: EPSG code of the coordinate reference system used for the area of interest.
       band:
-        type: 'eoap-types.yaml#SpectralBand'
+        type: 'SpectralBand'
         inputBinding:
           prefix: --band
         label: Raster band
@@ -178,6 +190,7 @@ $graph:
         envDef:
           PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       ResourceRequirement:
+        coresMin: 1
         coresMax: 1
         ramMin: 2048
         ramMax: 2048
@@ -213,6 +226,7 @@ $graph:
         envDef:
           PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       ResourceRequirement:
+        coresMin: 1
         coresMax: 1
         ramMin: 1024
         ramMax: 1024
@@ -245,7 +259,9 @@ $graph:
         envDef:
           PATH: /app/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       ResourceRequirement:
+        coresMin: 1
         coresMax: 1
+        ramMin: 512
         ramMax: 512
       NetworkAccess:
         networkAccess: true

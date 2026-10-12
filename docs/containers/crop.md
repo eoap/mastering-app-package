@@ -32,7 +32,7 @@ We'll use `podman` container engine (`docker` is also fine).
 
 The command to run the `crop` step in the container is:
 
-```bash linenums="1" hl_lines="4-5 11 15-22"
+```bash linenums="1" hl_lines="4-5 11-18"
 --8<--
 scripts/podman-crop-green.sh
 --8<--

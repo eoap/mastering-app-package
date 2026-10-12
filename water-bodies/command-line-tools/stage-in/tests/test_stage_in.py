@@ -91,3 +91,36 @@ def test_stages_only_selected_asset(tmp_path, monkeypatch):
     staged = next(pystac.Catalog.from_file(str(output / 'catalog.json')).get_items())
     assert set(staged.assets) == {'needed'}
     assert not (output / 'scene/unused.txt').exists()
+
+
+def test_transfer_environment_and_cli_precedence(tmp_path, monkeypatch):
+    from stage import stage_in_impl
+
+    item = pystac.Item('scene', None, None, datetime(2026, 1, 1, tzinfo=timezone.utc), {})
+    source = tmp_path / 'item.json'
+    item.save_object(dest_href=str(source))
+    configs = []
+
+    async def capture_download(*, item, directory, config):
+        configs.append(config)
+        return item
+
+    monkeypatch.setattr(stage_in_impl.stac_asset, 'download_item', capture_download)
+    monkeypatch.setenv('STAGE_IN_HTTP_TIMEOUT', '600')
+    monkeypatch.setenv('STAGE_IN_HTTP_MAX_ATTEMPTS', '5')
+    monkeypatch.chdir(tmp_path)
+    for options, expected_timeout in [([], 600), (['--http-timeout', '900'], 900)]:
+        result = CliRunner().invoke(stage_in, ['--reference', str(source), *options])
+        assert result.exit_code == 0, result.output
+        assert configs[-1].http_client_timeout == expected_timeout
+        assert configs[-1].http_max_attempts == 5
+
+
+def test_invalid_attempts_fail_before_staging(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    for value in ('0', '-1', 'invalid'):
+        monkeypatch.setenv('STAGE_IN_HTTP_MAX_ATTEMPTS', value)
+        result = CliRunner().invoke(stage_in, ['--reference', 'missing.json'])
+        assert result.exit_code == 1
+        assert 'STAGE_IN_HTTP_MAX_ATTEMPTS must be a positive integer' in result.output
+        assert not (tmp_path / 'catalog.json').exists()

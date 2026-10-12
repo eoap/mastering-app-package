@@ -30,7 +30,7 @@ scripts/build_container_stac.sh
 
 The command to run the `stac` step in the container is:
 
-```bash linenums="1" hl_lines="5-7 13 17-20"
+```bash linenums="1" hl_lines="5-7 13-17"
 --8<--
 scripts/podman-stac.sh
 --8<--

@@ -47,7 +47,7 @@ rm -fr /workspace/mastering-app-package/runs/*
 Run the CWL document using the `cwltool` CWL runner to execute the `crop` step with the `green` band with:
 
 
-```console hl_lines="9-12 49-53" title="terminal"
+```console hl_lines="7-8" title="terminal"
 --8<--
 scripts/cwl-cli-crop-green.sh
 --8<--
@@ -59,7 +59,7 @@ sh -x ${WORKSPACE}/scripts/cwl-cli-crop-green.sh
 
 Run the CWL document using the `cwltool` CWL runner to execute the `crop` step with the `nir` band with:
 
-```console hl_lines="9-12 49-53" title="terminal"
+```console hl_lines="7-8" title="terminal"
 --8<--
 scripts/cwl-cli-crop-nir.sh
 --8<--

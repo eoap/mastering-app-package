@@ -10,7 +10,7 @@ This step has a dedicated lab at `practice-labs/3-CWL-CommandLineTools/stac.ipyn
 
 The CWL document below shows the `stac` step wrapped as a CWL CommandLineTool:
 
-```yaml linenums="1" hl_lines="9-12 49-53"
+```yaml linenums="1" hl_lines="41-43 63-69"
 --8<--
 cwl-cli/stac.cwl
 --8<--
@@ -21,7 +21,7 @@ cwl-cli/stac.cwl
 Run the CWL document using the `cwltool` CWL runner to execute the `stac` step with:
 
 
-```bash linenums="1" hl_lines="9-12 49-53"
+```bash linenums="1" hl_lines="9-13"
 --8<--
 scripts/cwl-cli-stac.sh
 --8<--
@@ -35,7 +35,7 @@ sh -x ${WORKSPACE}/scripts/cwl-cli-stac.sh
 
 The folder `/workspace/mastering-app-package/runs` contains: 
 
-``` hl_lines="6"
+``` hl_lines="7"
 (base) jovyan@coder-fbrito:~/runs$ tree .
 .
 ├── crop_green.tif
@@ -51,4 +51,4 @@ The folder `/workspace/mastering-app-package/runs` contains:
 2 directories, 7 files
 ```
 
-Line #6 shows the folder created by the execution.
+Line #7 shows the folder created by the execution.

@@ -30,7 +30,7 @@ scripts/build_container_otsu.sh
 
 The command to run the `otsu` step in the container is:
 
-```bash linenums="1" hl_lines="5-7 13 17"
+```bash linenums="1" hl_lines="5-7 13-14"
 --8<--
 scripts/podman-otsu.sh
 --8<--

@@ -48,7 +48,7 @@ See [LICENSE.md](LICENSE.md).
 
 Alternatively, install with `python -m pip install -e .` in a Python 3.12 or newer virtual environment. The container runs as UID/GID 2000, with `stage-in` installed in `/app/venv/bin`.
 
-Failed asset downloads fail the command before catalog publication. HTTP requests have a 60-second timeout and up to three attempts.
+Failed asset downloads fail the command before catalog publication. HTTP requests default to a 300-second timeout and three attempts. Configure them with `STAGE_IN_HTTP_TIMEOUT` and `STAGE_IN_HTTP_MAX_ATTEMPTS`; an explicit `--http-timeout` overrides the timeout environment variable.
 
 ## Developer tasks and notebook kernel
 
