@@ -37,7 +37,7 @@ water-bodies/command-line-tools/stage-in/src/stage/stage_in_impl.py
 
 The container image is built with: 
 
-```bash linenums="1" hl_lines="8-71"
+```bash linenums="1" hl_lines="10-11"
 --8<--
 scripts/build-stage-container.sh
 --8<--

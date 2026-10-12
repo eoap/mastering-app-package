@@ -10,7 +10,7 @@ This step has a dedicated lab at `practice-labs/3-CWL-CommandLineTools/otsu.ipyn
 
 The CWL document below shows the `crop` step wrapped as a CWL CommandLineTool:
 
-```yaml linenums="1" hl_lines="9-12 49-53"
+```yaml linenums="1" hl_lines="41-44 59-65"
 --8<--
 cwl-cli/otsu.cwl
 --8<--
@@ -21,7 +21,7 @@ cwl-cli/otsu.cwl
 Run the CWL document using the `cwltool` CWL runner to execute the `otsu` step with:
 
 
-```bash linenums="1" hl_lines="9-12 49-53"
+```bash linenums="1" hl_lines="9-11"
 --8<--
 scripts/cwl-cli-otsu.sh
 --8<--
