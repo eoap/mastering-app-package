@@ -23,7 +23,9 @@ cwl-cli/stage-in.cwl
 The Python package reads a STAC Item, downloads its assets with `stac-asset`,
 and writes a self-contained `catalog.json` with relative asset links. It keeps
 the working directory unchanged and validates that the item ID is a directory
-name. HTTP downloads have a 60-second request timeout and up to three attempts.
+name. HTTP downloads default to a 300-second timeout and three attempts. Set
+`STAGE_IN_HTTP_TIMEOUT` and `STAGE_IN_HTTP_MAX_ATTEMPTS` to configure transfers;
+`--http-timeout` overrides the timeout environment variable.
 Failed asset downloads fail the command before publishing a catalog. Progress
 and errors are logged to stderr.
 
