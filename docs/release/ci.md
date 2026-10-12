@@ -92,11 +92,11 @@ token to publish these packages. A failure after image or OCI publication can
 leave registry artifacts without a GitHub release; inspect the failed run and
 use a new version for the next release. Registry publication is not transactional.
 
-For the prepared `2.0.0` release, the changelog documents the typed-input and
+For the prepared `2.0.2` release, the changelog documents the typed-input and
 console-command migration. The release job requires a matching version section
 in `CHANGELOG.md` and uses it as the GitHub release notes, followed by the
 verified OCI artifact references. Package versions and current CWL metadata are
-aligned to `2.0.0`; historical released CWL examples retain their old metadata.
+aligned to `2.0.2`; historical released CWL examples retain their old metadata.
 
 ## Validate chapter 5 before a stable release
 

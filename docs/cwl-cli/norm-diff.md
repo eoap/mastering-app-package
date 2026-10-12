@@ -10,7 +10,7 @@ This step has a dedicated lab at `practice-labs/3-CWL-CommandLineTools/normalize
 
 The CWL document below shows the `norm_diff` step wrapped as a CWL CommandLineTool:
 
-```yaml linenums="1" hl_lines="9-12 49-53" title="cwl-cli/norm-diff.cwl"
+```yaml linenums="1" hl_lines="41-44 62-68" title="cwl-cli/norm-diff.cwl"
 --8<--
 cwl-cli/norm-diff.cwl
 --8<--
@@ -20,7 +20,7 @@ cwl-cli/norm-diff.cwl
 
 Run the CWL document using the `cwltool` CWL runner to execute the `norm_diff` step with:
 
-```bash linenums="1" hl_lines="9-12 49-53"
+```bash linenums="1" hl_lines="9-13"
 --8<--
 scripts/cwl-cli-norm-diff.sh
 --8<--

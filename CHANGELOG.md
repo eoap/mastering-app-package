@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.2] - 2026-10-12
+
+### Fixed
+
+- Inline workflow enum schemas and declare CPU and memory minimums for EOAP validation and Calrissian scheduling.
+- Install application-step packages before switching to notebook runtime directories.
+- Correct documentation code highlights and explain YAML job inputs and the installed stage-in Python CLI.
+- Configure stage-in transfers through `STAGE_IN_HTTP_TIMEOUT` and `STAGE_IN_HTTP_MAX_ATTEMPTS`; explicit `--http-timeout` takes precedence. Defaults remain 300 seconds and three attempts, and asset selection is preserved.
+
+## [2.0.1] - 2026-10-11
+
+### Fixed
+
+- Stage-in defaults to a 300-second HTTP timeout, accepts `--http-timeout`, and reports transfer timeouts as command failures without publishing an incomplete catalog. `--asset` limits downloads to explicitly selected STAC asset keys.
+- Publish standalone stage-in/out CWL with matching immutable container references as GHCR OCI artifacts for reuse by other learning modules.
+- Bundle module-defined release schemas explicitly without invoking cwltool packing.
+
 ## Unreleased
 
 ### Fixed

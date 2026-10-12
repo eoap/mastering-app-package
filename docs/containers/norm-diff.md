@@ -30,7 +30,7 @@ scripts/build_container_norm_diff.sh
 
 The command to run the `norm_diff` step in the container is:
 
-```bash linenums="1" hl_lines="5-8 14 18-19"
+```bash linenums="1" hl_lines="5-8 14-16"
 --8<--
 scripts/podman-norm-diff.sh
 --8<--

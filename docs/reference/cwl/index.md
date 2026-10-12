@@ -99,4 +99,4 @@ binding serializes the full Polygon as JSON; pixels outside the polygon are mask
 These changes require updating jobs that previously supplied plain AOI and STAC
 strings. The imports reference the schemas repository's `main` branch.
 
-Workflow enum definitions are shared through `cwl-workflow/eoap-types.yaml` and imported with `SchemaDefRequirement`. Named enum references allow cwltool to bind array inputs and preserve identical types across workflow/tool boundaries.
+Workflow enum definitions are inline in each CWL document under `SchemaDefRequirement`, keeping the Application Package self-contained. Named enum references allow cwltool to bind array inputs and preserve identical types across workflow/tool boundaries.

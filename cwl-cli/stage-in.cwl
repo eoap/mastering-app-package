@@ -29,7 +29,7 @@ s:author:
 s:softwareRequirements:
   - container runtime
   - cwl runner
-s:softwareVersion: 2.0.0
+s:softwareVersion: 2.0.2
 
 class: CommandLineTool
 id: main
@@ -40,6 +40,22 @@ inputs:
     doc: URI of the STAC item whose assets are downloaded.
     inputBinding:
       prefix: --reference
+  http_timeout:
+    type: int
+    default: 300
+    label: HTTP transfer timeout
+    doc: Timeout in seconds for each HTTP transfer.
+    inputBinding:
+      prefix: --http-timeout
+  asset_keys:
+    type:
+      type: array
+      items: string
+      inputBinding:
+        prefix: --asset
+    default: []
+    label: Asset keys
+    doc: Download only these STAC asset keys; an empty list downloads all assets.
 outputs:
   staged:
     type: Directory
