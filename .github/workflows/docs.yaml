@@ -23,11 +23,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout master
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
 
       - name: Set up Python 3.x
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v7
         with:
           python-version: 3.x
+      - name: Bootstrap patched pip and CA bundle
+        shell: bash
+        run: |
+          python -m pip install --upgrade "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
+          python -m pip install --upgrade "certifi>=2026.10.19"
+          python -c "import pip, certifi; from pip._vendor import certifi as bundled; assert tuple(map(int, pip.__version__.split('.'))) >= (26, 2, 2); assert tuple(map(int, certifi.__version__.split('.'))) >= (2026, 10, 19); assert tuple(map(int, bundled.__version__.split('.'))) >= (2026, 10, 19)"
+          python -m pip download --no-deps --dest "$RUNNER_TEMP/python-bootstrap" "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
+          echo "VIRTUALENV_EXTRA_SEARCH_DIR=$RUNNER_TEMP/python-bootstrap" >> "$GITHUB_ENV"
+          echo "VIRTUALENV_PIP=26.2.2" >> "$GITHUB_ENV"
+          echo "VIRTUALENV_DOWNLOAD=false" >> "$GITHUB_ENV"
       - run: python -m pip install -r scripts/requirements-docs.txt
       - run: mkdocs gh-deploy --force
