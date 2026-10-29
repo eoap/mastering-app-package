@@ -1,2 +1,2 @@
-cwl2markdown==0.2.1
+cwl2markdown==0.2.3
 transpiler-mate-runtime==1.3.1
