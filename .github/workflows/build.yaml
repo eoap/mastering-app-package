@@ -154,7 +154,7 @@ jobs:
       - uses: oras-project/setup-oras@v1
         with:
           version: '1.3.0'
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: digest-*
           merge-multiple: true
@@ -220,7 +220,7 @@ jobs:
       CANDIDATE: ${{ needs.version.outputs.candidate }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: application-packages
           path: downloads
