@@ -117,7 +117,7 @@ jobs:
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           exit-code: '1'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: scan-${{ matrix.step }}
@@ -130,7 +130,7 @@ jobs:
           digest=$(oras resolve "$IMAGE:$VERSION")
           [[ "$digest" =~ ^sha256:[a-f0-9]{64}$ ]]
           printf '%s@%s\n' "$IMAGE" "$digest" > "digests/${{ matrix.step }}.txt"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: digest-${{ matrix.step }}
           path: digests/*.txt
@@ -202,7 +202,7 @@ jobs:
             cwltool --validate "verified/$name/$file#main"
             printf '%s\n' "$reference" >> downloads/oci-artifacts.txt
           done
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: application-packages
           path: downloads/*
